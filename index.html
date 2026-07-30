@@ -39,10 +39,13 @@
     display:flex;justify-content:center;
     transition:background .3s ease,color .3s ease;
   }
-  #app{width:100%;max-width:440px;min-height:100dvh;display:flex;flex-direction:column;padding:0 18px 24px}
+  #app{width:100%;max-width:440px;min-height:100dvh;display:flex;flex-direction:column;padding:60px 18px 24px}
 
   /* ---------- Header ---------- */
-  header{display:flex;align-items:center;justify-content:space-between;padding:18px 2px 10px}
+  header{display:flex;align-items:center;justify-content:space-between;
+    position:fixed;top:0;left:50%;transform:translateX(-50%);
+    width:100%;max-width:440px;height:60px;padding:0 20px;box-sizing:border-box;
+    z-index:16;background:var(--bg);transition:background .3s ease}
   .wordmark{font-size:17px;font-weight:800;letter-spacing:.22em}
   .wordmark span{color:var(--accent)}
   .meta{display:flex;gap:8px;align-items:center}
@@ -95,7 +98,11 @@
     font-size:13.5px;font-weight:600;cursor:pointer;font-family:inherit;color:var(--ink);
     transition:background .3s ease}
   .region.selected{background:var(--ink);border-color:var(--ink);color:var(--bg)}
-  .cta{margin-top:auto;padding-top:22px}
+  .cta{margin-top:auto;position:sticky;bottom:0;z-index:15;
+    background:var(--bg);padding:14px 0 calc(14px + env(safe-area-inset-bottom));
+    transition:background .3s ease}
+  .cta::before{content:'';position:absolute;left:-18px;right:-18px;top:0;bottom:0;
+    background:var(--bg);z-index:-1;transition:background .3s ease}
   .btn{width:100%;border:0;border-radius:var(--radius);background:var(--ink);color:var(--bg);
     font-family:inherit;font-size:16px;font-weight:700;padding:16px;cursor:pointer;
     display:flex;align-items:center;justify-content:center;gap:8px}
@@ -209,8 +216,12 @@
   .reg-head{display:flex;align-items:baseline;justify-content:space-between;margin:14px 2px 12px}
   .reg-head h2{font-size:24px;font-weight:800;letter-spacing:-.02em}
   .reg-head .n{font-size:12px;font-weight:700;color:var(--ink-soft);font-variant-numeric:tabular-nums}
-  .reg-search{width:100%;border:1.5px solid var(--line);border-radius:15px;background:var(--card);
-    font-family:inherit;font-size:15px;padding:13px 16px;color:var(--ink);outline:none;margin-bottom:14px}
+  .reg-searchwrap{position:sticky;top:60px;z-index:14;background:var(--bg);
+    padding-bottom:12px;transition:background .3s ease}
+  .reg-searchwrap::before{content:'';position:absolute;left:-18px;right:-18px;top:-4px;bottom:0;
+    background:var(--bg);z-index:-1;transition:background .3s ease}
+  .reg-search{position:relative;width:100%;border:1.5px solid var(--line);border-radius:15px;background:var(--card);
+    font-family:inherit;font-size:15px;padding:13px 16px;color:var(--ink);outline:none}
   .reg-search:focus{border-color:var(--ink)}
   .reg-group{margin-bottom:8px}
   .reg-cont{display:flex;align-items:center;justify-content:space-between;font-size:11px;font-weight:800;
@@ -231,6 +242,12 @@
   .reg-detail{display:none;padding:0 14px 14px 52px}
   .reg-row.open .reg-detail{display:block}
   .reg-detail .coords{font-size:12px;color:var(--ink-soft);font-variant-numeric:tabular-nums}
+  .reg-facts{display:flex;gap:12px;align-items:center;margin-bottom:8px}
+  .reg-facts .flagimg{height:22px;border-radius:3px;box-shadow:0 0 0 1px var(--line)}
+  .reg-facts .flag{font-size:22px;line-height:1}
+  .reg-facts .fact{font-size:13px;color:var(--ink-soft)}
+  .reg-facts .fact b{color:var(--ink);font-weight:700}
+  .reg-facts .fact + .fact{margin-top:3px}
   .nerdbox{margin:18px 0 6px;background:var(--card);border:1px dashed var(--line);border-radius:16px;padding:16px}
   .nerdbox .t{font-size:11px;font-weight:800;letter-spacing:.14em;color:var(--accent);margin-bottom:8px}
   .nerdbox p{font-size:13px;line-height:1.6;color:var(--ink-soft)}
@@ -354,7 +371,9 @@
       <h2 data-i18n="regBtnT">Länderregister</h2>
       <div class="n" id="regHeadCount"></div>
     </div>
-    <input class="reg-search" id="regSearch" type="text" placeholder="Register durchsuchen …" data-i18n-ph="regSearchPh" autocomplete="off">
+    <div class="reg-searchwrap">
+      <input class="reg-search" id="regSearch" type="text" placeholder="Register durchsuchen …" data-i18n-ph="regSearchPh" autocomplete="off">
+    </div>
     <div id="regList"></div>
     <div class="nerdbox">
       <div class="t" data-i18n="nerdT">FÜR NERDS 🤓</div>
@@ -898,6 +917,13 @@ function buildRegister(){
            <span class="iso">${c.a2}</span>
          </button>
          <div class="reg-detail">
+           <div class="reg-facts">
+             ${flagHtml(c.a2)}
+             <div>
+               ${ccap(c) ? `<div class="fact">🏛️ ${t('hintCap')}: <b>${ccap(c)}</b></div>` : ''}
+               ${c.pop ? `<div class="fact">👥 ${t('hintPop')}: <b>${fmtPop(c.pop)}</b></div>` : ''}
+             </div>
+           </div>
            <div class="coords">${t('centroid')} ${c.lat.toFixed(2)}°, ${c.lon.toFixed(2)}° · ${t('conts')[c.cont]}</div>
          </div>`;
       row.querySelector('button').onclick = ()=> row.classList.toggle('open');
