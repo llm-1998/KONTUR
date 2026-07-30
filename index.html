@@ -109,7 +109,8 @@
   .graticule{position:absolute;inset:0;
     background-image:radial-gradient(var(--line) 1px, transparent 1px);
     background-size:22px 22px;opacity:.55}
-  .silhouette{position:relative;width:100%;aspect-ratio:1/1;display:flex;align-items:center;justify-content:center}
+  .silhouette{position:relative;width:100%;aspect-ratio:1/1;max-height:min(42dvh,380px);
+    display:flex;align-items:center;justify-content:center;margin:0 auto}
   .silhouette svg{width:88%;height:88%}
   .silhouette path{fill:var(--ink);opacity:0;animation:reveal .5s ease forwards}
   .silhouette path.dots{stroke:var(--ink);stroke-width:10;stroke-linejoin:round;stroke-linecap:round}
@@ -133,7 +134,11 @@
   .guess .deg{display:none;color:var(--accent);margin-left:2px;font-variant-numeric:tabular-nums}
   html.nerd .guess .deg{display:inline}
 
-  .inputwrap{margin-top:auto;padding-top:14px;position:relative}
+  .inputwrap{margin-top:auto;position:sticky;bottom:0;z-index:15;
+    background:var(--bg);padding:12px 0 calc(12px + env(safe-area-inset-bottom));
+    transition:background .3s ease}
+  .inputwrap::before{content:'';position:absolute;left:-18px;right:-18px;top:0;bottom:0;
+    background:var(--bg);z-index:-1;transition:background .3s ease}
   .suggest{position:absolute;bottom:calc(100% - 2px);left:0;right:0;background:var(--card);
     border:1px solid var(--line);border-radius:16px;overflow:hidden;box-shadow:0 12px 30px var(--shadow);
     display:none;max-height:230px;overflow-y:auto;z-index:10}
