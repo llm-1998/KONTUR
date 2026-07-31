@@ -337,7 +337,7 @@
   <section class="screen" id="gameScreen">
     <div class="board">
       <div class="graticule"></div>
-      <div class="modechip" id="modeChip" style="display:none" data-i18n="lblDaily">TAGESCHALLENGE</div>
+      <div class="modechip" id="modeChip" style="display:none"></div>
       <div class="count" id="triesLeft"></div>
       <div class="silhouette" id="silhouette"></div>
     </div>
@@ -407,7 +407,7 @@
       <span data-i18n="share">Ergebnis teilen</span>
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v7a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-7"/><path d="M16 6l-4-4-4 4M12 2v13"/></svg>
     </button>
-    <button class="btn" id="nextBtn" data-i18n="next">Nächstes Land</button>
+    <button class="btn" id="nextBtn">Nächstes Land</button>
     <button class="btn ghost" id="menuBtn" data-i18n="backStart">Zurück zum Start</button>
   </div>
 </div>
@@ -480,6 +480,8 @@ const STRINGS = {
     unitT:'Einheiten', unitSub:'Für Entfernungsangaben im Spiel',
     unitKm:'Kilometer', unitMi:'Meilen',
     lblDiff:'SCHWIERIGKEIT', diffs:['Einfach','Mittel','Schwer','Experte'],
+    played:'Gespielt', newRound:'Neue Runde',
+    deckDone:n=>`Alle ${n} Länder dieser Auswahl durchgespielt – der Stapel wird neu gemischt. 🎉`,
     diffDescs:['Ikonische Formen zum Einstieg','Bekannte Länder mit gut lernbaren Umrissen','Fast alle Staaten der Welt','Wirklich alle – inklusive Zwergstaaten und Insel-Archipele']
   },
   en: {
@@ -512,6 +514,8 @@ const STRINGS = {
     unitT:'Units', unitSub:'For distances shown in the game',
     unitKm:'Kilometres', unitMi:'Miles',
     lblDiff:'DIFFICULTY', diffs:['Easy','Medium','Hard','Expert'],
+    played:'Played', newRound:'New round',
+    deckDone:n=>`You've played all ${n} countries in this selection – reshuffling the deck. 🎉`,
     diffDescs:['Iconic shapes to get started','Well-known countries with learnable outlines','Almost every state in the world','Truly all of them – including microstates and island archipelagos']
   }
 };
@@ -658,7 +662,6 @@ function show(screen){
 /* ---------- Runden ---------- */
 function setupBoard(){
   $('regionChip').textContent = (mode==='daily' ? REGIONS[0][lang] : region[lang]).toUpperCase();
-  $('modeChip').style.display = mode==='daily' ? '' : 'none';
   $('silhouette').innerHTML = svgFor(target);
   input.value=''; goBtn.disabled=true; closeSuggest();
   renderGuesses();
@@ -666,10 +669,14 @@ function setupBoard(){
 function gamePool(){
   return DATA.filter(c => (!region.conts || region.conts.includes(c.cont)) && c.dl <= diff);
 }
+let soloDeck = [], soloKey = '';
 function startSolo(){
   mode='solo';
   pool = gamePool();
-  target = pool[Math.floor(Math.random()*pool.length)];
+  // Kartenstapel: einmal mischen, dann ohne Wiederholung durchspielen; danach neu mischen
+  const key = region.id + ':' + diff;
+  if (key !== soloKey || !soloDeck.length) { soloDeck = shuffle([...pool]); soloKey = key; }
+  target = soloDeck.shift();
   guesses=[]; finished=false;
   setupBoard();
 }
@@ -727,8 +734,16 @@ function renderHints(){
   }).join('');
 }
 
+function updateModeChip(){
+  const mc = $('modeChip');
+  mc.style.display = '';
+  mc.textContent = mode==='daily'
+    ? t('lblDaily')
+    : `${t('played')} ${pool.length - soloDeck.length} / ${pool.length}`;
+}
 function renderGuesses(){
   renderHints();
+  updateModeChip();
   $('triesLeft').textContent = `${guesses.length} / ${MAX_TRIES}`;
   const list=$('guessList'); list.innerHTML='';
   for(let i=0;i<MAX_TRIES;i++){
@@ -808,7 +823,10 @@ function showResult(win, animate){
   b.className='badge '+(win?'win':'lose');
   b.textContent = win?t('solved'):t('missed');
   $('resCountry').textContent = cname(target);
-  $('resText').textContent = win ? t('winText')(guesses.length) : t('loseText');
+  let txt = win ? t('winText')(guesses.length) : t('loseText');
+  if (mode==='solo' && !soloDeck.length) txt += ' ' + t('deckDone')(pool.length);
+  $('resText').textContent = txt;
+  $('nextBtn').textContent = (mode==='solo' && !soloDeck.length) ? t('newRound') : t('next');
   $('stGames').textContent=stats.games; $('stWins').textContent=stats.wins; $('stStreak').textContent=stats.streak;
   $('shareBtn').style.display = mode==='daily' ? '' : 'none';
   $('nextBtn').style.display  = mode==='daily' ? 'none' : '';
