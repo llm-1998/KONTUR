@@ -175,6 +175,13 @@
   .sheet .badge.win{color:var(--green)} .sheet .badge.lose{color:var(--red)}
   .sheet h2{font-size:28px;font-weight:800;margin:6px 0 4px;letter-spacing:-.02em}
   .sheet p{color:var(--ink-soft);font-size:14.5px;margin-bottom:18px}
+  .sheet-facts{display:none;align-items:center;gap:12px;margin:2px 0 12px}
+  .sheet-facts.show{display:flex}
+  .sheet-facts .flagimg{height:24px;border-radius:3px;box-shadow:0 0 0 1px var(--line)}
+  .sheet-facts .flag{font-size:24px;line-height:1}
+  .sheet-facts .fact{font-size:13px;color:var(--ink-soft)}
+  .sheet-facts .fact b{color:var(--ink);font-weight:700}
+  .sheet-facts .fact + .fact{margin-top:3px}
   .sheet .btn + .btn{margin-top:10px}
   .statrow{display:flex;gap:10px;margin-bottom:18px}
   .stat{flex:1;background:var(--bg);border-radius:14px;padding:12px;text-align:center}
@@ -190,6 +197,9 @@
     min-height:122px;padding:12px 4px}
   .tcol .k{text-align:center;line-height:1.35;white-space:nowrap}
   .tcol .v{font-variant-numeric:tabular-nums}
+  .statrow.compact{gap:5px}
+  .statrow.compact .stat{padding:12px 2px}
+  .statrow.compact .v{font-size:15px;white-space:nowrap}
   .tbar{width:60%;border-radius:8px 8px 3px 3px;height:6px;transition:height .7s cubic-bezier(.2,.8,.2,1)}
   .tbar.zero{opacity:.22}
   /* ---------- Hinweise ---------- */
@@ -253,9 +263,17 @@
   .reg-row .iso{margin-left:auto;font-size:10.5px;font-weight:800;letter-spacing:.08em;
     color:var(--ink-soft);display:none}
   html.nerd .reg-row .iso{display:block}
-  .reg-detail{display:none;padding:0 14px 14px 52px}
+  .reg-detail{display:none;padding:0 14px 14px}
   .reg-row.open .reg-detail{display:block}
   .reg-detail .coords{font-size:12px;color:var(--ink-soft);font-variant-numeric:tabular-nums}
+  .reg-big{position:relative;background:var(--bg);border-radius:12px;margin-bottom:12px;
+    display:flex;align-items:center;justify-content:center;padding:12px;overflow:hidden}
+  .reg-big::before{content:'';position:absolute;inset:0;
+    background-image:radial-gradient(var(--line) 1px, transparent 1px);
+    background-size:16px 16px;opacity:.5}
+  .reg-big svg{position:relative;width:160px;height:160px}
+  .reg-big path{fill:var(--ink)}
+  .reg-big path.dots{stroke:var(--ink);stroke-width:10;stroke-linejoin:round;stroke-linecap:round}
   .reg-facts{display:flex;gap:12px;align-items:center;margin-bottom:8px}
   .reg-facts .flagimg{height:22px;border-radius:3px;box-shadow:0 0 0 1px var(--line)}
   .reg-facts .flag{font-size:22px;line-height:1}
@@ -409,6 +427,7 @@
   <div class="sheet">
     <div class="badge" id="resBadge"></div>
     <h2 id="resCountry"></h2>
+    <div class="sheet-facts" id="resFacts"></div>
     <p id="resText"></p>
     <div class="statrow">
       <div class="stat"><div class="v" id="stGames">0</div><div class="k" data-i18n="rounds">RUNDEN</div></div>
@@ -701,7 +720,7 @@ function startSolo(){
   pool = gamePool();
   // Kartenstapel: einmal mischen, dann ohne Wiederholung durchspielen; danach neu mischen
   const key = region.id + ':' + diff;
-  if (key !== soloKey || !soloDeck.length) { soloDeck = shuffle([...pool]); soloKey = key; }
+  if (key !== soloKey || !soloDeck.length) { soloDeck = shuffle([...pool]); soloKey = key; soloRoundStats = []; }
   target = soloDeck.shift();
   guesses=[]; finished=false;
   setupBoard();
@@ -828,10 +847,10 @@ function submitGuess(){
   const km = distKm(c, target);
   const brg = bearing(c, target);
   guesses.push({country:c, km, bearing:brg, dir:DIRS()[Math.round(brg/45)%8]});
-  input.value=''; goBtn.disabled=true; closeSuggest(); renderGuesses();
   const win = c.a2===target.a2;
-  if(win || guesses.length>=MAX_TRIES){
-    finished = true;
+  if(win || guesses.length>=MAX_TRIES) finished = true;
+  input.value=''; goBtn.disabled=true; closeSuggest(); renderGuesses();
+  if(finished){
     if(mode==='daily') saveDaily(win);
     return endRound(win);
   }
@@ -839,7 +858,9 @@ function submitGuess(){
 }
 
 /* ---------- Rundenende ---------- */
+let soloRoundStats = [];
 function endRound(win){
+  if (mode==='solo') soloRoundStats.push(win ? guesses.length : 0);
   stats.games++; if(win){stats.wins++;stats.streak++;}else{stats.streak=0;}
   store.set('kontur.stats', stats);
   setTimeout(()=>showResult(win, true), 900);
@@ -847,23 +868,51 @@ function endRound(win){
 function showResult(win, animate){
   overlayMode = 'solo';
   const row = document.querySelector('.statrow');
-  row.style.display='';
-  row.innerHTML =
-    `<div class="stat"><div class="v" id="stGames">0</div><div class="k">${t('rounds')}</div></div>
-     <div class="stat"><div class="v" id="stWins">0</div><div class="k">${t('solvedK')}</div></div>
-     <div class="stat"><div class="v" id="stStreak">0</div><div class="k">${t('streakK')}</div></div>`;
+  if (mode==='solo' && !soloDeck.length && soloRoundStats.length){
+    const counts = [0,0,0,0,0,0,0]; // 1..6 Versuche, ✕
+    soloRoundStats.forEach(v => counts[v===0 ? 6 : v-1]++);
+    renderBarChart(row, counts, ['1','2','3','4','5','6','✕'],
+      ['hsl(145 65% 42%)','hsl(115 55% 43%)','hsl(85 55% 44%)','hsl(58 65% 45%)','hsl(38 75% 48%)','hsl(18 70% 48%)','var(--ink-soft)'], true);
+  } else {
+    row.className='statrow'; row.style.display='';
+    row.innerHTML =
+      `<div class="stat"><div class="v" id="stGames">0</div><div class="k">${t('rounds')}</div></div>
+       <div class="stat"><div class="v" id="stWins">0</div><div class="k">${t('solvedK')}</div></div>
+       <div class="stat"><div class="v" id="stStreak">0</div><div class="k">${t('streakK')}</div></div>`;
+  }
   const b=$('resBadge');
   b.className='badge '+(win?'win':'lose');
   b.textContent = win?t('solved'):t('missed');
   $('resCountry').textContent = cname(target);
+  const rf=$('resFacts');
+  rf.className='sheet-facts show';
+  rf.innerHTML = `${flagHtml(target.a2)}<div>
+    ${ccap(target) ? `<div class="fact">🏛️ ${t('hintCap')}: <b>${ccap(target)}</b></div>` : ''}
+    ${target.pop ? `<div class="fact">👥 ${t('hintPop')}: <b>${fmtPop(target.pop)}</b></div>` : ''}
+  </div>`;
   let txt = win ? t('winText')(guesses.length) : t('loseText');
   if (mode==='solo' && !soloDeck.length) txt += ' ' + t('deckDone')(pool.length);
   $('resText').textContent = txt;
   $('nextBtn').textContent = (mode==='solo' && !soloDeck.length) ? t('newRound') : t('next');
-  $('stGames').textContent=stats.games; $('stWins').textContent=stats.wins; $('stStreak').textContent=stats.streak;
+  if($('stGames')){ $('stGames').textContent=stats.games; $('stWins').textContent=stats.wins; $('stStreak').textContent=stats.streak; }
   $('shareBtn').style.display = mode==='daily' ? '' : 'none';
   $('nextBtn').style.display  = mode==='daily' ? 'none' : '';
   $('overlay').classList.add('open');
+}
+function renderBarChart(row, values, labels, colors, compact){
+  const maxC = Math.max(...values, 1);
+  row.style.display='';
+  row.className = 'statrow' + (compact ? ' compact' : '');
+  row.innerHTML = labels.map((label,i) =>
+    `<div class="stat tcol">
+       <div class="v">${values[i]}</div>
+       <div class="tbar${values[i]?'':' zero'}" data-h="${values[i] ? Math.max(12, Math.round(values[i]/maxC*60)) : 6}"
+            style="background:${colors[i]}"></div>
+       <div class="k">${label}</div>
+     </div>`).join('');
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{
+    row.querySelectorAll('.tbar').forEach(b=>{ b.style.height = b.dataset.h + 'px'; });
+  }));
 }
 let overlayMode = 'solo';
 function showTrainDone(){
@@ -871,23 +920,12 @@ function showTrainDone(){
   const n = trainPool.filter(c=>mastered.has(c.a2)).length;
   const b=$('resBadge'); b.className='badge win'; b.textContent='TRAINING';
   $('resCountry').textContent = t('trainDoneT');
+  $('resFacts').className='sheet-facts';
   $('resText').textContent = t('trainDoneText')(trainPool.length, n);
   const counts = [0,0,0,0]; // 1. / 2. / 3. / 4+ Versuch
   Object.values(roundTries).forEach(v => counts[Math.min(v,4)-1]++);
-  const maxC = Math.max(...counts, 1);
-  const cols = ['var(--green)','hsl(80 55% 45%)','hsl(40 75% 48%)','var(--red)'];
-  const row = document.querySelector('.statrow');
-  row.style.display='';
-  row.innerHTML = t('tryLabels').map((label,i) =>
-    `<div class="stat tcol">
-       <div class="v">${counts[i]}</div>
-       <div class="tbar${counts[i]?'':' zero'}" data-h="${counts[i] ? Math.max(12, Math.round(counts[i]/maxC*60)) : 6}"
-            style="background:${cols[i]}"></div>
-       <div class="k">${label}</div>
-     </div>`).join('');
-  requestAnimationFrame(()=>requestAnimationFrame(()=>{
-    row.querySelectorAll('.tbar').forEach(b=>{ b.style.height = b.dataset.h + 'px'; });
-  }));
+  renderBarChart(document.querySelector('.statrow'), counts, t('tryLabels'),
+    ['var(--green)','hsl(80 55% 45%)','hsl(40 75% 48%)','var(--red)'], false);
   $('shareBtn').style.display='none';
   $('nextBtn').style.display=''; $('nextBtn').textContent = t('newRound');
   $('overlay').classList.add('open');
@@ -1032,6 +1070,7 @@ function buildRegister(){
            <span class="iso">${c.a2}</span>
          </button>
          <div class="reg-detail">
+           <div class="reg-big"></div>
            <div class="reg-facts">
              ${flagHtml(c.a2)}
              <div>
@@ -1041,7 +1080,11 @@ function buildRegister(){
            </div>
            <div class="coords">${t('centroid')} ${c.lat.toFixed(2)}°, ${c.lon.toFixed(2)}° · ${t('conts')[c.cont]}</div>
          </div>`;
-      row.querySelector('button').onclick = ()=> row.classList.toggle('open');
+      row.querySelector('button').onclick = ()=>{
+        row.classList.toggle('open');
+        const big = row.querySelector('.reg-big');
+        if(row.classList.contains('open') && !big.innerHTML) big.innerHTML = svgFor(c);
+      };
       svgObserver.observe(row.querySelector('.reg-mini'));
       rows.appendChild(row);
     });
