@@ -185,6 +185,13 @@
   .seg button{border:0;border-radius:11px;background:transparent;font-family:inherit;font-size:14.5px;
     font-weight:700;color:var(--ink-soft);padding:12px;cursor:pointer}
   .seg button.on{background:var(--card);color:var(--ink);box-shadow:0 2px 8px var(--shadow)}
+  .btn.ghost.arm{border-color:var(--red);color:var(--red)}
+  .tcol{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:7px;
+    min-height:122px;padding:12px 4px}
+  .tcol .k{text-align:center;line-height:1.35;white-space:nowrap}
+  .tcol .v{font-variant-numeric:tabular-nums}
+  .tbar{width:60%;border-radius:8px 8px 3px 3px;height:6px;transition:height .7s cubic-bezier(.2,.8,.2,1)}
+  .tbar.zero{opacity:.22}
   /* ---------- Hinweise ---------- */
   .hints{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
   .hint{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;
@@ -203,7 +210,12 @@
   .choice.right{border-color:var(--green);color:var(--green);background:color-mix(in srgb,var(--green) 10%,var(--card))}
   .choice.wrong{border-color:var(--red);color:var(--red);background:color-mix(in srgb,var(--red) 10%,var(--card))}
   .choice:disabled{cursor:default}
-  .train-foot{margin-top:auto;padding-top:16px;display:flex;align-items:center;justify-content:space-between}
+  .train-foot{position:fixed;bottom:0;left:50%;transform:translateX(-50%);
+    width:100%;max-width:440px;box-sizing:border-box;z-index:15;
+    padding:14px 18px calc(24px + env(safe-area-inset-bottom));
+    background:var(--bg);transition:background .3s ease;
+    display:flex;align-items:center;justify-content:space-between}
+  #trainScreen{padding-bottom:100px}
   .mastery{font-size:12.5px;font-weight:700;color:var(--ink-soft);font-variant-numeric:tabular-nums}
   .mastery b{color:var(--green)}
   .skiplink{border:0;background:none;font-family:inherit;font-size:13px;font-weight:700;
@@ -428,7 +440,11 @@
       <button data-unit="km" data-i18n="unitKm">Kilometer</button>
       <button data-unit="mi" data-i18n="unitMi">Meilen</button>
     </div>
-    <button class="btn ghost" id="settingsClose" data-i18n="close">Schließen</button>
+    <h2 style="font-size:22px" data-i18n="resetT">Zurücksetzen</h2>
+    <p data-i18n="resetSub">Zweimal tippen zum Bestätigen</p>
+    <button class="btn ghost" id="resetMasteryBtn" data-i18n="resetMastery">Lernstand (Sicher-Status)</button>
+    <button class="btn ghost" id="resetStatsBtn" data-i18n="resetStats">Spiel-Statistiken</button>
+    <button class="btn" id="settingsClose" data-i18n="close" style="margin-top:18px">Schließen</button>
   </div>
 </div>
 <div class="toast" id="toast">In die Zwischenablage kopiert</div>
@@ -480,7 +496,12 @@ const STRINGS = {
     unitT:'Einheiten', unitSub:'Für Entfernungsangaben im Spiel',
     unitKm:'Kilometer', unitMi:'Meilen',
     lblDiff:'SCHWIERIGKEIT', diffs:['Einfach','Mittel','Schwer','Experte'],
-    played:'Gespielt', newRound:'Neue Runde',
+    played:'Gespielt', newRound:'Neue Runde', trainDoneT:'Runde geschafft!',
+    tryLabels:['1.<br>VERSUCH','2.<br>VERSUCH','3.<br>VERSUCH','4+<br>VERSUCHE'],
+    resetT:'Zurücksetzen', resetSub:'Zweimal tippen zum Bestätigen',
+    resetMastery:'Lernstand (Sicher-Status)', resetStats:'Spiel-Statistiken',
+    resetConfirm:'Wirklich zurücksetzen?', resetDone:'Zurückgesetzt ✓',
+    trainDoneText:(n,m)=>`Alle ${n} Umrisse dieser Auswahl richtig erkannt – ${m} davon gelten als sicher. Der Stapel wird neu gemischt. 🎉`,
     deckDone:n=>`Alle ${n} Länder dieser Auswahl durchgespielt – der Stapel wird neu gemischt. 🎉`,
     diffDescs:['Ikonische Formen zum Einstieg','Bekannte Länder mit gut lernbaren Umrissen','Fast alle Staaten der Welt','Wirklich alle – inklusive Zwergstaaten und Insel-Archipele']
   },
@@ -514,7 +535,12 @@ const STRINGS = {
     unitT:'Units', unitSub:'For distances shown in the game',
     unitKm:'Kilometres', unitMi:'Miles',
     lblDiff:'DIFFICULTY', diffs:['Easy','Medium','Hard','Expert'],
-    played:'Played', newRound:'New round',
+    played:'Played', newRound:'New round', trainDoneT:'Round complete!',
+    tryLabels:['1ST<br>TRY','2ND<br>TRY','3RD<br>TRY','4+<br>TRIES'],
+    resetT:'Reset', resetSub:'Tap twice to confirm',
+    resetMastery:'Training progress (mastered)', resetStats:'Game statistics',
+    resetConfirm:'Really reset?', resetDone:'Reset done ✓',
+    trainDoneText:(n,m)=>`All ${n} outlines in this selection recognized – ${m} of them mastered. Reshuffling the deck. 🎉`,
     deckDone:n=>`You've played all ${n} countries in this selection – reshuffling the deck. 🎉`,
     diffDescs:['Iconic shapes to get started','Well-known countries with learnable outlines','Almost every state in the world','Truly all of them – including microstates and island archipelagos']
   }
@@ -819,6 +845,13 @@ function endRound(win){
   setTimeout(()=>showResult(win, true), 900);
 }
 function showResult(win, animate){
+  overlayMode = 'solo';
+  const row = document.querySelector('.statrow');
+  row.style.display='';
+  row.innerHTML =
+    `<div class="stat"><div class="v" id="stGames">0</div><div class="k">${t('rounds')}</div></div>
+     <div class="stat"><div class="v" id="stWins">0</div><div class="k">${t('solvedK')}</div></div>
+     <div class="stat"><div class="v" id="stStreak">0</div><div class="k">${t('streakK')}</div></div>`;
   const b=$('resBadge');
   b.className='badge '+(win?'win':'lose');
   b.textContent = win?t('solved'):t('missed');
@@ -832,7 +865,37 @@ function showResult(win, animate){
   $('nextBtn').style.display  = mode==='daily' ? 'none' : '';
   $('overlay').classList.add('open');
 }
-$('nextBtn').onclick = ()=>{ closeOverlay(); startSolo(); };
+let overlayMode = 'solo';
+function showTrainDone(){
+  overlayMode = 'train';
+  const n = trainPool.filter(c=>mastered.has(c.a2)).length;
+  const b=$('resBadge'); b.className='badge win'; b.textContent='TRAINING';
+  $('resCountry').textContent = t('trainDoneT');
+  $('resText').textContent = t('trainDoneText')(trainPool.length, n);
+  const counts = [0,0,0,0]; // 1. / 2. / 3. / 4+ Versuch
+  Object.values(roundTries).forEach(v => counts[Math.min(v,4)-1]++);
+  const maxC = Math.max(...counts, 1);
+  const cols = ['var(--green)','hsl(80 55% 45%)','hsl(40 75% 48%)','var(--red)'];
+  const row = document.querySelector('.statrow');
+  row.style.display='';
+  row.innerHTML = t('tryLabels').map((label,i) =>
+    `<div class="stat tcol">
+       <div class="v">${counts[i]}</div>
+       <div class="tbar${counts[i]?'':' zero'}" data-h="${counts[i] ? Math.max(12, Math.round(counts[i]/maxC*60)) : 6}"
+            style="background:${cols[i]}"></div>
+       <div class="k">${label}</div>
+     </div>`).join('');
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{
+    row.querySelectorAll('.tbar').forEach(b=>{ b.style.height = b.dataset.h + 'px'; });
+  }));
+  $('shareBtn').style.display='none';
+  $('nextBtn').style.display=''; $('nextBtn').textContent = t('newRound');
+  $('overlay').classList.add('open');
+}
+$('nextBtn').onclick = ()=>{
+  closeOverlay();
+  if(overlayMode==='train'){ startTraining(); } else { startSolo(); }
+};
 $('menuBtn').onclick = ()=>{ closeOverlay(); refreshDailyState(); show(startScreen); };
 function closeOverlay(){ $('overlay').classList.remove('open'); }
 
@@ -842,7 +905,9 @@ let mastered = new Set(store.get('kontur.mastered') || []);
 
 function shuffle(a){ for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; }
 
+let roundTries = {};
 function startTraining(){
+  roundTries = {};
   trainPool = gamePool();
   // Noch nicht sichere Länder zuerst
   const fresh = trainPool.filter(c=>!mastered.has(c.a2));
@@ -866,8 +931,9 @@ $('isoBtn').onclick = ()=>{
 };
 
 function nextCard(){
-  if(!trainQueue.length) trainQueue = shuffle([...trainPool]);
+  if(!trainQueue.length){ showTrainDone(); return; }
   trainTarget = trainQueue.shift();
+  roundTries[trainTarget.a2] = (roundTries[trainTarget.a2] || 0) + 1;
   wrongThisCard = false; trainLocked = false;
   $('trainStreak').textContent = '🔥 ' + trainStreakN;
   $('trainSilhouette').innerHTML = svgFor(trainTarget);
@@ -1065,6 +1131,31 @@ document.querySelectorAll('#unitSeg button').forEach(b=>{
   b.onclick = ()=> applyUnit(b.dataset.unit);
 });
 applyUnit(unit);
+function armReset(btn, action){
+  let armed=false, timer=null;
+  btn.onclick=()=>{
+    if(!armed){
+      armed=true; btn.classList.add('arm');
+      btn.textContent=t('resetConfirm');
+      timer=setTimeout(()=>{ armed=false; btn.classList.remove('arm'); btn.textContent=t(btn.dataset.i18n); }, 3000);
+    } else {
+      clearTimeout(timer); armed=false;
+      action();
+      btn.classList.remove('arm');
+      btn.textContent=t('resetDone');
+      setTimeout(()=>{ btn.textContent=t(btn.dataset.i18n); }, 1800);
+    }
+  };
+}
+armReset($('resetMasteryBtn'), ()=>{
+  mastered = new Set();
+  store.set('kontur.mastered', []);
+  if(trainScreen.classList.contains('active')) updateMastery();
+});
+armReset($('resetStatsBtn'), ()=>{
+  stats = {games:0, wins:0, streak:0};
+  store.set('kontur.stats', stats);
+});
 $('settingsBtn').onclick = ()=> $('settingsOverlay').classList.add('open');
 $('settingsClose').onclick = ()=> $('settingsOverlay').classList.remove('open');
 document.querySelectorAll('#langSeg button').forEach(b=>{
