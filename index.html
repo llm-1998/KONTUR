@@ -716,7 +716,7 @@ $('soloBtn').onclick  = ()=>selectMode('solo');
 $('trainBtn').onclick = ()=>selectMode('train');
 $('startBtn').onclick = () => {
   if(startMode==='train'){ startTraining(); show(trainScreen); }
-  else { startSolo(); show(gameScreen); }
+  else { startSolo(); show(gameScreen); if(matchMedia('(hover: hover)').matches) input.focus(); }
 };
 $('dailyBtn').onclick = () => { startDaily(); show(gameScreen); };
 $('homeBtn').onclick  = () => { closeOverlay(); refreshDailyState(); show(startScreen); };
@@ -975,10 +975,17 @@ function showTrainDone(){
   $('nextBtn').style.display=''; $('nextBtn').textContent = t('newRound');
   $('overlay').classList.add('open');
 }
+const isDesktop = matchMedia('(hover: hover)').matches;
 $('nextBtn').onclick = ()=>{
   closeOverlay();
-  if(overlayMode==='train'){ startTraining(); } else { startSolo(); }
+  if(overlayMode==='train'){ startTraining(); }
+  else { startSolo(); if(isDesktop) input.focus(); }
 };
+document.addEventListener('keydown', e=>{
+  if(e.key!=='Enter' || !$('overlay').classList.contains('open')) return;
+  e.preventDefault();
+  if($('nextBtn').style.display !== 'none') $('nextBtn').click();
+});
 $('menuBtn').onclick = ()=>{ closeOverlay(); refreshDailyState(); show(startScreen); };
 function closeOverlay(){ $('overlay').classList.remove('open'); }
 
