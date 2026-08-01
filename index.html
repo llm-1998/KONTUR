@@ -5,6 +5,16 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="theme-color" content="#12181C">
 <title>KONTUR – Länderquiz</title>
+<meta name="description" content="Erkenne das Land am Umriss: 233 Länder, Tageschallenge, Trainingsmodus und Länderregister. Deutsch/English, km/Meilen, Dark Mode.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%231E2A32'/%3E%3Ctext x='32' y='45' text-anchor='middle' font-family='Arial,sans-serif' font-size='38' font-weight='800' fill='%23E9EEF0'%3EK%3C/text%3E%3Ccircle cx='47' cy='18' r='5' fill='%235B84FF'/%3E%3C/svg%3E">
+<meta property="og:type" content="website">
+<meta property="og:title" content="KONTUR – Länderquiz">
+<meta property="og:description" content="Erkenne das Land am Umriss. 233 Länder, Tageschallenge, Training – kostenlos und werbefrei.">
+<meta property="og:url" content="https://llm-1998.github.io/KONTUR/">
+<meta property="og:image" content="https://llm-1998.github.io/KONTUR/social-preview.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
 <style>
   :root{
     --bg:#F2F4F1;
@@ -32,6 +42,9 @@
     --scrim:rgba(0,0,0,.55);
   }
   *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  @media (prefers-reduced-motion: reduce){
+    *,*::before,*::after{animation-duration:.01ms !important;transition-duration:.01ms !important}
+  }
   html,body{height:100%}
   body{
     font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
@@ -154,7 +167,7 @@
   .suggest.open{display:block}
   .suggest button{display:flex;width:100%;border:0;background:none;font-family:inherit;text-align:left;
     padding:13px 16px;font-size:15px;cursor:pointer;color:var(--ink);border-bottom:1px solid var(--bg)}
-  .suggest button:active{background:var(--bg)}
+  .suggest button:active,.suggest button.active{background:var(--bg)}
   .inputrow{display:flex;gap:8px}
   .inputrow input{flex:1;min-width:0;border:1.5px solid var(--line);border-radius:15px;background:var(--card);
     font-family:inherit;font-size:16px;padding:15px 16px;color:var(--ink);outline:none;
@@ -644,6 +657,7 @@ const input=$('guessInput'), suggest=$('suggest'), goBtn=$('goBtn');
 function applyTheme(t){
   document.documentElement.dataset.theme = t;
   store.set('kontur.theme', t);
+  document.querySelector('meta[name="theme-color"]').setAttribute('content', t==='dark' ? '#12181C' : '#F2F4F1');
 }
 applyTheme(store.get('kontur.theme') ||
   (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'));
@@ -845,8 +859,27 @@ input.addEventListener('input', ()=>{
     suggest.appendChild(b);
   });
   suggest.classList.add('open');
+  suggestIndex = -1;
 });
-input.addEventListener('keydown', e=>{ if(e.key==='Enter') submitGuess(); });
+let suggestIndex = -1;
+function highlightSuggest(){
+  [...suggest.children].forEach((b,i)=>b.classList.toggle('active', i===suggestIndex));
+  if(suggestIndex>=0) suggest.children[suggestIndex].scrollIntoView({block:'nearest'});
+}
+input.addEventListener('keydown', e=>{
+  const open = suggest.classList.contains('open');
+  if(open && (e.key==='ArrowDown' || e.key==='ArrowUp')){
+    e.preventDefault();
+    const n = suggest.children.length;
+    suggestIndex = e.key==='ArrowDown' ? (suggestIndex+1)%n : (suggestIndex-1+n)%n;
+    highlightSuggest();
+  } else if(e.key==='Escape'){
+    closeSuggest();
+  } else if(e.key==='Enter'){
+    if(open && suggestIndex>=0) suggest.children[suggestIndex].click();
+    else submitGuess();
+  }
+});
 goBtn.onclick = submitGuess;
 function closeSuggest(){ suggest.classList.remove('open'); }
 function exactMatch(v){ return pool.find(c=>fold(cname(c))===fold(v.trim())); }
