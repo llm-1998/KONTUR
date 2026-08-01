@@ -160,6 +160,9 @@
     font-family:inherit;font-size:16px;padding:15px 16px;color:var(--ink);outline:none;
     transition:background .3s ease}
   .inputrow input::placeholder{color:var(--ink-soft)}
+  input[type="search"]{-webkit-appearance:none;appearance:none}
+  input[type="search"]::-webkit-search-decoration,
+  input[type="search"]::-webkit-search-cancel-button{-webkit-appearance:none}
   .inputrow input:focus{border-color:var(--ink)}
   .inputrow .go{width:54px;flex-shrink:0;border:0;border-radius:15px;background:var(--ink);color:var(--bg);cursor:pointer;
     display:flex;align-items:center;justify-content:center}
@@ -376,7 +379,7 @@
     <div class="inputwrap">
       <div class="suggest" id="suggest"></div>
       <div class="inputrow">
-        <input id="guessInput" type="text" placeholder="Land eingeben …" data-i18n-ph="inputPh" autocomplete="off" autocorrect="off" spellcheck="false">
+        <input id="guessInput" type="search" enterkeyhint="go" placeholder="Land eingeben …" data-i18n-ph="inputPh" autocomplete="off" autocorrect="off" spellcheck="false">
         <button class="go" id="goBtn" disabled aria-label="Tipp abgeben">
           <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
         </button>
@@ -407,7 +410,7 @@
       <div class="n" id="regHeadCount"></div>
     </div>
     <div class="reg-searchwrap">
-      <input class="reg-search" id="regSearch" type="text" placeholder="Register durchsuchen …" data-i18n-ph="regSearchPh" autocomplete="off">
+      <input class="reg-search" id="regSearch" type="search" enterkeyhint="search" placeholder="Register durchsuchen …" data-i18n-ph="regSearchPh" autocomplete="off">
     </div>
     <div id="regList"></div>
     <div class="nerdbox">
