@@ -1188,7 +1188,7 @@ function shareText(){
   });
   const [y,m,day] = todayKey().split('-');
   const date = lang==='de' ? `${day}.${m}.${y}` : `${m}/${day}/${y}`;
-  return `KONTUR ${date} – ${score}\n\n${rows.join('\n')}`;
+  return `KONTUR ${date} – ${score}\n\n${rows.join('\n')}\n\nhttps://llm-1998.github.io/KONTUR/`;
 }
 /* ---------- Einstellungen & Sprache ---------- */
 function applyLang(l){
