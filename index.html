@@ -379,7 +379,7 @@
     <div class="inputwrap">
       <div class="suggest" id="suggest"></div>
       <div class="inputrow">
-        <input id="guessInput" type="search" enterkeyhint="go" placeholder="Land eingeben …" data-i18n-ph="inputPh" autocomplete="off" autocorrect="off" spellcheck="false">
+        <input id="guessInput" name="kontur-guess" type="search" enterkeyhint="go" placeholder="Deine Antwort …" data-i18n-ph="inputPh" autocomplete="off" autocorrect="off" autocapitalize="words" spellcheck="false">
         <button class="go" id="goBtn" disabled aria-label="Tipp abgeben">
           <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
         </button>
@@ -497,7 +497,7 @@ const STRINGS = {
     multiT:'Mehrspieler', multiS:'Gegen Freunde', soon:'BALD',
     lblRegion:'REGION', lblLookup:'NACHSCHLAGEN', regBtnT:'Länderregister',
     countries:'Länder', entries:'EINTRÄGE', play:'Spielen',
-    regSearchPh:'Register durchsuchen …', inputPh:'Land eingeben …',
+    regSearchPh:'Register durchsuchen …', inputPh:'Deine Antwort …',
     training:'TRAINING', iso:'ISO-Modus', skip:'Überspringen', mastered:'Sicher',
     hit:'Getroffen', hintPop:'Einwohner', hintCap:'Hauptstadt', hintFlag:'Flagge',
     fromTry:'ab Versuch', stateOpen:'OFFEN', stateOver:'VORBEI', stateSolved:'GELÖST',
@@ -536,7 +536,7 @@ const STRINGS = {
     multiT:'Multiplayer', multiS:'With friends', soon:'SOON',
     lblRegion:'REGION', lblLookup:'LOOK UP', regBtnT:'Country index',
     countries:'countries', entries:'ENTRIES', play:'Play',
-    regSearchPh:'Search the index …', inputPh:'Enter a country …',
+    regSearchPh:'Search the index …', inputPh:'Your answer …',
     training:'TRAINING', iso:'ISO mode', skip:'Skip', mastered:'Mastered',
     hit:'Correct', hintPop:'Population', hintCap:'Capital', hintFlag:'Flag',
     fromTry:'from guess', stateOpen:'OPEN', stateOver:'DONE', stateSolved:'SOLVED',
