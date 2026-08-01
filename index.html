@@ -544,6 +544,8 @@ const STRINGS = {
     resetMastery:'Lernstand (Sicher-Status)', resetStats:'Spiel-Statistiken',
     resetConfirm:'Wirklich zurücksetzen?', resetDone:'Zurückgesetzt ✓',
     ghLink:'Open Source auf GitHub',
+    shareFree:'Freies Spiel', shareTrain:'Training',
+    solvedOf:(a,b)=>`${a}/${b} gelöst`, firstTryOf:(a,b)=>`${a}/${b} im 1. Versuch`,
     trainDoneText:(n,m)=>`Alle ${n} Umrisse dieser Auswahl richtig erkannt – ${m} davon gelten als sicher. Der Stapel wird neu gemischt. 🎉`,
     deckDone:n=>`Alle ${n} Länder dieser Auswahl durchgespielt – der Stapel wird neu gemischt. 🎉`,
     diffDescs:['Ikonische Formen zum Einstieg','Bekannte Länder mit gut lernbaren Umrissen','Fast alle Staaten der Welt','Wirklich alle – inklusive Zwergstaaten und Insel-Archipele']
@@ -584,6 +586,8 @@ const STRINGS = {
     resetMastery:'Training progress (mastered)', resetStats:'Game statistics',
     resetConfirm:'Really reset?', resetDone:'Reset done ✓',
     ghLink:'Open source on GitHub',
+    shareFree:'Free play', shareTrain:'Training',
+    solvedOf:(a,b)=>`${a}/${b} solved`, firstTryOf:(a,b)=>`${a}/${b} on the 1st try`,
     trainDoneText:(n,m)=>`All ${n} outlines in this selection recognized – ${m} of them mastered. Reshuffling the deck. 🎉`,
     deckDone:n=>`You've played all ${n} countries in this selection – reshuffling the deck. 🎉`,
     diffDescs:['Iconic shapes to get started','Well-known countries with learnable outlines','Almost every state in the world','Truly all of them – including microstates and island archipelagos']
@@ -940,7 +944,9 @@ function showResult(win, animate){
   $('resText').textContent = txt;
   $('nextBtn').textContent = (mode==='solo' && !soloDeck.length) ? t('newRound') : t('next');
   if($('stGames')){ $('stGames').textContent=stats.games; $('stWins').textContent=stats.wins; $('stStreak').textContent=stats.streak; }
-  $('shareBtn').style.display = mode==='daily' ? '' : 'none';
+  const deckDoneNow = mode==='solo' && !soloDeck.length && soloRoundStats.length;
+  shareContext = mode==='daily' ? 'daily' : (deckDoneNow ? 'deck' : null);
+  $('shareBtn').style.display = shareContext ? '' : 'none';
   $('nextBtn').style.display  = mode==='daily' ? 'none' : '';
   $('overlay').classList.add('open');
 }
@@ -973,6 +979,9 @@ function showTrainDone(){
     ['var(--green)','hsl(80 55% 45%)','hsl(40 75% 48%)','var(--red)'], false);
   $('shareBtn').style.display='none';
   $('nextBtn').style.display=''; $('nextBtn').textContent = t('newRound');
+  shareContext = 'train';
+  lastTrainShare = { counts, mastered: n, total: trainPool.length };
+  $('shareBtn').style.display='';
   $('overlay').classList.add('open');
 }
 const isDesktop = matchMedia('(hover: hover)').matches;
@@ -1177,7 +1186,29 @@ document.querySelector('.wordmark').addEventListener('click', ()=>{
 });
 
 /* ---------- Teilen ---------- */
+let shareContext = 'daily';
+let lastTrainShare = null;
+const APP_URL = 'https://llm-1998.github.io/KONTUR/';
+const miniBar = (v, max, sym='🟩') => v ? sym.repeat(Math.max(1, Math.ceil(v/max*5))) : '';
+
 function shareText(){
+  if(shareContext === 'deck'){
+    const counts=[0,0,0,0,0,0,0];
+    soloRoundStats.forEach(v=>counts[v===0?6:v-1]++);
+    const maxC=Math.max(...counts,1);
+    const solved=soloRoundStats.filter(v=>v>0).length;
+    const rows=[];
+    for(let i=0;i<6;i++) if(counts[i]) rows.push(`${i+1}: ${miniBar(counts[i],maxC)} ${counts[i]}`);
+    if(counts[6]) rows.push(`✕: ${miniBar(counts[6],maxC,'🟥')} ${counts[6]}`);
+    return `KONTUR – ${t('shareFree')} · ${region[lang]} · ${t('diffs')[diff-1]}\n${t('solvedOf')(solved, soloRoundStats.length)}\n\n${rows.join('\n')}\n\n${APP_URL}`;
+  }
+  if(shareContext === 'train' && lastTrainShare){
+    const {counts, mastered:m0, total} = lastTrainShare;
+    const maxC=Math.max(...counts,1);
+    const labels=['1×','2×','3×','4×+'];
+    const rows=counts.map((v,i)=>v?`${labels[i]}: ${miniBar(v,maxC)} ${v}`:null).filter(Boolean);
+    return `KONTUR – ${t('shareTrain')} · ${region[lang]} · ${t('diffs')[diff-1]}\n${t('trainDoneT')} ${t('firstTryOf')(counts[0], total)}\n\n${rows.join('\n')}\n\n${APP_URL}`;
+  }
   const d = getDaily();
   const score = d.win ? `${d.guesses.length}/6` : 'X/6';
   const rows = guesses.map(g=>{
@@ -1188,7 +1219,7 @@ function shareText(){
   });
   const [y,m,day] = todayKey().split('-');
   const date = lang==='de' ? `${day}.${m}.${y}` : `${m}/${day}/${y}`;
-  return `KONTUR ${date} – ${score}\n\n${rows.join('\n')}\n\nhttps://llm-1998.github.io/KONTUR/`;
+  return `KONTUR ${date} – ${score}\n\n${rows.join('\n')}\n\n${APP_URL}`;
 }
 /* ---------- Einstellungen & Sprache ---------- */
 function applyLang(l){
