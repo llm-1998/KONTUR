@@ -957,6 +957,7 @@ function showResult(win, animate){
   $('nextBtn').style.display  = mode==='daily' ? 'none' : '';
   $('overlay').classList.remove('peek');
   $('overlay').classList.add('open');
+  syncScrollLock();
 }
 function renderBarChart(row, values, labels, colors, compact){
   const maxC = Math.max(...values, 1);
@@ -992,6 +993,7 @@ function showTrainDone(){
   $('shareBtn').style.display='';
   $('overlay').classList.remove('peek');
   $('overlay').classList.add('open');
+  syncScrollLock();
 }
 const isDesktop = matchMedia('(hover: hover)').matches;
 $('nextBtn').onclick = ()=>{
@@ -1005,47 +1007,64 @@ document.addEventListener('keydown', e=>{
   if($('nextBtn').style.display !== 'none') $('nextBtn').click();
 });
 $('menuBtn').onclick = ()=>{ closeOverlay(); refreshDailyState(); show(startScreen); };
-function closeOverlay(){ $('overlay').classList.remove('open','peek'); }
+function syncScrollLock(){
+  const o = $('overlay');
+  const lock = o.classList.contains('open') && !o.classList.contains('peek');
+  document.body.style.overflow = lock ? 'hidden' : '';
+}
+function closeOverlay(){ $('overlay').classList.remove('open','peek'); syncScrollLock(); }
 
-/* ---------- Sheet-Wischgeste ---------- */
+/* ---------- Sheet-Wischgeste (Touch fuer iOS, Maus fuer Desktop) ---------- */
 const sheetEl = document.querySelector('#overlay .sheet');
 let dragStartY=null, dragDelta=0, dragging=false, justDragged=false;
 const peekOffset = ()=> sheetEl.getBoundingClientRect().height - 46;
 
-sheetEl.addEventListener('pointerdown', e=>{
-  dragStartY=e.clientY; dragDelta=0; dragging=false;
-});
-sheetEl.addEventListener('pointermove', e=>{
+function dsStart(y){ dragStartY=y; dragDelta=0; dragging=false; }
+function dsMove(y, ev){
   if(dragStartY===null) return;
-  dragDelta = e.clientY - dragStartY;
+  dragDelta = y - dragStartY;
   if(!dragging && Math.abs(dragDelta) > 8){
     dragging=true;
-    sheetEl.setPointerCapture(e.pointerId);
     sheetEl.style.transition='none';
   }
   if(dragging){
     const base = $('overlay').classList.contains('peek') ? peekOffset() : 0;
     sheetEl.style.transform = 'translateY(' + Math.max(0, base + dragDelta) + 'px)';
-    e.preventDefault();
+    if(ev && ev.cancelable) ev.preventDefault();
   }
-});
-function endSheetDrag(){
+}
+function dsEnd(){
   if(dragStartY===null) return;
   if(dragging){
     const peek = $('overlay').classList.contains('peek');
     if(!peek && dragDelta > 60) $('overlay').classList.add('peek');
     if(peek && dragDelta < -60) $('overlay').classList.remove('peek');
-    justDragged=true; setTimeout(()=>justDragged=false, 80);
+    syncScrollLock();
+    justDragged=true; setTimeout(()=>justDragged=false, 120);
   }
   sheetEl.style.transition=''; sheetEl.style.transform='';
   dragStartY=null; dragging=false;
 }
-sheetEl.addEventListener('pointerup', endSheetDrag);
-sheetEl.addEventListener('pointercancel', endSheetDrag);
+// Touch (iPhone/Android): preventDefault im touchmove entzieht Safari die Geste
+sheetEl.addEventListener('touchstart', e=>dsStart(e.touches[0].clientY), {passive:true});
+sheetEl.addEventListener('touchmove', e=>{
+  if(e.cancelable) e.preventDefault(); // sofort blockieren, sonst uebernimmt Safari den Scroll
+  dsMove(e.touches[0].clientY, null);
+}, {passive:false});
+sheetEl.addEventListener('touchend', dsEnd);
+sheetEl.addEventListener('touchcancel', dsEnd);
+// Maus (Desktop): waehrend des Ziehens dem Dokument folgen
+sheetEl.addEventListener('mousedown', e=>{
+  dsStart(e.clientY);
+  const mm = ev=>dsMove(ev.clientY, ev);
+  const mu = ()=>{ dsEnd(); document.removeEventListener('mousemove',mm); document.removeEventListener('mouseup',mu); };
+  document.addEventListener('mousemove',mm);
+  document.addEventListener('mouseup',mu);
+});
 document.addEventListener('click', e=>{
   if(justDragged){ e.stopPropagation(); e.preventDefault(); }
 }, true);
-$('sheetGrabber').onclick = ()=>{ if(!justDragged) $('overlay').classList.toggle('peek'); };
+$('sheetGrabber').onclick = ()=>{ if(!justDragged){ $('overlay').classList.toggle('peek'); syncScrollLock(); } };
 
 /* ---------- Training ---------- */
 let trainQueue=[], trainTarget=null, trainPool=[], trainStreakN=0, trainLocked=false, wrongThisCard=false;
