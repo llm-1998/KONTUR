@@ -17,6 +17,7 @@
 <meta name="twitter:card" content="summary_large_image">
 <style>
   :root{
+    --sab: env(safe-area-inset-bottom, 0px);
     --bg:#F2F4F1;
     --card:#FFFFFF;
     --ink:#1E2A32;
@@ -191,8 +192,9 @@
   .grabber{display:flex;justify-content:center;padding:0 0 14px;margin-top:-8px;cursor:pointer}
   .grabber::before{content:'';width:44px;height:5px;border-radius:99px;background:var(--line)}
   .overlay.peek{background:transparent;pointer-events:none}
-  .overlay.peek .sheet{pointer-events:auto;transform:translateY(calc(100% - 46px));
-    box-shadow:0 -8px 30px var(--shadow)}
+  .overlay.peek .sheet{pointer-events:auto;
+    transform:translateY(calc(100% - 68px - var(--sab)));
+    box-shadow:0 -8px 30px var(--shadow);cursor:pointer}
   .sheet .badge{font-size:11px;font-weight:800;letter-spacing:.14em}
   .sheet .badge.win{color:var(--green)} .sheet .badge.lose{color:var(--red)}
   .sheet h2{font-size:28px;font-weight:800;margin:6px 0 4px;letter-spacing:-.02em}
@@ -1017,7 +1019,10 @@ function closeOverlay(){ $('overlay').classList.remove('open','peek'); syncScrol
 /* ---------- Sheet-Wischgeste (Touch fuer iOS, Maus fuer Desktop) ---------- */
 const sheetEl = document.querySelector('#overlay .sheet');
 let dragStartY=null, dragDelta=0, dragging=false, justDragged=false;
-const peekOffset = ()=> sheetEl.getBoundingClientRect().height - 46;
+const peekOffset = ()=>{
+  const sab = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--sab')) || 0;
+  return sheetEl.getBoundingClientRect().height - 68 - sab;
+};
 
 function dsStart(y){ dragStartY=y; dragDelta=0; dragging=false; }
 function dsMove(y, ev){
@@ -1065,6 +1070,11 @@ document.addEventListener('click', e=>{
   if(justDragged){ e.stopPropagation(); e.preventDefault(); }
 }, true);
 $('sheetGrabber').onclick = ()=>{ if(!justDragged){ $('overlay').classList.toggle('peek'); syncScrollLock(); } };
+sheetEl.addEventListener('click', ()=>{
+  if(!justDragged && $('overlay').classList.contains('peek')){
+    $('overlay').classList.remove('peek'); syncScrollLock();
+  }
+});
 
 /* ---------- Training ---------- */
 let trainQueue=[], trainTarget=null, trainPool=[], trainStreakN=0, trainLocked=false, wrongThisCard=false;
