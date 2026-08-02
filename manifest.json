@@ -1,0 +1,16 @@
+{
+  "name": "KONTUR – Länderquiz",
+  "short_name": "KONTUR",
+  "description": "Erkenne das Land am Umriss. 233 Länder, Tageschallenge, Training – kostenlos und werbefrei.",
+  "lang": "de",
+  "start_url": ".",
+  "scope": ".",
+  "display": "standalone",
+  "background_color": "#12181C",
+  "theme_color": "#12181C",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
