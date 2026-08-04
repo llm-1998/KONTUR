@@ -17,4 +17,4 @@ A single HTML file – no frameworks, no backend. Country outlines from
 Natural Earth (hybrid 1:50m/1:10m) plus OSM data for microstates, simplified
 with Douglas-Peucker; distances via the haversine formula between country centroids.
 
-*Built in dialogue with Claude (Anthropic)*
+*Built in dialogue with Claude*
