@@ -68,7 +68,7 @@
     width:100%;max-width:440px;height:calc(60px + var(--sat));
     padding:var(--sat) 20px 0;box-sizing:border-box;
     z-index:16;background:var(--bg);transition:background .3s ease}
-  .wordmark{font-size:17px;font-weight:800;letter-spacing:.22em}
+  .wordmark{font-size:17px;font-weight:800;letter-spacing:.22em;cursor:pointer;user-select:none}
   .wordmark span{color:var(--accent)}
   .meta{display:flex;gap:8px;align-items:center}
   .chip{font-size:11px;font-weight:600;letter-spacing:.06em;color:var(--ink-soft);
@@ -125,6 +125,9 @@
   .mp-view{display:none;padding-bottom:30px}
   .mp-view.active{display:block}
   .region.dis{opacity:.35;pointer-events:none}
+  .regions.ro{pointer-events:none}
+  .regions.ro .region:not(.selected){opacity:.5}
+  #mpLobby{padding-bottom:calc(150px + var(--sab))}
   .mp-code-input{text-align:center;font-size:19px;text-transform:uppercase;
     letter-spacing:7px;font-weight:800}
   #mpScreen{overflow-x:hidden}
@@ -156,7 +159,8 @@
   .mp-row .p.hit{color:var(--green)}
   .mp-stand{display:flex;align-items:center;gap:10px;background:var(--card);border:1.5px solid var(--line);
     border-radius:13px;padding:12px 15px;margin-bottom:7px;font-weight:700;font-size:15px}
-  .mp-stand .pts{margin-left:auto;font-variant-numeric:tabular-nums}
+  .mp-stand .pts{margin-left:auto;font-variant-numeric:tabular-nums;flex-shrink:0}
+  .mp-stand>span:first-child{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .mp-stand.me{border-color:var(--accent)}
   .mp-quip{color:var(--ink-soft);font-size:14.5px;line-height:1.55;text-align:center;
     margin:18px 6px 0;font-weight:600}
@@ -473,17 +477,17 @@
       <button class="btn ghost" id="mpShareBtn" style="width:100%" data-i18n="mpShare">Einladungslink teilen</button>
       <div class="label" style="margin-top:22px" data-i18n="mpPlayers">SPIELER</div>
       <div id="mpPlayerList"></div>
-      <p class="mp-info" id="mpLobbyInfo" style="margin:6px 2px 0;display:none"></p>
-      <div id="mpHostCfg" style="display:none">
-        <div class="label" style="margin-top:22px" data-i18n="lblRegion">REGION</div>
-        <div class="regions" id="mpRegionList"></div>
-        <div class="label" style="margin-top:18px" data-i18n="lblDiff">SCHWIERIGKEIT</div>
-        <div class="regions" id="mpDiffList"></div>
-        <div class="label" style="margin-top:18px" data-i18n="mpRounds">LÄNDER PRO PARTIE</div>
-        <div class="regions" id="mpRoundsList"></div>
-        <button class="btn" id="mpStartBtn" style="width:100%;margin-top:18px" data-i18n="mpStart">Partie starten</button>
+      <div class="label" style="margin-top:22px" data-i18n="lblRegion">REGION</div>
+      <div class="regions" id="mpRegionList"></div>
+      <div class="label" style="margin-top:18px" data-i18n="lblDiff">SCHWIERIGKEIT</div>
+      <div class="regions" id="mpDiffList"></div>
+      <div class="label" style="margin-top:18px" data-i18n="mpRounds">LÄNDER PRO PARTIE</div>
+      <div class="regions" id="mpRoundsList"></div>
+      <p class="mp-quip" id="mp233Quip" style="display:none"></p>
+      <div class="mp-finalbar">
+        <button class="btn" id="mpStartBtn" data-i18n="mpStart">Partie starten</button>
+        <p class="mp-wait" id="mpLobbyWait" style="padding:8px 0 2px" data-i18n="mpWaitHost">Warten auf den Start …</p>
       </div>
-      <p class="mp-wait" id="mpLobbyWait" data-i18n="mpWaitHost">Warten auf den Start …</p>
     </div>
 
     <div class="mp-view" id="mpPlay">
@@ -725,6 +729,11 @@ const STRINGS = {
       'Letzter. Aber im Länderregister wartet dein Comeback.',
       'Punkte sind auch nur Zahlen. Sagt der letzte Platz.',
       'Kennst du eigentlich den Unterschied zwischen Frankfurt und Frankreich?'],
+    mpQuip233:['Alle? Wirklich alle? Was ist los mit euch …?',
+      'Alle 233 … seid ihr euch da wirklich sicher?',
+      'So viel Freizeit hätte ich auch gerne …',
+      'Wer abbricht, muss einen ausgeben.',
+      'Da will es aber jemand wissen …'],
     mpQuipHits:(h,n)=>`${h} von ${n} direkt getroffen`,
     trainDoneText:(n,m)=>`Alle ${n} Umrisse dieser Auswahl richtig erkannt – ${m} davon gelten als sicher. Der Stapel wird neu gemischt. 🎉`,
     deckDone:n=>`Alle ${n} Länder dieser Auswahl durchgespielt – der Stapel wird neu gemischt. 🎉`,
@@ -809,6 +818,11 @@ const STRINGS = {
       'Last. But the country index awaits your comeback.',
       'Points are just numbers. Says last place.',
       'Do you actually know the difference between Austria and Australia?'],
+    mpQuip233:['All of them? Really all? What is wrong with you …?',
+      'All 233 … are you really sure about this?',
+      'I wish I had that much free time …',
+      'Whoever quits buys the next round.',
+      'Someone really wants to know …'],
     mpQuipHits:(h,n)=>`${h} of ${n} spot-on`,
     trainDoneText:(n,m)=>`All ${n} outlines in this selection recognized – ${m} of them mastered. Reshuffling the deck. 🎉`,
     deckDone:n=>`You've played all ${n} countries in this selection – reshuffling the deck. 🎉`,
@@ -1464,6 +1478,10 @@ function applyNerd(on){
 applyNerd(!!store.get('kontur.nerd'));
 let logoTaps=0, logoTimer=null;
 document.querySelector('.wordmark').addEventListener('click', ()=>{
+  closeOverlay();
+  if(window.mpLeave) window.mpLeave();
+  refreshDailyState();
+  show(startScreen);
   clearTimeout(logoTimer);
   logoTimer=setTimeout(()=>logoTaps=0, 1500);
   if(++logoTaps<7) return;
@@ -1743,24 +1761,27 @@ function renderLobby(){
       (id===room.host?`<span class="mp-hosttag">${t('mpHostTag')}</span>`:'');
     list.appendChild(div);
   });
-  $('mpHostCfg').style.display = isHost?'':'none';
+  $('mpStartBtn').style.display = isHost?'':'none';
   $('mpLobbyWait').style.display = isHost?'none':'';
-  if(isHost){
+  {
     const regList=$('mpRegionList'); regList.innerHTML='';
+    regList.classList.toggle('ro', !isHost);
     REGIONS.forEach((rg,i)=>{
       const b=document.createElement('button');
       b.className='region'+(room.cfg.r===i?' selected':''); b.textContent=rg[lang];
-      b.onclick=()=>roomRef.child('cfg/r').set(i);
+      if(isHost) b.onclick=()=>roomRef.child('cfg/r').set(i);
       regList.appendChild(b);
     });
     const dList=$('mpDiffList'); dList.innerHTML='';
+    dList.classList.toggle('ro', !isHost);
     t('diffs').forEach((label,i)=>{
       const b=document.createElement('button');
       b.className='region'+(room.cfg.d===i+1?' selected':''); b.textContent=label;
-      b.onclick=()=>roomRef.child('cfg/d').set(i+1);
+      if(isHost) b.onclick=()=>roomRef.child('cfg/d').set(i+1);
       dList.appendChild(b);
     });
     const rl=$('mpRoundsList'); rl.innerHTML='';
+    rl.classList.toggle('ro', !isHost);
     const regC=REGIONS[room.cfg.r]||REGIONS[0];
     const allOk = !regC.conts && room.cfg.d===4; // Welt + Experte
     [5,10,20,30,40,50,233].forEach(n=>{
@@ -1768,16 +1789,19 @@ function renderLobby(){
       const isAll = n===233;
       b.className='region'+(room.cfg.n===n?' selected':'')+(isAll&&!allOk?' dis':'');
       b.textContent = isAll ? (lang==='de'?'Alle 233':'All 233') : n;
-      if(!(isAll&&!allOk)) b.onclick=()=>roomRef.child('cfg/n').set(n);
+      if(isHost && !(isAll&&!allOk)) b.onclick=()=>roomRef.child('cfg/n').set(n);
       rl.appendChild(b);
     });
-    if(room.cfg.n===233 && !allOk) roomRef.child('cfg/n').set(5);
+    if(isHost && room.cfg.n===233 && !allOk) roomRef.child('cfg/n').set(5);
   }
   const reg=REGIONS[room.cfg.r]||REGIONS[0];
   $('mpInfoChip').textContent=(reg[lang]+' · '+t('diffs')[room.cfg.d-1]).toUpperCase();
-  const info=$('mpLobbyInfo');
-  info.style.display = isHost?'none':'';
-  info.textContent=(reg[lang]+' · '+t('diffs')[room.cfg.d-1]+' · '+room.cfg.n+' '+t('countries')).toUpperCase();
+  const q=$('mp233Quip');
+  if(room.cfg.n===233){
+    let h=0; for(const ch of (roomCode||'')) h=(h*31+ch.charCodeAt(0))>>>0;
+    q.textContent=t('mpQuip233')[h % t('mpQuip233').length];
+    q.style.display='';
+  } else q.style.display='none';
 }
 function esc(x){ const d=document.createElement('div'); d.textContent=x; return d.innerHTML; }
 
