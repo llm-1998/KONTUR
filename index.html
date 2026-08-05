@@ -124,6 +124,7 @@
   .mp-sub{color:var(--ink-soft);font-size:14px;line-height:1.55;margin-bottom:18px}
   .mp-view{display:none;padding-bottom:30px}
   .mp-view.active{display:block}
+  .region.dis{opacity:.35;pointer-events:none}
   .mp-code-input{text-align:center;font-size:19px;text-transform:uppercase;
     letter-spacing:7px;font-weight:800}
   #mpScreen{overflow-x:hidden}
@@ -456,7 +457,7 @@
   <section class="screen" id="mpScreen">
     <div class="mp-view active" id="mpSetup">
       <h2 class="mp-h" data-i18n="mpTitle">Mehrspieler</h2>
-      <p class="mp-sub" data-i18n="mpIntro">Spielt gleichzeitig auf euren eigenen Geräten: gleiche Länder, heimliche Tipps, Punkte nach Nähe. Region und Schwierigkeit übernimmt der Raum von deiner Auswahl auf der Startseite.</p>
+      <p class="mp-sub" data-i18n="mpIntro">Spielt gleichzeitig auf euren eigenen Geräten: gleiche Länder, heimliche Tipps, Punkte nach Nähe. Region, Schwierigkeit und Rundenzahl legt der Host in der Lobby fest.</p>
       <div class="label" data-i18n="mpNameLbl">DEIN NAME</div>
       <input class="reg-search" id="mpNameInput" maxlength="14" placeholder="Name eingeben …" data-i18n-ph="mpNamePh" autocomplete="off">
       <button class="btn" id="mpCreateBtn" style="width:100%;margin-top:12px" data-i18n="mpCreate">Runde erstellen</button>
@@ -472,8 +473,13 @@
       <button class="btn ghost" id="mpShareBtn" style="width:100%" data-i18n="mpShare">Einladungslink teilen</button>
       <div class="label" style="margin-top:22px" data-i18n="mpPlayers">SPIELER</div>
       <div id="mpPlayerList"></div>
+      <p class="mp-info" id="mpLobbyInfo" style="margin:6px 2px 0;display:none"></p>
       <div id="mpHostCfg" style="display:none">
-        <div class="label" style="margin-top:22px" data-i18n="mpRounds">LÄNDER PRO PARTIE</div>
+        <div class="label" style="margin-top:22px" data-i18n="lblRegion">REGION</div>
+        <div class="regions" id="mpRegionList"></div>
+        <div class="label" style="margin-top:18px" data-i18n="lblDiff">SCHWIERIGKEIT</div>
+        <div class="regions" id="mpDiffList"></div>
+        <div class="label" style="margin-top:18px" data-i18n="mpRounds">LÄNDER PRO PARTIE</div>
         <div class="regions" id="mpRoundsList"></div>
         <button class="btn" id="mpStartBtn" style="width:100%;margin-top:18px" data-i18n="mpStart">Partie starten</button>
       </div>
@@ -680,7 +686,7 @@ const STRINGS = {
     solvedOf:(a,b)=>`${a}/${b} gelöst`, firstTryOf:(a,b)=>`${a}/${b} im 1. Versuch`,
     multiS:'Gegen Freunde – jeder auf seinem Gerät',
     mpTitle:'Mehrspieler',
-    mpIntro:'Spielt gleichzeitig auf euren eigenen Geräten: gleiche Länder, heimliche Tipps, Punkte nach Nähe. Region und Schwierigkeit übernimmt der Raum von deiner Auswahl auf der Startseite.',
+    mpIntro:'Spielt gleichzeitig auf euren eigenen Geräten: gleiche Länder, heimliche Tipps, Punkte nach Nähe. Region, Schwierigkeit und Rundenzahl legt der Host in der Lobby fest.',
     mpNameLbl:'DEIN NAME', mpNamePh:'Name eingeben …', mpCreate:'Runde erstellen',
     mpJoinLbl:'ODER MIT CODE BEITRETEN', mpJoin:'Beitreten', mpCodeLbl:'RAUM-CODE',
     mpShare:'Einladungslink teilen', mpPlayers:'SPIELER', mpRounds:'LÄNDER PRO PARTIE',
@@ -695,15 +701,30 @@ const STRINGS = {
     mpLeft:'Der Host hat den Raum geschlossen', mpLinkCopied:'Einladungslink kopiert!',
     mpHit:'Getroffen! 🎯', mpShareHead:'Mehrspieler',
     mpQuipPerfect:[
-      'Alle getroffen! Einfach war dir wohl noch zu einfach. 😏',
-      'Fehlerfrei durch Mittel – da sitzt der Atlas im Kopf. 🗺️',
-      'Alles richtig auf Schwer?! Da kennt sich aber jemand aus. 🌍',
-      'Perfekte Experten-Runde – meine Güte, mit dem Können gehörst du ins TV-Abendprogramm! 📺'
+      ['Alle getroffen! Einfach war dir wohl noch zu einfach …',
+       'Fehlerfrei auf Einfach. Sauber! Nächster Halt: Mittel.'],
+      ['Fehlerfrei durch Mittel? Da sitzt der Atlas im Kopf.',
+       'Mittel ohne Fehler – deine Erdkunde-Lehrer wären stolz.'],
+      ['Alles richtig auf Schwer?! Ha, da kennt sich aber jemand aus.',
+       'Schwer, fehlerfrei. Wir tun jetzt mal so, als wäre das normal.'],
+      ['Perfekte Experten-Runde?! Meine Güte, mit dem Können gehörst du ins TV-Abendprogramm!',
+       'Alle 233er-Weihen auf Experte?! Sag mal … spielst du heimlich mit Atlas daneben?']
     ],
-    mpQuipGold:'🥇 Platz 1 – die Weltkarte gehört heute dir!',
-    mpQuipSilver:'🥈 Hauchdünn am Thron vorbei. Riecht nach Revanche …',
-    mpQuipBronze:'🥉 Aufs Treppchen gerettet – Bronze glänzt auch.',
-    mpQuipLast:'Letzter Platz … aber hey, jede Weltreise beginnt mit Verlaufen. 🧭',
+    mpQuipGold:['🥇 Platz 1 – die Weltkarte gehört heute dir!',
+      '🥇 Sieg! Die anderen durften immerhin auch mal tippen.',
+      '🥇 Erster! Bescheidenheit ist ab jetzt optional.'],
+    mpQuipLucky:['Null Treffer und trotzdem gewonnen. Sachen gibt\'s.',
+      'Kein einziger Treffer, aber der Pokal ist deiner. Effizienz nennt man das.'],
+    mpQuipChicken:['Auch ein blindes Huhn findet mal ein Korn. *Gacker*',
+      'Ein Treffer, letzter Platz – Qualität statt Quantität, oder so.'],
+    mpQuipSilver:['🥈 Hauchdünn am Thron vorbei. Riecht nach Revanche …',
+      '🥈 Silber! Fast-Ruhm ist auch Ruhm.'],
+    mpQuipBronze:['🥉 Aufs Treppchen gerettet – Bronze glänzt auch.',
+      '🥉 Bronze – von hier sieht man das Podium wenigstens von innen.'],
+    mpQuipLast:['Letzter Platz … aber hey, jede Weltreise beginnt mit Verlaufen. 🧭',
+      'Letzter. Aber im Länderregister wartet dein Comeback.',
+      'Punkte sind auch nur Zahlen. Sagt der letzte Platz.',
+      'Kennst du eigentlich den Unterschied zwischen Frankfurt und Frankreich?'],
     mpQuipHits:(h,n)=>`${h} von ${n} direkt getroffen`,
     trainDoneText:(n,m)=>`Alle ${n} Umrisse dieser Auswahl richtig erkannt – ${m} davon gelten als sicher. Der Stapel wird neu gemischt. 🎉`,
     deckDone:n=>`Alle ${n} Länder dieser Auswahl durchgespielt – der Stapel wird neu gemischt. 🎉`,
@@ -749,7 +770,7 @@ const STRINGS = {
     solvedOf:(a,b)=>`${a}/${b} solved`, firstTryOf:(a,b)=>`${a}/${b} on the 1st try`,
     multiS:'Against friends – everyone on their own device',
     mpTitle:'Multiplayer',
-    mpIntro:'Play simultaneously on your own devices: same countries, secret guesses, points for proximity. The room uses the region and difficulty selected on the start screen.',
+    mpIntro:'Play simultaneously on your own devices: same countries, secret guesses, points for proximity. The host sets region, difficulty and round count in the lobby.',
     mpNameLbl:'YOUR NAME', mpNamePh:'Enter a name …', mpCreate:'Create a room',
     mpJoinLbl:'OR JOIN WITH A CODE', mpJoin:'Join', mpCodeLbl:'ROOM CODE',
     mpShare:'Share invite link', mpPlayers:'PLAYERS', mpRounds:'COUNTRIES PER MATCH',
@@ -764,15 +785,30 @@ const STRINGS = {
     mpLeft:'The host has closed the room', mpLinkCopied:'Invite link copied!',
     mpHit:'Direct hit! 🎯', mpShareHead:'Multiplayer',
     mpQuipPerfect:[
-      'All correct! Easy mode was clearly too easy for you. 😏',
-      'Flawless on Medium – there is an atlas living in your head. 🗺️',
-      'Everything right on Hard?! Someone knows their way around. 🌍',
-      'A perfect Expert run – honestly, that skill belongs on prime-time TV! 📺'
+      ['All correct! Easy was clearly still too easy for you …',
+       'Flawless on Easy. Nice! Next stop: Medium.'],
+      ['Flawless on Medium? There is an atlas living in your head.',
+       'Medium without a miss – your geography teachers would be proud.'],
+      ['Everything right on Hard?! Ha, someone knows their way around.',
+       'Hard mode, flawless. Let us pretend that is normal.'],
+      ['A perfect Expert run?! My goodness, that skill belongs on prime-time TV!',
+       'All correct on Expert?! Be honest … is there an atlas next to you?']
     ],
-    mpQuipGold:'🥇 First place – the world map is yours today!',
-    mpQuipSilver:'🥈 So close to the throne. Smells like a rematch …',
-    mpQuipBronze:'🥉 Made it onto the podium – bronze still shines.',
-    mpQuipLast:'Last place … but hey, every world trip starts with getting lost. 🧭',
+    mpQuipGold:['🥇 First place – the world map is yours today!',
+      '🥇 Victory! At least the others got to guess too.',
+      '🥇 First! Modesty is optional from now on.'],
+    mpQuipLucky:['Zero hits and still won. Go figure.',
+      'Not a single hit, yet the trophy is yours. That is called efficiency.'],
+    mpQuipChicken:['Even a blind chicken finds a grain sometimes. *Cluck*',
+      'One hit, last place – quality over quantity, or something.'],
+    mpQuipSilver:['🥈 So close to the throne. Smells like a rematch …',
+      '🥈 Silver! Almost-glory is still glory.'],
+    mpQuipBronze:['🥉 Made it onto the podium – bronze still shines.',
+      '🥉 Bronze – at least you can see the podium from the inside.'],
+    mpQuipLast:['Last place … but hey, every world trip starts with getting lost. 🧭',
+      'Last. But the country index awaits your comeback.',
+      'Points are just numbers. Says last place.',
+      'Do you actually know the difference between Austria and Australia?'],
     mpQuipHits:(h,n)=>`${h} of ${n} spot-on`,
     trainDoneText:(n,m)=>`All ${n} outlines in this selection recognized – ${m} of them mastered. Reshuffling the deck. 🎉`,
     deckDone:n=>`You've played all ${n} countries in this selection – reshuffling the deck. 🎉`,
@@ -1710,16 +1746,38 @@ function renderLobby(){
   $('mpHostCfg').style.display = isHost?'':'none';
   $('mpLobbyWait').style.display = isHost?'none':'';
   if(isHost){
-    const rl=$('mpRoundsList'); rl.innerHTML='';
-    [3,5,10].forEach(n=>{
+    const regList=$('mpRegionList'); regList.innerHTML='';
+    REGIONS.forEach((rg,i)=>{
       const b=document.createElement('button');
-      b.className='region'+(room.cfg.n===n?' selected':''); b.textContent=n;
-      b.onclick=()=>roomRef.child('cfg/n').set(n);
+      b.className='region'+(room.cfg.r===i?' selected':''); b.textContent=rg[lang];
+      b.onclick=()=>roomRef.child('cfg/r').set(i);
+      regList.appendChild(b);
+    });
+    const dList=$('mpDiffList'); dList.innerHTML='';
+    t('diffs').forEach((label,i)=>{
+      const b=document.createElement('button');
+      b.className='region'+(room.cfg.d===i+1?' selected':''); b.textContent=label;
+      b.onclick=()=>roomRef.child('cfg/d').set(i+1);
+      dList.appendChild(b);
+    });
+    const rl=$('mpRoundsList'); rl.innerHTML='';
+    const regC=REGIONS[room.cfg.r]||REGIONS[0];
+    const allOk = !regC.conts && room.cfg.d===4; // Welt + Experte
+    [5,10,20,30,40,50,233].forEach(n=>{
+      const b=document.createElement('button');
+      const isAll = n===233;
+      b.className='region'+(room.cfg.n===n?' selected':'')+(isAll&&!allOk?' dis':'');
+      b.textContent = isAll ? (lang==='de'?'Alle 233':'All 233') : n;
+      if(!(isAll&&!allOk)) b.onclick=()=>roomRef.child('cfg/n').set(n);
       rl.appendChild(b);
     });
+    if(room.cfg.n===233 && !allOk) roomRef.child('cfg/n').set(5);
   }
   const reg=REGIONS[room.cfg.r]||REGIONS[0];
   $('mpInfoChip').textContent=(reg[lang]+' · '+t('diffs')[room.cfg.d-1]).toUpperCase();
+  const info=$('mpLobbyInfo');
+  info.style.display = isHost?'none':'';
+  info.textContent=(reg[lang]+' · '+t('diffs')[room.cfg.d-1]+' · '+room.cfg.n+' '+t('countries')).toUpperCase();
 }
 function esc(x){ const d=document.createElement('div'); d.textContent=x; return d.innerHTML; }
 
@@ -1816,12 +1874,19 @@ function renderFinal(){
     const g=room.guesses&&room.guesses[r]&&room.guesses[r][pid];
     if(g && g.a2===room.countries[r]) hits++;
   }
+  const pick=arr=>{
+    let h=0; const seed=(roomCode||'')+pid;
+    for(const ch of seed) h=(h*31+ch.charCodeAt(0))>>>0;
+    return arr[h%arr.length];
+  };
   let quip;
-  if(n>0 && hits===n) quip=t('mpQuipPerfect')[(room.cfg.d||4)-1];
-  else if(myRank===1) quip=t('mpQuipGold');
-  else if(myRank===order.length) quip=t('mpQuipLast');
-  else if(myRank===2) quip=t('mpQuipSilver');
-  else quip=t('mpQuipBronze');
+  if(n>0 && hits===n) quip=pick(t('mpQuipPerfect')[(room.cfg.d||4)-1]);
+  else if(myRank===1 && hits===0) quip=pick(t('mpQuipLucky'));
+  else if(myRank===1) quip=pick(t('mpQuipGold'));
+  else if(myRank===order.length && hits===1) quip=pick(t('mpQuipChicken'));
+  else if(myRank===order.length) quip=pick(t('mpQuipLast'));
+  else if(myRank===2) quip=pick(t('mpQuipSilver'));
+  else quip=pick(t('mpQuipBronze'));
   $('mpQuip').textContent=t('mpQuipHits')(hits,n)+' · '+quip;
 }
 $('mpExitBtn').onclick=()=>{ window.mpLeave(); refreshDailyState(); show(startScreen); };
