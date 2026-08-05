@@ -120,6 +120,44 @@
     font-size:13.5px;font-weight:600;cursor:pointer;font-family:inherit;color:var(--ink);
     transition:background .3s ease}
   .region.selected{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+  .mp-h{font-size:26px;font-weight:800;margin:8px 0 6px}
+  .mp-sub{color:var(--ink-soft);font-size:14px;line-height:1.55;margin-bottom:18px}
+  .mp-view{display:none;padding-bottom:30px}
+  .mp-view.active{display:block}
+  .mp-joinrow{display:flex;gap:10px}
+  .mp-joinrow input{flex:1;text-transform:uppercase;letter-spacing:5px;font-weight:800}
+  .mp-joinrow .btn{flex-shrink:0}
+  .mp-err{color:var(--red);font-size:13.5px;font-weight:600;margin-top:12px;min-height:18px}
+  .mp-code{font-size:36px;font-weight:800;letter-spacing:10px;text-align:center;background:var(--card);
+    border:1.5px solid var(--line);border-radius:16px;padding:18px;margin:4px 0 12px;user-select:all}
+  .mp-player{display:flex;align-items:center;gap:11px;background:var(--card);border:1.5px solid var(--line);
+    border-radius:14px;padding:13px 15px;margin-bottom:8px;font-weight:600;font-size:15px}
+  .mp-player .mp-dot{width:9px;height:9px;border-radius:50%;background:var(--green);flex-shrink:0}
+  .mp-player .mp-hosttag{margin-left:auto;font-size:10px;letter-spacing:.1em;color:var(--accent);font-weight:800}
+  .mp-wait{text-align:center;color:var(--ink-soft);font-size:14.5px;padding:22px 0 6px}
+  .mp-topline{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+  .mp-info{font-size:11px;font-weight:700;letter-spacing:.08em;color:var(--ink-soft)}
+  .mp-suggest{position:absolute;top:calc(100% + 8px);left:0;right:0;background:var(--card);
+    border:1.5px solid var(--line);border-radius:14px;overflow:hidden;display:none;z-index:12;
+    box-shadow:0 10px 30px var(--shadow)}
+  .mp-suggest.open{display:block}
+  .mp-suggest button{display:block;width:100%;text-align:left;padding:13px 15px;background:none;border:none;
+    color:var(--ink);font-family:inherit;font-size:15px;border-bottom:1px solid var(--line);cursor:pointer}
+  .mp-suggest button:last-child{border-bottom:none}
+  .mp-suggest button:active,.mp-suggest button.active{background:var(--bg)}
+  .mp-target{font-size:26px;font-weight:800;margin:4px 0 12px;letter-spacing:-.02em}
+  .mp-row{display:flex;align-items:center;gap:10px;background:var(--card);border:1.5px solid var(--line);
+    border-radius:13px;padding:12px 14px;margin-bottom:7px;font-size:14px}
+  .mp-row.me{border-color:var(--accent)}
+  .mp-row .n{font-weight:800;flex-shrink:0}
+  .mp-row .g{color:var(--ink-soft);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .mp-row .p{margin-left:auto;font-weight:800;flex-shrink:0;font-variant-numeric:tabular-nums}
+  .mp-row .p.hit{color:var(--green)}
+  .mp-stand{display:flex;align-items:center;gap:10px;background:var(--card);border:1.5px solid var(--line);
+    border-radius:13px;padding:12px 15px;margin-bottom:7px;font-weight:700;font-size:15px}
+  .mp-stand .pts{margin-left:auto;font-variant-numeric:tabular-nums}
+  .mp-stand.me{border-color:var(--accent)}
+  #mpFinal .mp-stand{padding:15px}
   .diff-hint{font-size:12.5px;color:var(--ink-soft);margin:10px 2px 0;line-height:1.5}
   .diff-hint b{color:var(--ink)}
   .cta{position:fixed;bottom:0;left:50%;transform:translateX(-50%);
@@ -376,9 +414,8 @@
       <button class="mode" id="trainBtn">
         <div class="t">Training</div><div class="s" data-i18n="trainS">Umrisse lernen</div>
       </button>
-      <button class="mode" disabled style="grid-column:1/-1">
-        <div class="t" data-i18n="multiT">Mehrspieler</div><div class="s" data-i18n="multiS">Gegen Freunde</div>
-        <div class="soon" data-i18n="soon">BALD</div>
+      <button class="mode" id="multiBtn" style="grid-column:1/-1">
+        <div class="t" data-i18n="multiT">Mehrspieler</div><div class="s" data-i18n="multiS">Gegen Freunde – jeder auf seinem Gerät</div>
       </button>
     </div>
     <div class="label" data-i18n="lblRegion">REGION</div>
@@ -400,6 +437,70 @@
       <span data-i18n="play">Spielen</span>
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
     </button></div>
+  </section>
+
+  <!-- MULTIPLAYER -->
+  <section class="screen" id="mpScreen">
+    <div class="mp-view active" id="mpSetup">
+      <h2 class="mp-h" data-i18n="mpTitle">Mehrspieler</h2>
+      <p class="mp-sub" data-i18n="mpIntro">Spielt gleichzeitig auf euren eigenen Geräten: gleiche Länder, heimliche Tipps, Punkte nach Nähe. Region und Schwierigkeit übernimmt der Raum von deiner Auswahl auf der Startseite.</p>
+      <div class="label" data-i18n="mpNameLbl">DEIN NAME</div>
+      <input class="reg-search" id="mpNameInput" maxlength="14" placeholder="Name eingeben …" data-i18n-ph="mpNamePh" autocomplete="off">
+      <button class="btn" id="mpCreateBtn" style="width:100%;margin-top:12px" data-i18n="mpCreate">Runde erstellen</button>
+      <div class="label" style="margin-top:26px" data-i18n="mpJoinLbl">ODER MIT CODE BEITRETEN</div>
+      <div class="mp-joinrow">
+        <input class="reg-search" id="mpCodeInput" maxlength="4" placeholder="CODE" autocomplete="off">
+        <button class="btn ghost" id="mpJoinBtn" data-i18n="mpJoin">Beitreten</button>
+      </div>
+      <p class="mp-err" id="mpErr"></p>
+    </div>
+
+    <div class="mp-view" id="mpLobby">
+      <div class="label" data-i18n="mpCodeLbl">RAUM-CODE</div>
+      <div class="mp-code" id="mpCodeShow"></div>
+      <button class="btn ghost" id="mpShareBtn" style="width:100%" data-i18n="mpShare">Einladungslink teilen</button>
+      <div class="label" style="margin-top:22px" data-i18n="mpPlayers">SPIELER</div>
+      <div id="mpPlayerList"></div>
+      <div id="mpHostCfg" style="display:none">
+        <div class="label" style="margin-top:22px" data-i18n="mpRounds">LÄNDER PRO PARTIE</div>
+        <div class="regions" id="mpRoundsList"></div>
+        <button class="btn" id="mpStartBtn" style="width:100%;margin-top:18px" data-i18n="mpStart">Partie starten</button>
+      </div>
+      <p class="mp-wait" id="mpLobbyWait" data-i18n="mpWaitHost">Warten auf den Start …</p>
+    </div>
+
+    <div class="mp-view" id="mpPlay">
+      <div class="mp-topline"><span class="modechip" id="mpRoundChip"></span><span class="mp-info" id="mpInfoChip"></span></div>
+      <div class="silhouette" id="mpSil"></div>
+      <div id="mpGuessBox">
+        <div class="inputrow" style="position:relative;margin-top:14px">
+          <input id="mpInput" type="search" enterkeyhint="go" placeholder="Deine Antwort …" data-i18n-ph="inputPh" autocomplete="off" autocorrect="off" spellcheck="false">
+          <button class="go" id="mpGo" disabled aria-label="Tipp abgeben">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </button>
+          <div class="mp-suggest" id="mpSuggest"></div>
+        </div>
+      </div>
+      <div id="mpWaitBox" style="display:none">
+        <p class="mp-wait" id="mpWaitText"></p>
+        <div id="mpWaitList"></div>
+      </div>
+      <div id="mpRevealBox" style="display:none">
+        <h2 class="mp-target" id="mpTargetName"></h2>
+        <div id="mpRevealRows"></div>
+        <div class="label" style="margin-top:20px" data-i18n="mpStand">ZWISCHENSTAND</div>
+        <div id="mpStandRows"></div>
+        <button class="btn" id="mpNextBtn" style="width:100%;margin-top:16px"></button>
+        <p class="mp-wait" id="mpRevealWait" data-i18n="mpWaitReveal" style="display:none">Warten auf den Host …</p>
+      </div>
+    </div>
+
+    <div class="mp-view" id="mpFinal">
+      <h2 class="mp-target" data-i18n="mpFinalT">Siegerehrung 🏆</h2>
+      <div id="mpFinalRows" style="margin-top:14px"></div>
+      <button class="btn" id="mpShareResBtn" style="width:100%;margin-top:18px" data-i18n="share">Ergebnis teilen</button>
+      <button class="btn ghost" id="mpExitBtn" style="width:100%;margin-top:10px" data-i18n="mpAgain">Zurück zum Start</button>
+    </div>
   </section>
 
   <!-- GAME -->
@@ -563,6 +664,22 @@ const STRINGS = {
     ghLink:'Open Source auf GitHub',
     shareFree:'Freies Spiel', shareTrain:'Training',
     solvedOf:(a,b)=>`${a}/${b} gelöst`, firstTryOf:(a,b)=>`${a}/${b} im 1. Versuch`,
+    multiS:'Gegen Freunde – jeder auf seinem Gerät',
+    mpTitle:'Mehrspieler',
+    mpIntro:'Spielt gleichzeitig auf euren eigenen Geräten: gleiche Länder, heimliche Tipps, Punkte nach Nähe. Region und Schwierigkeit übernimmt der Raum von deiner Auswahl auf der Startseite.',
+    mpNameLbl:'DEIN NAME', mpNamePh:'Name eingeben …', mpCreate:'Runde erstellen',
+    mpJoinLbl:'ODER MIT CODE BEITRETEN', mpJoin:'Beitreten', mpCodeLbl:'RAUM-CODE',
+    mpShare:'Einladungslink teilen', mpPlayers:'SPIELER', mpRounds:'LÄNDER PRO PARTIE',
+    mpWaitHost:'Warten auf den Start …', mpStart:'Partie starten', mpStand:'ZWISCHENSTAND',
+    mpNeedName:'Bitte gib zuerst einen Namen ein', mpNeed2:'Mindestens 2 Spieler nötig',
+    mpErrNo:'Raum nicht gefunden – Code prüfen', mpErrFull:'Der Raum ist voll (max. 4 Spieler)',
+    mpErrStarted:'Diese Partie läuft bereits', mpConn:'Verbinde …',
+    mpRound:(a,b)=>`LAND ${a} / ${b}`, mpGuessed:(a,b)=>`${a} von ${b} haben getippt …`,
+    mpYours:'✓ Dein Tipp ist drin – warten auf die anderen',
+    mpNext:'Nächstes Land', mpFinish:'Zur Siegerehrung', mpWaitReveal:'Warten auf den Host …',
+    mpFinalT:'Siegerehrung 🏆', mpAgain:'Zurück zum Start', mpHostTag:'HOST',
+    mpLeft:'Der Host hat den Raum geschlossen', mpLinkCopied:'Einladungslink kopiert!',
+    mpHit:'Getroffen! 🎯', mpShareHead:'Mehrspieler',
     trainDoneText:(n,m)=>`Alle ${n} Umrisse dieser Auswahl richtig erkannt – ${m} davon gelten als sicher. Der Stapel wird neu gemischt. 🎉`,
     deckDone:n=>`Alle ${n} Länder dieser Auswahl durchgespielt – der Stapel wird neu gemischt. 🎉`,
     diffDescs:['Ikonische Formen zum Einstieg','Bekannte Länder mit gut lernbaren Umrissen','Fast alle Staaten der Welt','Wirklich alle – inklusive Zwergstaaten und Insel-Archipele']
@@ -605,6 +722,22 @@ const STRINGS = {
     ghLink:'Open source on GitHub',
     shareFree:'Free play', shareTrain:'Training',
     solvedOf:(a,b)=>`${a}/${b} solved`, firstTryOf:(a,b)=>`${a}/${b} on the 1st try`,
+    multiS:'Against friends – everyone on their own device',
+    mpTitle:'Multiplayer',
+    mpIntro:'Play simultaneously on your own devices: same countries, secret guesses, points for proximity. The room uses the region and difficulty selected on the start screen.',
+    mpNameLbl:'YOUR NAME', mpNamePh:'Enter a name …', mpCreate:'Create a room',
+    mpJoinLbl:'OR JOIN WITH A CODE', mpJoin:'Join', mpCodeLbl:'ROOM CODE',
+    mpShare:'Share invite link', mpPlayers:'PLAYERS', mpRounds:'COUNTRIES PER MATCH',
+    mpWaitHost:'Waiting for the start …', mpStart:'Start match', mpStand:'STANDINGS',
+    mpNeedName:'Please enter a name first', mpNeed2:'At least 2 players needed',
+    mpErrNo:'Room not found – check the code', mpErrFull:'The room is full (max. 4 players)',
+    mpErrStarted:'This match is already running', mpConn:'Connecting …',
+    mpRound:(a,b)=>`COUNTRY ${a} / ${b}`, mpGuessed:(a,b)=>`${a} of ${b} have guessed …`,
+    mpYours:'✓ Your guess is in – waiting for the others',
+    mpNext:'Next country', mpFinish:'To the podium', mpWaitReveal:'Waiting for the host …',
+    mpFinalT:'Podium 🏆', mpAgain:'Back to start', mpHostTag:'HOST',
+    mpLeft:'The host has closed the room', mpLinkCopied:'Invite link copied!',
+    mpHit:'Direct hit! 🎯', mpShareHead:'Multiplayer',
     trainDoneText:(n,m)=>`All ${n} outlines in this selection recognized – ${m} of them mastered. Reshuffling the deck. 🎉`,
     deckDone:n=>`You've played all ${n} countries in this selection – reshuffling the deck. 🎉`,
     diffDescs:['Iconic shapes to get started','Well-known countries with learnable outlines','Almost every state in the world','Truly all of them – including microstates and island archipelagos']
@@ -740,11 +873,11 @@ $('startBtn').onclick = () => {
   else { startSolo(); show(gameScreen); if(matchMedia('(hover: hover)').matches) input.focus(); }
 };
 $('dailyBtn').onclick = () => { startDaily(); show(gameScreen); };
-$('homeBtn').onclick  = () => { closeOverlay(); refreshDailyState(); show(startScreen); };
+$('homeBtn').onclick  = () => { closeOverlay(); if(window.mpLeave) window.mpLeave(); refreshDailyState(); show(startScreen); };
 
-const registerScreen=$('registerScreen'), trainScreen=$('trainScreen');
+const registerScreen=$('registerScreen'), trainScreen=$('trainScreen'), mpScreen=$('mpScreen');
 function show(screen){
-  [startScreen,gameScreen,registerScreen,trainScreen].forEach(s=>s.classList.remove('active'));
+  [startScreen,gameScreen,registerScreen,trainScreen,mpScreen].forEach(s=>s.classList.remove('active'));
   screen.classList.add('active');
   $('regionChip').style.display = (screen===gameScreen||screen===trainScreen)?'':'none';
   $('homeBtn').style.display    = screen===startScreen?'none':'';
@@ -1386,6 +1519,305 @@ $('shareBtn').onclick = async ()=>{
     setTimeout(()=>el.classList.remove('show'), 2200);
   }catch(e){}
 };
+/* ==================== MEHRSPIELER ==================== */
+(function(){
+const FB_CONFIG = {
+  apiKey: "AIzaSyAgC-N9zNHTMQLyTAL-uzQFl1-fcNuhBQ8",
+  authDomain: "kontur-b1c79.firebaseapp.com",
+  databaseURL: "https://kontur-b1c79-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "kontur-b1c79",
+  storageBucket: "kontur-b1c79.firebasestorage.app",
+  messagingSenderId: "876644380115",
+  appId: "1:876644380115:web:6e0d5c8935b7516bef5326"
+};
+let db=null, fbPromise=null;
+function loadScript(src){ return new Promise((res,rej)=>{ const el=document.createElement('script'); el.src=src; el.onload=res; el.onerror=rej; document.head.appendChild(el); }); }
+function fb(){
+  if(!fbPromise){
+    fbPromise = loadScript('https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js')
+      .then(()=>loadScript('https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js'))
+      .then(()=>{ firebase.initializeApp(FB_CONFIG); db=firebase.database(); });
+  }
+  return fbPromise;
+}
+
+const byA2 = Object.fromEntries(DATA.map(c=>[c.a2,c]));
+let pid = store0('kontur.mp.pid');
+if(!pid){ pid='p'+Math.random().toString(36).slice(2,10); store.set('kontur.mp.pid', pid); }
+
+let roomCode=null, roomRef=null, room=null, isHost=false, leftHere=false, autoAdv='';
+
+function mpView(v){ ['mpSetup','mpLobby','mpPlay','mpFinal'].forEach(id=>$(id).classList.toggle('active', id===v)); window.scrollTo(0,0); }
+function mpToast(msg){ const el=$('toast'); el.textContent=msg; el.classList.add('show'); setTimeout(()=>el.classList.remove('show'), 2400); }
+function players(){ return room && room.players ? Object.entries(room.players) : []; }
+function totals(){
+  const t={};
+  players().forEach(([id])=>t[id]=0);
+  if(room && room.guesses) Object.values(room.guesses).forEach(rg=>Object.entries(rg).forEach(([id,g])=>{ t[id]=(t[id]||0)+g.pts; }));
+  return t;
+}
+function fmtPts(n){ return n.toLocaleString(lang==='de'?'de-DE':'en-US'); }
+
+/* ---- Einstieg ---- */
+$('multiBtn').onclick = ()=>{ show(mpScreen); mpView('mpSetup'); $('mpErr').textContent=''; $('mpNameInput').value = store0('kontur.mp.name') || ''; };
+
+function myName(){
+  const n=$('mpNameInput').value.trim().slice(0,14);
+  if(!n){ $('mpErr').textContent=t('mpNeedName'); return null; }
+  store.set('kontur.mp.name', n);
+  return n;
+}
+const CODE_CHARS='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+const genCode=()=>Array.from({length:4},()=>CODE_CHARS[Math.floor(Math.random()*CODE_CHARS.length)]).join('');
+
+$('mpCreateBtn').onclick = async ()=>{
+  const name=myName(); if(!name) return;
+  $('mpErr').textContent=''; $('mpCreateBtn').disabled=true; $('mpCreateBtn').textContent=t('mpConn');
+  try{
+    await fb();
+    let code, ref;
+    do{ code=genCode(); ref=db.ref('rooms/'+code); }while((await ref.get()).exists());
+    await ref.set({
+      created: firebase.database.ServerValue.TIMESTAMP,
+      host: pid, state:'lobby',
+      cfg:{ r: Math.max(0,REGIONS.indexOf(region)), d: diff, n: 5 },
+      players:{ [pid]: { name } }
+    });
+    ref.onDisconnect().remove();
+    attach(code);
+  }catch(e){ $('mpErr').textContent='Fehler: '+(e.message||e); }
+  $('mpCreateBtn').disabled=false; $('mpCreateBtn').textContent=t('mpCreate');
+};
+
+$('mpJoinBtn').onclick = async ()=>{
+  const name=myName(); if(!name) return;
+  const code=$('mpCodeInput').value.trim().toUpperCase();
+  if(code.length<4){ $('mpErr').textContent=t('mpErrNo'); return; }
+  $('mpErr').textContent=''; $('mpJoinBtn').disabled=true; $('mpJoinBtn').textContent=t('mpConn');
+  try{
+    await fb();
+    const ref=db.ref('rooms/'+code);
+    const snap=await ref.get();
+    const v=snap.val();
+    if(!v) $('mpErr').textContent=t('mpErrNo');
+    else if(v.state!=='lobby') $('mpErr').textContent=t('mpErrStarted');
+    else if(Object.keys(v.players||{}).length>=4 && !v.players[pid]) $('mpErr').textContent=t('mpErrFull');
+    else{
+      await ref.child('players/'+pid).set({ name });
+      ref.child('players/'+pid).onDisconnect().remove();
+      attach(code);
+    }
+  }catch(e){ $('mpErr').textContent='Fehler: '+(e.message||e); }
+  $('mpJoinBtn').disabled=false; $('mpJoinBtn').textContent=t('mpJoin');
+};
+
+function attach(code){
+  roomCode=code; roomRef=db.ref('rooms/'+code); leftHere=false;
+  roomRef.on('value', snap=>{
+    const v=snap.val();
+    if(v===null){
+      if(!leftHere && room && room.state!=='done'){ mpToast(t('mpLeft')); exitLocal(); refreshDailyState(); show(startScreen); }
+      room=null; return;
+    }
+    room=v; isHost = room.host===pid;
+    renderRoom();
+  });
+}
+function exitLocal(){
+  if(roomRef) roomRef.off();
+  roomCode=null; roomRef=null; room=null; isHost=false; autoAdv='';
+}
+window.mpLeave = ()=>{
+  if(!roomRef) return;
+  leftHere=true;
+  const r=room;
+  if(r){
+    if(r.state==='lobby'){ isHost ? roomRef.remove() : roomRef.child('players/'+pid).remove(); }
+    else if(r.state==='playing'){ roomRef.child('players/'+pid).remove(); }
+    else if(r.state==='done' && isHost){ roomRef.remove(); }
+  }
+  exitLocal();
+};
+
+/* ---- Zentrale Zustandsmaschine ---- */
+function renderRoom(){
+  if(!room) return;
+  if(room.state==='lobby'){ mpView('mpLobby'); renderLobby(); }
+  else if(room.state==='playing'){ mpView('mpPlay'); renderPlay(); }
+  else if(room.state==='done'){ mpView('mpFinal'); renderFinal(); }
+}
+
+function renderLobby(){
+  $('mpCodeShow').textContent=roomCode;
+  const list=$('mpPlayerList'); list.innerHTML='';
+  players().forEach(([id,pl])=>{
+    const div=document.createElement('div'); div.className='mp-player';
+    div.innerHTML=`<span class="mp-dot"></span><span>${esc(pl.name)}</span>`+
+      (id===room.host?`<span class="mp-hosttag">${t('mpHostTag')}</span>`:'');
+    list.appendChild(div);
+  });
+  $('mpHostCfg').style.display = isHost?'':'none';
+  $('mpLobbyWait').style.display = isHost?'none':'';
+  if(isHost){
+    const rl=$('mpRoundsList'); rl.innerHTML='';
+    [3,5,10].forEach(n=>{
+      const b=document.createElement('button');
+      b.className='region'+(room.cfg.n===n?' selected':''); b.textContent=n;
+      b.onclick=()=>roomRef.child('cfg/n').set(n);
+      rl.appendChild(b);
+    });
+  }
+  const reg=REGIONS[room.cfg.r]||REGIONS[0];
+  $('mpInfoChip').textContent=(reg[lang]+' · '+t('diffs')[room.cfg.d-1]).toUpperCase();
+}
+function esc(x){ const d=document.createElement('div'); d.textContent=x; return d.innerHTML; }
+
+$('mpShareBtn').onclick = async ()=>{
+  const link=APP_URL+'?join='+roomCode;
+  const text=`KONTUR ${t('mpTitle')} – Code ${roomCode}\n${link}`;
+  if(navigator.share){ try{ await navigator.share({text}); return; }catch(e){} }
+  try{ await navigator.clipboard.writeText(text); mpToast(t('mpLinkCopied')); }catch(e){}
+};
+
+$('mpStartBtn').onclick = ()=>{
+  if(players().length<2){ mpToast(t('mpNeed2')); return; }
+  const reg=REGIONS[room.cfg.r]||REGIONS[0];
+  const mpPool=DATA.filter(c=>(!reg.conts||reg.conts.includes(c.cont)) && c.dl<=room.cfg.d);
+  const n=Math.min(room.cfg.n, mpPool.length);
+  const countries=shuffle([...mpPool]).slice(0,n).map(c=>c.a2);
+  roomRef.onDisconnect().cancel();
+  roomRef.update({ state:'playing', round:0, phase:'guess', countries });
+};
+
+/* ---- Spielrunden ---- */
+let shownRound=-1;
+function renderPlay(){
+  const r=room.round, target=byA2[room.countries[r]];
+  $('mpRoundChip').textContent=t('mpRound')(r+1, room.countries.length);
+  if(shownRound!==r){ $('mpSil').innerHTML=svgFor(target); shownRound=r; $('mpInput').value=''; $('mpGo').disabled=true; mpCloseSuggest(); }
+  const gs=(room.guesses&&room.guesses[r])||{};
+  const mine=gs[pid];
+  const phase=room.phase||'guess';
+
+  $('mpGuessBox').style.display  = (phase==='guess' && !mine) ? '' : 'none';
+  $('mpWaitBox').style.display   = (phase==='guess' && mine)  ? '' : 'none';
+  $('mpRevealBox').style.display = phase==='reveal' ? '' : 'none';
+
+  if(phase==='guess'){
+    const done=Object.keys(gs).length, total=players().length;
+    $('mpWaitText').textContent=t('mpYours')+'\n'+t('mpGuessed')(done,total);
+    const wl=$('mpWaitList'); wl.innerHTML='';
+    players().forEach(([id,pl])=>{
+      const div=document.createElement('div'); div.className='mp-player';
+      div.innerHTML=`<span class="mp-dot" style="background:${gs[id]?'var(--green)':'var(--line)'}"></span><span>${esc(pl.name)}</span>`;
+      wl.appendChild(div);
+    });
+    if(isHost && total>0 && done>=total && autoAdv!==r+':rev'){
+      autoAdv=r+':rev';
+      setTimeout(()=>roomRef.update({phase:'reveal'}), 400);
+    }
+  }
+  if(phase==='reveal'){
+    $('mpTargetName').textContent=cname(target);
+    const rows=$('mpRevealRows'); rows.innerHTML='';
+    Object.entries(gs).sort((a,b)=>b[1].pts-a[1].pts).forEach(([id,g])=>{
+      const pl=room.players[id]||{name:'?'};
+      const hit=g.a2===target.a2;
+      const div=document.createElement('div'); div.className='mp-row'+(id===pid?' me':'');
+      div.innerHTML=`<span class="n">${esc(pl.name)}</span>`+
+        `<span class="g">${hit?t('mpHit'):esc(cname(byA2[g.a2]))+' · '+fmtDist(g.km)+' '+DIR_EMOJI[Math.round(g.brg/45)%8]}</span>`+
+        `<span class="p${hit?' hit':''}">+${fmtPts(g.pts)}</span>`;
+      rows.appendChild(div);
+    });
+    const st=$('mpStandRows'); st.innerHTML='';
+    const tt=totals();
+    Object.entries(tt).sort((a,b)=>b[1]-a[1]).forEach(([id,pts])=>{
+      const pl=room.players[id]||{name:'?'};
+      const div=document.createElement('div'); div.className='mp-stand'+(id===pid?' me':'');
+      div.innerHTML=`<span>${esc(pl.name)}</span><span class="pts">${fmtPts(pts)}</span>`;
+      st.appendChild(div);
+    });
+    const last=r+1>=room.countries.length;
+    $('mpNextBtn').style.display=isHost?'':'none';
+    $('mpRevealWait').style.display=isHost?'none':'';
+    $('mpNextBtn').textContent=last?t('mpFinish'):t('mpNext');
+    $('mpNextBtn').onclick=()=> last ? roomRef.update({state:'done'}) : roomRef.update({round:r+1, phase:'guess'});
+  }
+}
+
+function renderFinal(){
+  const rows=$('mpFinalRows'); rows.innerHTML='';
+  const medals=['🥇','🥈','🥉','4.'];
+  const tt=totals();
+  Object.entries(tt).sort((a,b)=>b[1]-a[1]).forEach(([id,pts],i)=>{
+    const pl=room.players[id]||{name:'?'};
+    const div=document.createElement('div'); div.className='mp-stand'+(id===pid?' me':'');
+    div.innerHTML=`<span>${medals[i]||''} ${esc(pl.name)}</span><span class="pts">${fmtPts(pts)}</span>`;
+    rows.appendChild(div);
+  });
+}
+$('mpExitBtn').onclick=()=>{ window.mpLeave(); refreshDailyState(); show(startScreen); };
+$('mpShareResBtn').onclick=async ()=>{
+  if(!room) return;
+  const reg=REGIONS[room.cfg.r]||REGIONS[0];
+  const medals=['🥇','🥈','🥉','4.'];
+  const tt=totals();
+  const lines=Object.entries(tt).sort((a,b)=>b[1]-a[1])
+    .map(([id,pts],i)=>`${medals[i]||''} ${(room.players[id]||{name:'?'}).name}: ${fmtPts(pts)}`);
+  const text=`KONTUR – ${t('mpShareHead')} · ${reg[lang]} · ${t('diffs')[room.cfg.d-1]}\n\n${lines.join('\n')}\n\n${APP_URL}`;
+  if(navigator.share){ try{ await navigator.share({text}); return; }catch(e){} }
+  try{ await navigator.clipboard.writeText(text); mpToast(t('copied')); }catch(e){}
+};
+
+/* ---- Tipp-Eingabe mit Vorschlägen ---- */
+const mpInput=$('mpInput'), mpSuggest=$('mpSuggest'), mpGo=$('mpGo');
+function mpPoolNow(){
+  if(!room) return DATA;
+  const reg=REGIONS[room.cfg.r]||REGIONS[0];
+  return DATA.filter(c=>(!reg.conts||reg.conts.includes(c.cont)) && c.dl<=room.cfg.d);
+}
+function mpCloseSuggest(){ mpSuggest.classList.remove('open'); }
+function mpExact(v){ return mpPoolNow().find(c=>fold(cname(c))===fold(v.trim())); }
+mpInput.addEventListener('input', ()=>{
+  const q=fold(mpInput.value.trim());
+  mpGo.disabled=!mpExact(mpInput.value);
+  if(q.length<1){ mpCloseSuggest(); return; }
+  const hits=mpPoolNow().filter(c=>fold(cname(c)).includes(q))
+    .sort((a,b)=>fold(cname(a)).startsWith(q)===fold(cname(b)).startsWith(q)?cname(a).localeCompare(cname(b),lang):(fold(cname(a)).startsWith(q)?-1:1))
+    .slice(0,6);
+  if(!hits.length){ mpCloseSuggest(); return; }
+  mpSuggest.innerHTML='';
+  hits.forEach(c=>{
+    const b=document.createElement('button'); b.textContent=cname(c);
+    b.onclick=()=>{ mpInput.value=cname(c); mpCloseSuggest(); mpSubmit(); };
+    mpSuggest.appendChild(b);
+  });
+  mpSuggest.classList.add('open');
+});
+mpInput.addEventListener('keydown', e=>{ if(e.key==='Enter') mpSubmit(); if(e.key==='Escape') mpCloseSuggest(); });
+mpGo.onclick=()=>mpSubmit();
+function mpSubmit(){
+  if(!room || room.state!=='playing' || (room.phase||'guess')!=='guess') return;
+  const c=mpExact(mpInput.value); if(!c) return;
+  const r=room.round, target=byA2[room.countries[r]];
+  if(room.guesses && room.guesses[r] && room.guesses[r][pid]) return;
+  const km=Math.round(distKm(c,target));
+  const brg=bearing(c,target);
+  const pts=c.a2===target.a2 ? 5000 : Math.max(0, 5000-km);
+  roomRef.child('guesses/'+r+'/'+pid).set({ a2:c.a2, km, brg:Math.round(brg), pts });
+  mpCloseSuggest();
+}
+
+/* ---- Beitritt per Link ---- */
+const joinParam=new URLSearchParams(location.search).get('join');
+if(joinParam){
+  history.replaceState(null,'',location.pathname);
+  show(mpScreen); mpView('mpSetup');
+  $('mpNameInput').value=store0('kontur.mp.name')||'';
+  $('mpCodeInput').value=joinParam.toUpperCase().slice(0,4);
+}
+})();
+
 if('serviceWorker' in navigator){
   window.addEventListener('load', ()=> navigator.serviceWorker.register('sw.js').catch(()=>{}));
 }
