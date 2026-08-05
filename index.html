@@ -128,6 +128,7 @@
   .regions.ro{pointer-events:none}
   .regions.ro .region:not(.selected){opacity:.5}
   #mpLobby{padding-bottom:calc(150px + var(--sab))}
+  .mp-finalbar.slim{padding:6px 18px calc(12px + var(--sab))}
   .mp-code-input{text-align:center;font-size:19px;text-transform:uppercase;
     letter-spacing:7px;font-weight:800}
   #mpScreen{overflow-x:hidden}
@@ -485,9 +486,9 @@
       <div class="regions" id="mpRoundsList"></div>
       <div class="diff-hint" id="mpPoolHint"></div>
       <p class="mp-quip" id="mp233Quip" style="display:none"></p>
-      <div class="mp-finalbar">
+      <div class="mp-finalbar" id="mpLobbyBar">
         <button class="btn" id="mpStartBtn" data-i18n="mpStart">Partie starten</button>
-        <p class="mp-wait" id="mpLobbyWait" style="padding:8px 0 2px" data-i18n="mpWaitHost">Warten auf den Start …</p>
+        <p class="mp-wait" id="mpLobbyWait" style="padding:2px 0" data-i18n="mpWaitHost">Warten auf den Start …</p>
       </div>
     </div>
 
@@ -1766,6 +1767,7 @@ function renderLobby(){
   });
   $('mpStartBtn').style.display = isHost?'':'none';
   $('mpLobbyWait').style.display = isHost?'none':'';
+  $('mpLobbyBar').classList.toggle('slim', !isHost);
   {
     const regList=$('mpRegionList'); regList.innerHTML='';
     regList.classList.toggle('ro', !isHost);
@@ -1796,9 +1798,9 @@ function renderLobby(){
       if(isHost && !dis) b.onclick=()=>roomRef.child('cfg/n').set(n);
       rl.appendChild(b);
     });
-    if(isHost && room.cfg.n > poolSize){
-      const valid = opts.filter(n=>n<=poolSize);
-      roomRef.child('cfg/n').set(valid[valid.length-1]);
+    const valid = opts.filter(n=>n<=poolSize);
+    if(isHost && !valid.includes(room.cfg.n)){
+      roomRef.child('cfg/n').set(room.cfg.n > poolSize ? valid[valid.length-1] : valid[0]);
     }
     $('mpPoolHint').innerHTML = `<b>${poolSize} ${t('countries')}</b> · ${t('mpPoolHint')}`;
   }
