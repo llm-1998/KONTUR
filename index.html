@@ -483,6 +483,7 @@
       <div class="regions" id="mpDiffList"></div>
       <div class="label" style="margin-top:18px" data-i18n="mpRounds">LÄNDER PRO PARTIE</div>
       <div class="regions" id="mpRoundsList"></div>
+      <div class="diff-hint" id="mpPoolHint"></div>
       <p class="mp-quip" id="mp233Quip" style="display:none"></p>
       <div class="mp-finalbar">
         <button class="btn" id="mpStartBtn" data-i18n="mpStart">Partie starten</button>
@@ -704,6 +705,7 @@ const STRINGS = {
     mpFinalT:'Siegerehrung 🏆', mpAgain:'Zurück zum Start', mpHostTag:'HOST',
     mpLeft:'Der Host hat den Raum geschlossen', mpLinkCopied:'Einladungslink kopiert!',
     mpHit:'Getroffen! 🎯', mpShareHead:'Mehrspieler',
+    mpPoolHint:'in dieser Auswahl – ohne Wiederholung spielbar',
     mpQuipPerfect:[
       ['Alle getroffen! Einfach war dir wohl noch zu einfach …',
        'Fehlerfrei auf Einfach. Sauber! Nächster Halt: Mittel.'],
@@ -729,7 +731,7 @@ const STRINGS = {
       'Letzter. Aber im Länderregister wartet dein Comeback.',
       'Punkte sind auch nur Zahlen. Sagt der letzte Platz.',
       'Kennst du eigentlich den Unterschied zwischen Frankfurt und Frankreich?'],
-    mpQuip233:['Alle? Wirklich alle? Was ist los mit euch …?',
+    mpQuip233:['Alle? Wirklich alle? Was ist los mit euch …',
       'Alle 233 … seid ihr euch da wirklich sicher?',
       'So viel Freizeit hätte ich auch gerne …',
       'Wer abbricht, muss einen ausgeben.',
@@ -793,6 +795,7 @@ const STRINGS = {
     mpFinalT:'Podium 🏆', mpAgain:'Back to start', mpHostTag:'HOST',
     mpLeft:'The host has closed the room', mpLinkCopied:'Invite link copied!',
     mpHit:'Direct hit! 🎯', mpShareHead:'Multiplayer',
+    mpPoolHint:'in this selection – playable without repeats',
     mpQuipPerfect:[
       ['All correct! Easy was clearly still too easy for you …',
        'Flawless on Easy. Nice! Next stop: Medium.'],
@@ -818,7 +821,7 @@ const STRINGS = {
       'Last. But the country index awaits your comeback.',
       'Points are just numbers. Says last place.',
       'Do you actually know the difference between Austria and Australia?'],
-    mpQuip233:['All of them? Really all? What is wrong with you …?',
+    mpQuip233:['All of them? Really all? What is wrong with you …',
       'All 233 … are you really sure about this?',
       'I wish I had that much free time …',
       'Whoever quits buys the next round.',
@@ -1783,16 +1786,22 @@ function renderLobby(){
     const rl=$('mpRoundsList'); rl.innerHTML='';
     rl.classList.toggle('ro', !isHost);
     const regC=REGIONS[room.cfg.r]||REGIONS[0];
-    const allOk = !regC.conts && room.cfg.d===4; // Welt + Experte
-    [5,10,20,30,40,50,233].forEach(n=>{
+    const poolSize = DATA.filter(c=>(!regC.conts||regC.conts.includes(c.cont)) && c.dl<=room.cfg.d).length;
+    const base=[5,10,20,30,40,50,233];
+    const opts = base.some(n=>n<=poolSize) ? base : [poolSize, ...base];
+    opts.forEach(n=>{
+      const dis = n > poolSize;
       const b=document.createElement('button');
-      const isAll = n===233;
-      b.className='region'+(room.cfg.n===n?' selected':'')+(isAll&&!allOk?' dis':'');
-      b.textContent = isAll ? (lang==='de'?'Alle 233':'All 233') : n;
-      if(isHost && !(isAll&&!allOk)) b.onclick=()=>roomRef.child('cfg/n').set(n);
+      b.className='region'+(room.cfg.n===n?' selected':'')+(dis?' dis':'');
+      b.textContent = n;
+      if(isHost && !dis) b.onclick=()=>roomRef.child('cfg/n').set(n);
       rl.appendChild(b);
     });
-    if(isHost && room.cfg.n===233 && !allOk) roomRef.child('cfg/n').set(5);
+    if(isHost && room.cfg.n > poolSize){
+      const valid = opts.filter(n=>n<=poolSize);
+      roomRef.child('cfg/n').set(valid[valid.length-1]);
+    }
+    $('mpPoolHint').innerHTML = `<b>${poolSize} ${t('countries')}</b> · ${t('mpPoolHint')}`;
   }
   const reg=REGIONS[room.cfg.r]||REGIONS[0];
   $('mpInfoChip').textContent=(reg[lang]+' · '+t('diffs')[room.cfg.d-1]).toUpperCase();
