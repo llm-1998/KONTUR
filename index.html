@@ -129,6 +129,10 @@
   .regions.ro .region:not(.selected){opacity:.5}
   #mpLobby{padding-bottom:calc(150px + var(--sab))}
   .mp-finalbar.slim{padding:6px 18px calc(12px + var(--sab))}
+  #mpRoundsList{display:grid;grid-template-columns:repeat(7,1fr)}
+  #mpRoundsList .region{padding-left:0;padding-right:0;text-align:center}
+  #mpFullRoundRow{margin-top:2px}
+  #mpFullRoundRow .region{width:100%;text-align:center}
   .mp-code-input{text-align:center;font-size:19px;text-transform:uppercase;
     letter-spacing:7px;font-weight:800}
   #mpScreen{overflow-x:hidden}
@@ -484,6 +488,7 @@
       <div class="regions" id="mpDiffList"></div>
       <div class="label" style="margin-top:18px" data-i18n="mpRounds">LÄNDER PRO PARTIE</div>
       <div class="regions" id="mpRoundsList"></div>
+      <div class="regions" id="mpFullRoundRow"></div>
       <div class="diff-hint" id="mpPoolHint"></div>
       <p class="mp-quip" id="mp233Quip" style="display:none"></p>
       <div class="mp-finalbar" id="mpLobbyBar">
@@ -707,6 +712,7 @@ const STRINGS = {
     mpLeft:'Der Host hat den Raum geschlossen', mpLinkCopied:'Einladungslink kopiert!',
     mpHit:'Getroffen! 🎯', mpShareHead:'Mehrspieler',
     mpPoolHint:'in dieser Auswahl ohne Wiederholung spielbar',
+    mpFullRound:n=>`Komplette Runde · alle ${n}`,
     mpQuipPerfect:[
       ['Alle getroffen! Einfach war dir wohl noch zu einfach …',
        'Fehlerfrei auf Einfach. Sauber! Nächster Halt: Mittel.'],
@@ -797,6 +803,7 @@ const STRINGS = {
     mpLeft:'The host has closed the room', mpLinkCopied:'Invite link copied!',
     mpHit:'Direct hit! 🎯', mpShareHead:'Multiplayer',
     mpPoolHint:'in this selection playable without repeats',
+    mpFullRound:n=>`Full round · all ${n}`,
     mpQuipPerfect:[
       ['All correct! Easy was clearly still too easy for you …',
        'Flawless on Easy. Nice! Next stop: Medium.'],
@@ -1787,10 +1794,12 @@ function renderLobby(){
     });
     const rl=$('mpRoundsList'); rl.innerHTML='';
     rl.classList.toggle('ro', !isHost);
+    const fr=$('mpFullRoundRow'); fr.innerHTML='';
+    fr.classList.toggle('ro', !isHost);
     const regC=REGIONS[room.cfg.r]||REGIONS[0];
     const poolSize = DATA.filter(c=>(!regC.conts||regC.conts.includes(c.cont)) && c.dl<=room.cfg.d).length;
-    const opts=[...new Set([5,10,20,30,40,50,233,poolSize])].sort((a,b)=>a-b);
-    opts.forEach(n=>{
+    const base=[5,10,20,30,40,50,233];
+    base.forEach(n=>{
       const dis = n > poolSize;
       const b=document.createElement('button');
       b.className='region'+(room.cfg.n===n?' selected':'')+(dis?' dis':'');
@@ -1798,9 +1807,14 @@ function renderLobby(){
       if(isHost && !dis) b.onclick=()=>roomRef.child('cfg/n').set(n);
       rl.appendChild(b);
     });
-    const valid = opts.filter(n=>n<=poolSize);
+    const fb=document.createElement('button');
+    fb.className='region'+(room.cfg.n===poolSize?' selected':'');
+    fb.textContent=t('mpFullRound')(poolSize);
+    if(isHost) fb.onclick=()=>roomRef.child('cfg/n').set(poolSize);
+    fr.appendChild(fb);
+    const valid=[...base.filter(n=>n<=poolSize), poolSize];
     if(isHost && !valid.includes(room.cfg.n)){
-      roomRef.child('cfg/n').set(room.cfg.n > poolSize ? valid[valid.length-1] : valid[0]);
+      roomRef.child('cfg/n').set(room.cfg.n > poolSize ? poolSize : valid[0]);
     }
     $('mpPoolHint').innerHTML = `<b>${poolSize} ${t('countries')}</b> · ${t('mpPoolHint')}`;
   }
