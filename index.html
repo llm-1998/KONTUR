@@ -128,8 +128,6 @@
   .regions.ro{pointer-events:none}
   .regions.ro .region:not(.selected){opacity:.5}
   #mpLobby{padding-bottom:calc(150px + var(--sab))}
-  .mp-finalbar.slim{padding:2px 18px calc(8px + var(--sab))}
-  .mp-finalbar.slim .mp-wait{font-size:13px}
   #mpRoundsList{display:grid;grid-template-columns:repeat(7,1fr)}
   #mpRoundsList .region{padding-left:0;padding-right:0;text-align:center}
   #mpFullRoundRow{display:grid;grid-template-columns:repeat(7,1fr);margin-top:10px}
@@ -492,9 +490,9 @@
       <div class="regions" id="mpFullRoundRow"></div>
       <div class="diff-hint" id="mpPoolHint"></div>
       <p class="mp-quip" id="mp233Quip" style="display:none"></p>
-      <div class="mp-finalbar slim" id="mpLobbyBar">
+      <p class="mp-wait" id="mpLobbyWait" data-i18n="mpWaitHost">Warten auf den Start …</p>
+      <div class="mp-finalbar" id="mpLobbyBar" style="display:none">
         <button class="btn" id="mpStartBtn" data-i18n="mpStart">Partie starten</button>
-        <p class="mp-wait" id="mpLobbyWait" style="padding:0" data-i18n="mpWaitHost">Warten auf den Start …</p>
       </div>
     </div>
 
@@ -1771,9 +1769,8 @@ function renderLobby(){
       (id===room.host?`<span class="mp-hosttag">${t('mpHostTag')}</span>`:'');
     list.appendChild(div);
   });
-  $('mpStartBtn').style.display = isHost?'':'none';
+  $('mpLobbyBar').style.display = isHost?'':'none';
   $('mpLobbyWait').style.display = isHost?'none':'';
-  $('mpLobbyBar').classList.toggle('slim', !isHost);
   {
     const regList=$('mpRegionList'); regList.innerHTML='';
     regList.classList.toggle('ro', !isHost);
