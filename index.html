@@ -157,6 +157,14 @@
     border-radius:13px;padding:12px 15px;margin-bottom:7px;font-weight:700;font-size:15px}
   .mp-stand .pts{margin-left:auto;font-variant-numeric:tabular-nums}
   .mp-stand.me{border-color:var(--accent)}
+  .mp-quip{color:var(--ink-soft);font-size:14.5px;line-height:1.55;text-align:center;
+    margin:18px 6px 0;font-weight:600}
+  .mp-finalbar{position:fixed;bottom:0;left:50%;transform:translateX(-50%);
+    width:100%;max-width:440px;box-sizing:border-box;z-index:15;
+    padding:12px 18px calc(24px + var(--sab));background:var(--bg);
+    transition:background .3s ease;display:flex;flex-direction:column;gap:10px}
+  .mp-finalbar .btn{width:100%}
+  #mpFinal{padding-bottom:calc(160px + var(--sab))}
   #mpFinal .mp-stand{padding:15px;position:relative;overflow:hidden}
   #mpFinal .mp-stand .bar{position:absolute;left:0;top:0;bottom:0;width:0;
     background:var(--green);opacity:.15;border-radius:inherit;
@@ -501,8 +509,11 @@
     <div class="mp-view" id="mpFinal">
       <h2 class="mp-target" data-i18n="mpFinalT">Siegerehrung 🏆</h2>
       <div id="mpFinalRows" style="margin-top:14px"></div>
-      <button class="btn" id="mpShareResBtn" style="width:100%;margin-top:18px" data-i18n="share">Ergebnis teilen</button>
-      <button class="btn ghost" id="mpExitBtn" style="width:100%;margin-top:10px" data-i18n="mpAgain">Zurück zum Start</button>
+      <p class="mp-quip" id="mpQuip"></p>
+      <div class="mp-finalbar">
+        <button class="btn" id="mpShareResBtn" data-i18n="share">Ergebnis teilen</button>
+        <button class="btn ghost" id="mpExitBtn" data-i18n="mpAgain">Zurück zum Start</button>
+      </div>
     </div>
   </section>
 
@@ -673,7 +684,7 @@ const STRINGS = {
     mpNameLbl:'DEIN NAME', mpNamePh:'Name eingeben …', mpCreate:'Runde erstellen',
     mpJoinLbl:'ODER MIT CODE BEITRETEN', mpJoin:'Beitreten', mpCodeLbl:'RAUM-CODE',
     mpShare:'Einladungslink teilen', mpPlayers:'SPIELER', mpRounds:'LÄNDER PRO PARTIE',
-    mpWaitHost:'Warten auf den Start …', mpStart:'Partie starten', mpStand:'ZWISCHENSTAND',
+    mpWaitHost:'Warten auf den Start …', mpStart:'Partie starten', mpStand:'DEIN PUNKTESTAND',
     mpNeedName:'Bitte gib zuerst einen Namen ein', mpNeed2:'Mindestens 2 Spieler nötig',
     mpErrNo:'Raum nicht gefunden – Code prüfen', mpErrFull:'Der Raum ist voll (max. 4 Spieler)',
     mpErrStarted:'Diese Partie läuft bereits', mpConn:'Verbinde …',
@@ -683,6 +694,17 @@ const STRINGS = {
     mpFinalT:'Siegerehrung 🏆', mpAgain:'Zurück zum Start', mpHostTag:'HOST',
     mpLeft:'Der Host hat den Raum geschlossen', mpLinkCopied:'Einladungslink kopiert!',
     mpHit:'Getroffen! 🎯', mpShareHead:'Mehrspieler',
+    mpQuipPerfect:[
+      'Alle getroffen! Einfach war dir wohl noch zu einfach. 😏',
+      'Fehlerfrei durch Mittel – da sitzt der Atlas im Kopf. 🗺️',
+      'Alles richtig auf Schwer?! Da kennt sich aber jemand aus. 🌍',
+      'Perfekte Experten-Runde – meine Güte, mit dem Können gehörst du ins TV-Abendprogramm! 📺'
+    ],
+    mpQuipGold:'🥇 Platz 1 – die Weltkarte gehört heute dir!',
+    mpQuipSilver:'🥈 Hauchdünn am Thron vorbei. Riecht nach Revanche …',
+    mpQuipBronze:'🥉 Aufs Treppchen gerettet – Bronze glänzt auch.',
+    mpQuipLast:'Letzter Platz … aber hey, jede Weltreise beginnt mit Verlaufen. 🧭',
+    mpQuipHits:(h,n)=>`${h} von ${n} direkt getroffen`,
     trainDoneText:(n,m)=>`Alle ${n} Umrisse dieser Auswahl richtig erkannt – ${m} davon gelten als sicher. Der Stapel wird neu gemischt. 🎉`,
     deckDone:n=>`Alle ${n} Länder dieser Auswahl durchgespielt – der Stapel wird neu gemischt. 🎉`,
     diffDescs:['Ikonische Formen zum Einstieg','Bekannte Länder mit gut lernbaren Umrissen','Fast alle Staaten der Welt','Wirklich alle – inklusive Zwergstaaten und Insel-Archipele']
@@ -731,7 +753,7 @@ const STRINGS = {
     mpNameLbl:'YOUR NAME', mpNamePh:'Enter a name …', mpCreate:'Create a room',
     mpJoinLbl:'OR JOIN WITH A CODE', mpJoin:'Join', mpCodeLbl:'ROOM CODE',
     mpShare:'Share invite link', mpPlayers:'PLAYERS', mpRounds:'COUNTRIES PER MATCH',
-    mpWaitHost:'Waiting for the start …', mpStart:'Start match', mpStand:'STANDINGS',
+    mpWaitHost:'Waiting for the start …', mpStart:'Start match', mpStand:'YOUR SCORE',
     mpNeedName:'Please enter a name first', mpNeed2:'At least 2 players needed',
     mpErrNo:'Room not found – check the code', mpErrFull:'The room is full (max. 4 players)',
     mpErrStarted:'This match is already running', mpConn:'Connecting …',
@@ -741,6 +763,17 @@ const STRINGS = {
     mpFinalT:'Podium 🏆', mpAgain:'Back to start', mpHostTag:'HOST',
     mpLeft:'The host has closed the room', mpLinkCopied:'Invite link copied!',
     mpHit:'Direct hit! 🎯', mpShareHead:'Multiplayer',
+    mpQuipPerfect:[
+      'All correct! Easy mode was clearly too easy for you. 😏',
+      'Flawless on Medium – there is an atlas living in your head. 🗺️',
+      'Everything right on Hard?! Someone knows their way around. 🌍',
+      'A perfect Expert run – honestly, that skill belongs on prime-time TV! 📺'
+    ],
+    mpQuipGold:'🥇 First place – the world map is yours today!',
+    mpQuipSilver:'🥈 So close to the throne. Smells like a rematch …',
+    mpQuipBronze:'🥉 Made it onto the podium – bronze still shines.',
+    mpQuipLast:'Last place … but hey, every world trip starts with getting lost. 🧭',
+    mpQuipHits:(h,n)=>`${h} of ${n} spot-on`,
     trainDoneText:(n,m)=>`All ${n} outlines in this selection recognized – ${m} of them mastered. Reshuffling the deck. 🎉`,
     deckDone:n=>`You've played all ${n} countries in this selection – reshuffling the deck. 🎉`,
     diffDescs:['Iconic shapes to get started','Well-known countries with learnable outlines','Almost every state in the world','Truly all of them – including microstates and island archipelagos']
@@ -1748,12 +1781,10 @@ function renderPlay(){
       rows.appendChild(div);
     });
     const st=$('mpStandRows'); st.innerHTML='';
-    const tt=totals();
-    Object.entries(tt).sort((a,b)=>b[1]-a[1]).forEach(([id,pts])=>{
-      const div=document.createElement('div'); div.className='mp-stand'+(id===pid?' me':'');
-      div.innerHTML=`<span>${esc(nameOf(id))}</span><span class="pts">${fmtPts(pts)}</span>`;
-      st.appendChild(div);
-    });
+    const myPts=totals()[pid]||0;
+    const own=document.createElement('div'); own.className='mp-stand me';
+    own.innerHTML=`<span>${esc(nameOf(pid))}</span><span class="pts">${fmtPts(myPts)}</span>`;
+    st.appendChild(own);
     const last=r+1>=room.countries.length;
     $('mpNextBtn').style.display=isHost?'':'none';
     $('mpRevealWait').style.display=isHost?'none':'';
@@ -1776,6 +1807,22 @@ function renderFinal(){
   requestAnimationFrame(()=>requestAnimationFrame(()=>{
     rows.querySelectorAll('.bar').forEach(b=>{ b.style.width=b.dataset.w+'%'; });
   }));
+  // Spruch je Leistung
+  const order=Object.entries(tt).sort((a,b)=>b[1]-a[1]).map(([id])=>id);
+  const myRank=order.indexOf(pid)+1;
+  const n=(room.countries||[]).length;
+  let hits=0;
+  for(let r=0;r<n;r++){
+    const g=room.guesses&&room.guesses[r]&&room.guesses[r][pid];
+    if(g && g.a2===room.countries[r]) hits++;
+  }
+  let quip;
+  if(n>0 && hits===n) quip=t('mpQuipPerfect')[(room.cfg.d||4)-1];
+  else if(myRank===1) quip=t('mpQuipGold');
+  else if(myRank===order.length) quip=t('mpQuipLast');
+  else if(myRank===2) quip=t('mpQuipSilver');
+  else quip=t('mpQuipBronze');
+  $('mpQuip').textContent=t('mpQuipHits')(hits,n)+' · '+quip;
 }
 $('mpExitBtn').onclick=()=>{ window.mpLeave(); refreshDailyState(); show(startScreen); };
 $('mpShareResBtn').onclick=async ()=>{
