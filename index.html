@@ -128,7 +128,8 @@
   .regions.ro{pointer-events:none}
   .regions.ro .region:not(.selected){opacity:.5}
   #mpLobby{padding-bottom:calc(150px + var(--sab))}
-  .mp-finalbar.slim{padding:6px 18px calc(12px + var(--sab))}
+  .mp-finalbar.slim{padding:2px 18px calc(8px + var(--sab))}
+  .mp-finalbar.slim .mp-wait{font-size:13px}
   #mpRoundsList{display:grid;grid-template-columns:repeat(7,1fr)}
   #mpRoundsList .region{padding-left:0;padding-right:0;text-align:center}
   #mpFullRoundRow{display:grid;grid-template-columns:repeat(7,1fr);margin-top:10px}
@@ -493,7 +494,7 @@
       <p class="mp-quip" id="mp233Quip" style="display:none"></p>
       <div class="mp-finalbar" id="mpLobbyBar">
         <button class="btn" id="mpStartBtn" data-i18n="mpStart">Partie starten</button>
-        <p class="mp-wait" id="mpLobbyWait" style="padding:2px 0" data-i18n="mpWaitHost">Warten auf den Start …</p>
+        <p class="mp-wait" id="mpLobbyWait" style="padding:0" data-i18n="mpWaitHost">Warten auf den Start …</p>
       </div>
     </div>
 
