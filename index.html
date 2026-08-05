@@ -131,8 +131,8 @@
   .mp-finalbar.slim{padding:6px 18px calc(12px + var(--sab))}
   #mpRoundsList{display:grid;grid-template-columns:repeat(7,1fr)}
   #mpRoundsList .region{padding-left:0;padding-right:0;text-align:center}
-  #mpFullRoundRow{margin-top:2px}
-  #mpFullRoundRow .region{width:100%;text-align:center}
+  #mpFullRoundRow{display:grid;grid-template-columns:repeat(7,1fr);margin-top:10px}
+  #mpFullRoundRow .region{padding-left:0;padding-right:0;text-align:center}
   .mp-code-input{text-align:center;font-size:19px;text-transform:uppercase;
     letter-spacing:7px;font-weight:800}
   #mpScreen{overflow-x:hidden}
@@ -712,7 +712,6 @@ const STRINGS = {
     mpLeft:'Der Host hat den Raum geschlossen', mpLinkCopied:'Einladungslink kopiert!',
     mpHit:'Getroffen! 🎯', mpShareHead:'Mehrspieler',
     mpPoolHint:'in dieser Auswahl ohne Wiederholung spielbar',
-    mpFullRound:n=>`Komplette Runde · alle ${n}`,
     mpQuipPerfect:[
       ['Alle getroffen! Einfach war dir wohl noch zu einfach …',
        'Fehlerfrei auf Einfach. Sauber! Nächster Halt: Mittel.'],
@@ -803,7 +802,6 @@ const STRINGS = {
     mpLeft:'The host has closed the room', mpLinkCopied:'Invite link copied!',
     mpHit:'Direct hit! 🎯', mpShareHead:'Multiplayer',
     mpPoolHint:'in this selection playable without repeats',
-    mpFullRound:n=>`Full round · all ${n}`,
     mpQuipPerfect:[
       ['All correct! Easy was clearly still too easy for you …',
        'Flawless on Easy. Nice! Next stop: Medium.'],
@@ -1809,7 +1807,7 @@ function renderLobby(){
     });
     const fb=document.createElement('button');
     fb.className='region'+(room.cfg.n===poolSize?' selected':'');
-    fb.textContent=t('mpFullRound')(poolSize);
+    fb.textContent=poolSize;
     if(isHost) fb.onclick=()=>roomRef.child('cfg/n').set(poolSize);
     fr.appendChild(fb);
     const valid=[...base.filter(n=>n<=poolSize), poolSize];
