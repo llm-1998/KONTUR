@@ -1787,8 +1787,7 @@ function renderLobby(){
     rl.classList.toggle('ro', !isHost);
     const regC=REGIONS[room.cfg.r]||REGIONS[0];
     const poolSize = DATA.filter(c=>(!regC.conts||regC.conts.includes(c.cont)) && c.dl<=room.cfg.d).length;
-    const base=[5,10,20,30,40,50,233];
-    const opts = base.some(n=>n<=poolSize) ? base : [poolSize, ...base];
+    const opts=[...new Set([5,10,20,30,40,50,233,poolSize])].sort((a,b)=>a-b);
     opts.forEach(n=>{
       const dis = n > poolSize;
       const b=document.createElement('button');
