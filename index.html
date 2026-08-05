@@ -959,11 +959,13 @@ function selectMode(m){
   startMode = m;
   $('soloBtn').classList.toggle('selected', m==='solo');
   $('trainBtn').classList.toggle('selected', m==='train');
+  $('multiBtn').classList.toggle('selected', m==='multi');
 }
 $('soloBtn').onclick  = ()=>selectMode('solo');
 $('trainBtn').onclick = ()=>selectMode('train');
 $('startBtn').onclick = () => {
   if(startMode==='train'){ startTraining(); show(trainScreen); }
+  else if(startMode==='multi'){ if(window.mpEnter) window.mpEnter(); }
   else { startSolo(); show(gameScreen); if(matchMedia('(hover: hover)').matches) input.focus(); }
 };
 $('dailyBtn').onclick = () => { startDaily(); show(gameScreen); };
@@ -1666,7 +1668,8 @@ function totals(){
 function fmtPts(n){ return n.toLocaleString(lang==='de'?'de-DE':'en-US'); }
 
 /* ---- Einstieg ---- */
-$('multiBtn').onclick = ()=>{ show(mpScreen); mpView('mpSetup'); $('mpErr').textContent=''; $('mpNameInput').value = store0('kontur.mp.name') || ''; };
+window.mpEnter = ()=>{ show(mpScreen); mpView('mpSetup'); $('mpErr').textContent=''; $('mpNameInput').value = store0('kontur.mp.name') || ''; };
+$('multiBtn').onclick = ()=>selectMode('multi');
 
 function myName(){
   const n=$('mpNameInput').value.trim().slice(0,14);
@@ -1990,6 +1993,7 @@ function mpSubmit(){
 const joinParam=new URLSearchParams(location.search).get('join');
 if(joinParam){
   history.replaceState(null,'',location.pathname);
+  selectMode('multi');
   show(mpScreen); mpView('mpSetup');
   $('mpNameInput').value=store0('kontur.mp.name')||'';
   $('mpCodeInput').value=joinParam.toUpperCase().slice(0,4);
