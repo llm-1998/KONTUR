@@ -1508,6 +1508,7 @@ document.querySelector('.wordmark').addEventListener('click', ()=>{
 let shareContext = 'daily';
 let lastTrainShare = null;
 const APP_URL = 'https://llm-1998.github.io/KONTUR/';
+const shareUrl = ()=> APP_URL + (lang==='en' ? 'en.html' : '');
 const miniBar = (v, max, sym='🟩') => v ? sym.repeat(Math.max(1, Math.ceil(v/max*5))) : '';
 
 function shareText(){
@@ -1519,14 +1520,14 @@ function shareText(){
     const rows=[];
     for(let i=0;i<6;i++) if(counts[i]) rows.push(`${i+1}: ${miniBar(counts[i],maxC)} ${counts[i]}`);
     if(counts[6]) rows.push(`✕: ${miniBar(counts[6],maxC,'🟥')} ${counts[6]}`);
-    return `KONTUR – ${t('shareFree')} · ${region[lang]} · ${t('diffs')[diff-1]}\n${t('solvedOf')(solved, soloRoundStats.length)}\n\n${rows.join('\n')}\n\n${APP_URL}`;
+    return `KONTUR – ${t('shareFree')} · ${region[lang]} · ${t('diffs')[diff-1]}\n${t('solvedOf')(solved, soloRoundStats.length)}\n\n${rows.join('\n')}\n\n${shareUrl()}`;
   }
   if(shareContext === 'train' && lastTrainShare){
     const {counts, mastered:m0, total} = lastTrainShare;
     const maxC=Math.max(...counts,1);
     const labels=['1×','2×','3×','4×+'];
     const rows=counts.map((v,i)=>v?`${labels[i]}: ${miniBar(v,maxC)} ${v}`:null).filter(Boolean);
-    return `KONTUR – ${t('shareTrain')} · ${region[lang]} · ${t('diffs')[diff-1]}\n${t('trainDoneT')} ${t('firstTryOf')(counts[0], total)}\n\n${rows.join('\n')}\n\n${APP_URL}`;
+    return `KONTUR – ${t('shareTrain')} · ${region[lang]} · ${t('diffs')[diff-1]}\n${t('trainDoneT')} ${t('firstTryOf')(counts[0], total)}\n\n${rows.join('\n')}\n\n${shareUrl()}`;
   }
   const d = getDaily();
   const score = d.win ? `${d.guesses.length}/6` : 'X/6';
@@ -1538,7 +1539,7 @@ function shareText(){
   });
   const [y,m,day] = todayKey().split('-');
   const date = lang==='de' ? `${day}.${m}.${y}` : `${m}/${day}/${y}`;
-  return `KONTUR ${date} – ${score}\n\n${rows.join('\n')}\n\n${APP_URL}`;
+  return `KONTUR ${date} – ${score}\n\n${rows.join('\n')}\n\n${shareUrl()}`;
 }
 /* ---------- Einstellungen & Sprache ---------- */
 function applyLang(l){
@@ -1944,7 +1945,7 @@ $('mpShareResBtn').onclick=async ()=>{
   const tt=totals();
   const lines=Object.entries(tt).sort((a,b)=>b[1]-a[1])
     .map(([id,pts],i)=>`${medals[i]||''} ${(room.players[id]||{name:'?'}).name}: ${fmtPts(pts)}`);
-  const text=`KONTUR – ${t('mpShareHead')} · ${reg[lang]} · ${t('diffs')[room.cfg.d-1]}\n\n${lines.join('\n')}\n\n${APP_URL}`;
+  const text=`KONTUR – ${t('mpShareHead')} · ${reg[lang]} · ${t('diffs')[room.cfg.d-1]}\n\n${lines.join('\n')}\n\n${shareUrl()}`;
   if(navigator.share){ try{ await navigator.share({text}); return; }catch(e){} }
   try{ await navigator.clipboard.writeText(text); mpToast(t('copied')); }catch(e){}
 };
@@ -1990,9 +1991,12 @@ function mpSubmit(){
 }
 
 /* ---- Beitritt per Link ---- */
-const joinParam=new URLSearchParams(location.search).get('join');
+const mpQs=new URLSearchParams(location.search);
+const langParam=mpQs.get('lang');
+if(langParam==='en'||langParam==='de') applyLang(langParam);
+const joinParam=mpQs.get('join');
+if(joinParam||langParam) history.replaceState(null,'',location.pathname);
 if(joinParam){
-  history.replaceState(null,'',location.pathname);
   selectMode('multi');
   show(mpScreen); mpView('mpSetup');
   $('mpNameInput').value=store0('kontur.mp.name')||'';
