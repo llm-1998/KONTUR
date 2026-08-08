@@ -515,7 +515,13 @@
         <path id="gGrat"/>
         <path id="gLand"/>
         <path id="gBorders"/>
-        <g id="gMark" style="display:none"><circle r="7" class="ring"/><circle r="2.8" class="dot"/></g>
+        <g id="gMark" style="display:none">
+          <circle class="ring" r="6">
+            <animate attributeName="r" values="5;17" dur="1.5s" repeatCount="indefinite"/>
+            <animate attributeName="opacity" values="0.95;0" dur="1.5s" repeatCount="indefinite"/>
+          </circle>
+          <circle r="3.6" class="dot"/>
+        </g>
       </svg>
     </div>
     <div class="globe-panel" id="globePanel" style="display:none">
@@ -1120,6 +1126,7 @@ function flagHtml(a2){
     onerror="this.outerHTML='<span class=flag>${flagEmoji(a2)}</span>'">`;
 }
 function fmtPop(p){
+  if(p == null) return '–';
   if(p >= 1e6) return (p/1e6).toLocaleString(t('locale'),{maximumFractionDigits:1}) + t('mio');
   return p.toLocaleString(t('locale'));
 }
@@ -2215,7 +2222,7 @@ function focusCountry(c){
       scale=BASE+(to[2]-BASE)*ease((el-D0-D1)/D2);
     } else {
       rot[0]=to[0]; rot[1]=to[1]; scale=to[2];
-      render(); anim=0; return;
+      anim=0; render(); return;
     }
     render();
     anim=requestAnimationFrame(step);
