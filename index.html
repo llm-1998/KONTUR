@@ -126,6 +126,13 @@
   .a2hs-p{font-size:13px;color:var(--ink-soft);line-height:1.55}
   .a2hs-x{position:absolute;top:6px;right:8px;background:none;border:none;
     color:var(--ink-soft);font-size:20px;padding:6px;cursor:pointer;line-height:1}
+  .gb-col{display:flex;flex-direction:column;align-items:flex-start;gap:2px;min-width:0}
+  .gb-teaser{font-size:11.5px;font-weight:600;color:var(--ink-soft);
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+  .reg-globe{margin-top:12px;width:100%;padding:11px;border:1.5px solid var(--line);
+    border-radius:12px;background:var(--bg);color:var(--accent);font-weight:700;
+    font-size:13.5px;font-family:inherit;cursor:pointer}
+  .reg-globe:active{transform:scale(.99)}
   .globe-wrap{position:relative;background:var(--card);border:1.5px solid var(--line);
     border-radius:var(--radius);overflow:hidden}
   #globeSvg{display:block;width:100%;height:auto;touch-action:none;cursor:grab}
@@ -481,7 +488,8 @@
     </button>
     <button class="reg-open" id="globeBtn" style="margin-top:10px">
       <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-      <span data-i18n="globeBtnT">Weltglobus</span>
+      <span class="gb-col"><span data-i18n="globeBtnT">Weltglobus</span>
+        <span class="gb-teaser" id="globeTeaser"></span></span>
       <span class="cnt">🌍</span>
     </button>
     <div class="a2hs" id="a2hsCard" style="display:none">
@@ -790,6 +798,8 @@ const STRINGS = {
     globeBtnT:'Weltglobus', globePh:'Land suchen …',
     globeHint:'Ziehen zum Drehen · Zwei Finger oder Scrollen zum Zoomen',
     gpCap:'Hauptstadt', gpPop:'Einwohner', gpCont:'Kontinent', gpIso:'ISO-Code',
+    globeTeaser:n=>`Wo liegt eigentlich ${n}?`,
+    regGlobe:'Auf dem Weltglobus zeigen',
     a2hsT:'KONTUR als App auf deinem Homescreen',
     a2hsIOS:'In Safari unten rechts auf ⋯ tippen, dann „Teilen" (Quadrat mit Pfeil nach oben) und „Zum Home-Bildschirm" wählen. Danach startet KONTUR im Vollbild mit eigenem Icon – und ist auch offline spielbar.',
     a2hsAndroid:'Im Browser-Menü (⋮) „App installieren" wählen – danach startet KONTUR im Vollbild mit eigenem Icon und ist auch offline spielbar.',
@@ -887,6 +897,8 @@ const STRINGS = {
     globeBtnT:'World globe', globePh:'Search a country …',
     globeHint:'Drag to rotate · Pinch or scroll to zoom',
     gpCap:'Capital', gpPop:'Population', gpCont:'Continent', gpIso:'ISO code',
+    globeTeaser:n=>`Where exactly is ${n}?`,
+    regGlobe:'Show on the world globe',
     a2hsT:'KONTUR as an app on your home screen',
     a2hsIOS:'In Safari, tap ⋯ at the bottom right, then "Share" (square with an arrow) and "Add to Home Screen". KONTUR will launch fullscreen with its own icon – playable offline, too.',
     a2hsAndroid:'Open the browser menu (⋮) and choose "Install app" – KONTUR will launch fullscreen with its own icon, playable offline.',
@@ -1546,12 +1558,14 @@ function buildRegister(){
              </div>
            </div>
            <div class="coords">${t('centroid')} ${c.lat.toFixed(2)}°, ${c.lon.toFixed(2)}° · ${t('conts')[c.cont]}</div>
+           <button class="reg-globe">🌍 ${t('regGlobe')}</button>
          </div>`;
       row.querySelector('button').onclick = ()=>{
         row.classList.toggle('open');
         const big = row.querySelector('.reg-big');
         if(row.classList.contains('open') && !big.innerHTML) big.innerHTML = svgFor(c);
       };
+      row.querySelector('.reg-globe').onclick = (e)=>{ e.stopPropagation(); if(window.globeShow) window.globeShow(c.a2); };
       svgObserver.observe(row.querySelector('.reg-mini'));
       rows.appendChild(row);
     });
@@ -2256,7 +2270,19 @@ gi.addEventListener('input', ()=>{
 gi.addEventListener('keydown', e=>{ if(e.key==='Enter'){ const c=gExact(gi.value); if(c) gPick(c); } if(e.key==='Escape') gs.classList.remove('open'); });
 gGo.onclick=()=>{ const c=gExact(gi.value); if(c) gPick(c); };
 
+window.globeShow=(a2)=>{
+  const c=DATA.find(x=>x.a2===a2);
+  if(!c) return;
+  show(globeScreen);
+  ensureD3().then(()=>{ if(!inited){ inited=true; build(); } focusCountry(c); });
+};
+// Neugier-Frage: bei jedem App-Start ein anderes unbekannteres Land
+const tzPool=DATA.filter(c=>c.dl>=3);
+const teaser=tzPool[Math.floor(Math.random()*tzPool.length)];
+$('globeTeaser').textContent=t('globeTeaser')(cname(teaser));
+let teaserFlown=false;
 $('globeBtn').onclick=()=>{
+  if(!teaserFlown){ teaserFlown=true; window.globeShow(teaser.a2); return; }
   show(globeScreen);
   ensureD3().then(()=>{ if(!inited){ inited=true; build(); } else render(); });
 };
