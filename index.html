@@ -2198,7 +2198,7 @@ function focusCountry(c){
   const ext=Math.max(CEXT[c.a2]||0.6, 0.35);
   // Landung auf Übersichtshöhe (Zoom um 2/3 reduziert): das Ziel liegt sichtbar in seiner
   // Großregion, der Marker zeigt es – tiefer geht es jederzeit manuell
-  const viewDeg = Math.max(ext*1.5, 20);
+  const viewDeg = Math.min(26, Math.max(ext*1.5, 20)); // Obergrenze: auch Riesen bekommen ihren Anflug
   const radius=Math.min(viewDeg*Math.PI/180, 1);
   const targetScale=Math.max(BASE, Math.min(BASE*90, (0.62*CX)/Math.sin(radius)));
   let dLon=(-c.lon)-rot[0]; dLon=((dLon+540)%360)-180;
