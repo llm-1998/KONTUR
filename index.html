@@ -124,6 +124,9 @@
     border-radius:var(--radius);padding:14px 38px 14px 16px;margin-top:10px}
   .a2hs-t{font-weight:800;font-size:14px;margin-bottom:5px}
   .a2hs-p{font-size:13px;color:var(--ink-soft);line-height:1.55}
+  .a2hs-p ol{margin:2px 0 8px 18px;padding:0}
+  .a2hs-p li{margin-bottom:4px}
+  .a2hs-p b{color:var(--ink);font-weight:700}
   .a2hs-x{position:absolute;top:6px;right:8px;background:none;border:none;
     color:var(--ink-soft);font-size:20px;padding:6px;cursor:pointer;line-height:1}
   .gb-col{display:flex;flex-direction:column;align-items:flex-start;gap:2px;min-width:0}
@@ -155,6 +158,7 @@
     overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .globe-hint{text-align:center;color:var(--ink-soft);font-size:12.5px;margin-top:12px}
   #globeScreen{padding-bottom:30px}
+  #registerScreen{padding-bottom:calc(46px + var(--sab))}
   .mp-h{font-size:26px;font-weight:800;margin:8px 0 6px}
   .mp-sub{color:var(--ink-soft);font-size:14px;line-height:1.55;margin-bottom:18px}
   .mp-view{display:none;padding-bottom:30px}
@@ -801,8 +805,9 @@ const STRINGS = {
     globeTeaser:n=>`Wo liegt eigentlich ${n}?`,
     regGlobe:'Auf dem Weltglobus zeigen',
     a2hsT:'KONTUR als App auf deinem Homescreen',
-    a2hsIOS:'In Safari unten rechts auf ⋯ tippen, dann „Teilen" (Quadrat mit Pfeil nach oben) und „Zum Home-Bildschirm" wählen. Danach startet KONTUR im Vollbild mit eigenem Icon – und ist auch offline spielbar.',
-    a2hsAndroid:'Im Browser-Menü (⋮) „App installieren" wählen – danach startet KONTUR im Vollbild mit eigenem Icon und ist auch offline spielbar.',
+    a2hsIOS:'<ol><li>In Safari unten rechts auf <b>⋯</b> tippen</li><li><b>„Teilen"</b> wählen (Quadrat mit Pfeil nach oben)</li><li><b>„Zum Home-Bildschirm"</b> antippen</li></ol>Danach startet KONTUR im Vollbild mit eigenem Icon – und ist auch offline spielbar.',
+    a2hsAndroid:'<ol><li>Browser-Menü <b>⋮</b> öffnen</li><li><b>„App installieren"</b> bzw. <b>„Zum Startbildschirm hinzufügen"</b> wählen</li></ol>Danach startet KONTUR im Vollbild mit eigenem Icon – und ist auch offline spielbar.',
+    a2hsIOSOther:'Auf dem iPhone klappt die Installation am zuverlässigsten über <b>Safari</b>:<ol><li>Diese Seite in Safari öffnen (Adresse kopieren und dort einfügen)</li><li>Dort erscheint diese Anleitung mit den Safari-Schritten erneut</li></ol>',
     a2hsBtn:'Jetzt installieren',
     mpQuipPerfect:[
       ['Alle getroffen! Einfach war dir wohl noch zu einfach …',
@@ -900,8 +905,9 @@ const STRINGS = {
     globeTeaser:n=>`Where exactly is ${n}?`,
     regGlobe:'Show on the world globe',
     a2hsT:'KONTUR as an app on your home screen',
-    a2hsIOS:'In Safari, tap ⋯ at the bottom right, then "Share" (square with an arrow) and "Add to Home Screen". KONTUR will launch fullscreen with its own icon – playable offline, too.',
-    a2hsAndroid:'Open the browser menu (⋮) and choose "Install app" – KONTUR will launch fullscreen with its own icon, playable offline.',
+    a2hsIOS:'<ol><li>In Safari, tap <b>⋯</b> at the bottom right</li><li>Choose <b>"Share"</b> (square with an arrow)</li><li>Tap <b>"Add to Home Screen"</b></li></ol>KONTUR will then launch fullscreen with its own icon – playable offline, too.',
+    a2hsAndroid:'<ol><li>Open the browser menu <b>⋮</b></li><li>Choose <b>"Install app"</b> or <b>"Add to Home screen"</b></li></ol>KONTUR will then launch fullscreen with its own icon – playable offline, too.',
+    a2hsIOSOther:'On iPhone, installing works most reliably via <b>Safari</b>:<ol><li>Open this page in Safari (copy the address and paste it there)</li><li>The Safari step-by-step guide will appear there</li></ol>',
     a2hsBtn:'Install now',
     mpQuipPerfect:[
       ['All correct! Easy was clearly still too easy for you …',
@@ -1654,6 +1660,7 @@ function applyLang(l){
   document.querySelectorAll('[data-i18n]').forEach(el=>{ el.textContent = t(el.dataset.i18n); });
   document.querySelectorAll('[data-i18n-html]').forEach(el=>{ el.innerHTML = t(el.dataset.i18nHtml); });
   document.querySelectorAll('[data-i18n-ph]').forEach(el=>{ el.placeholder = t(el.dataset.i18nPh); });
+  if(window.a2hsSync) window.a2hsSync();
   $('calMonth').textContent = now.toLocaleDateString(t('locale'),{month:'short'}).replace('.','').toUpperCase();
   document.querySelectorAll('#langSeg button').forEach(b=>b.classList.toggle('on', b.dataset.lang===l));
   renderRegions();
@@ -2295,22 +2302,27 @@ if(new URLSearchParams(location.search).get('a2hs')) store.set(KEY,'');  // Hint
 const standalone = matchMedia('(display-mode: standalone)').matches || navigator.standalone===true;
 const ua=navigator.userAgent;
 const isIOS=/iphone|ipad|ipod/i.test(ua);
+const isIOSSafari=isIOS && !/crios|fxios|edgios/i.test(ua);
 const isMobile=isIOS || /android/i.test(ua);
 if(standalone || !isMobile || store0(KEY)) return;
 const card=$('a2hsCard');
 let deferred=null;
 function sync(){
+  if(store0(KEY)) return;
   card.style.display='';
-  if(isIOS){
-    $('a2hsText').textContent=t('a2hsIOS');
+  if(isIOSSafari){
+    $('a2hsText').innerHTML=t('a2hsIOS');
+  } else if(isIOS){
+    $('a2hsText').innerHTML=t('a2hsIOSOther');
   } else if(deferred){
-    $('a2hsText').textContent=t('a2hsAndroid');
+    $('a2hsText').innerHTML=t('a2hsAndroid');
     $('a2hsBtn').style.display='';
   } else {
-    $('a2hsText').textContent=t('a2hsAndroid');
+    $('a2hsText').innerHTML=t('a2hsAndroid');
   }
 }
 window.addEventListener('beforeinstallprompt', e=>{ e.preventDefault(); deferred=e; sync(); });
+window.a2hsSync=sync;
 sync();
 $('a2hsClose').onclick=()=>{ store.set(KEY,'1'); card.style.display='none'; };
 $('a2hsBtn').onclick=async ()=>{
