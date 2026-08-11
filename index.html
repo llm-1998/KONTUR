@@ -2277,15 +2277,35 @@ function setScale(v){ scale=Math.max(BASE*0.8, Math.min(BASE*90, v)); }
 
 /* Drehen & Zoomen */
 let dragging=false, lx=0, ly=0, pinch0=0, pScale=0;
-svg.addEventListener('pointerdown', e=>{ if(e.isPrimary && proj){ dragging=true; lx=e.clientX; ly=e.clientY; try{svg.setPointerCapture(e.pointerId);}catch(_){}} });
+let vLon=0, vLat=0, vT=0;
+svg.addEventListener('pointerdown', e=>{ if(e.isPrimary && proj){ dragging=true; lx=e.clientX; ly=e.clientY; vLon=0; vLat=0; vT=performance.now(); cancelAnim(); try{svg.setPointerCapture(e.pointerId);}catch(_){}} });
 svg.addEventListener('pointermove', e=>{
   if(!dragging || !proj || !e.isPrimary) return;
   const k=0.28*BASE/scale;
-  rot[0]+=(e.clientX-lx)*k;
-  rot[1]=Math.max(-89, Math.min(89, rot[1]-(e.clientY-ly)*k));
+  const dLon=(e.clientX-lx)*k, dLat=-(e.clientY-ly)*k;
+  rot[0]+=dLon;
+  rot[1]=Math.max(-89, Math.min(89, rot[1]+dLat));
+  const now=performance.now(), dt=now-vT;
+  if(dt>0 && dt<120){ vLon=0.75*vLon+0.25*(dLon/dt); vLat=0.75*vLat+0.25*(dLat/dt); }
+  vT=now;
   lx=e.clientX; ly=e.clientY;
   cancelAnim(); render();
 });
+function glide(){
+  if(!proj || performance.now()-vT>120) return;      // altes Tempo verfallen lassen
+  if(Math.hypot(vLon,vLat) < 0.02) return;           // zu langsam für Schwung
+  let last=performance.now();
+  const step=now=>{
+    const dt=Math.min(50, now-last); last=now;
+    rot[0]+=vLon*dt;
+    rot[1]=Math.max(-89, Math.min(89, rot[1]+vLat*dt));
+    const f=Math.pow(0.93, dt/16.7);                 // Reibung
+    vLon*=f; vLat*=f;
+    render();
+    if(Math.hypot(vLon,vLat) > 0.002) anim=requestAnimationFrame(step); else anim=0;
+  };
+  cancelAnim(); anim=requestAnimationFrame(step);
+}
 let tapT=0, tapX=0, tapY=0, downX=0, downY=0;
 svg.addEventListener('pointerdown', e=>{ if(e.isPrimary){ downX=e.clientX; downY=e.clientY; } });
 function svgPoint(e){
@@ -2309,7 +2329,7 @@ function identifyAt(px,py){
 svg.addEventListener('pointerup', e=>{
   dragging=false;
   if(!e.isPrimary) return;
-  if(Math.hypot(e.clientX-downX, e.clientY-downY) > 12) { tapT=0; return; }  // war ein Zieh-Vorgang
+  if(Math.hypot(e.clientX-downX, e.clientY-downY) > 12) { tapT=0; glide(); return; }  // war ein Zieh-Vorgang: ausgleiten
   const now=performance.now();
   if(now-tapT<350 && Math.hypot(e.clientX-tapX, e.clientY-tapY)<24){
     tapT=0;
