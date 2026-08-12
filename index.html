@@ -134,8 +134,10 @@
     box-shadow:0 10px 30px var(--shadow)}
   .qflag-emoji{font-size:110px;line-height:1}
   .choice.locked:not(.right):not(.wrong){opacity:.5}
-  .train-fact{margin-top:14px;background:var(--card);border:1.5px solid var(--line);
-    border-radius:14px;padding:12px 15px;font-size:13.5px;line-height:1.6;color:var(--ink)}
+  .train-fact{position:absolute;left:12px;right:12px;bottom:12px;
+    background:var(--card);border:1.5px solid var(--line);border-radius:14px;
+    padding:11px 14px;font-size:13px;line-height:1.55;color:var(--ink);
+    box-shadow:0 8px 24px var(--shadow)}
   .train-taphint{text-align:center;color:var(--ink-soft);font-size:13px;font-weight:600;
     margin-top:14px;animation:taphint 1.8s ease-in-out infinite}
   @keyframes taphint{0%,100%{opacity:.45}50%{opacity:.95}}
@@ -675,9 +677,9 @@
       <div class="modechip" style="display:block">TRAINING</div>
       <div class="count" id="trainStreak"></div>
       <div class="silhouette" id="trainSilhouette"></div>
+      <div class="train-fact" id="trainFact" style="display:none"></div>
     </div>
     <div class="choices" id="choices"></div>
-    <div class="train-fact" id="trainFact" style="display:none"></div>
     <div class="train-taphint" id="trainTapHint" style="display:none" data-i18n="trainTap">Tippen, um fortzufahren</div>
     <div class="train-foot">
       <div class="mastery" id="mastery"></div>
