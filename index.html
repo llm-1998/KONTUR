@@ -133,6 +133,10 @@
   .qflag-img{max-height:min(32dvh,170px);max-width:88%;border-radius:14px;border:1px solid var(--line);
     box-shadow:0 10px 30px var(--shadow)}
   .qflag-emoji{font-size:110px;line-height:1}
+  .choice.locked:not(.right):not(.wrong){opacity:.5}
+  .train-taphint{text-align:center;color:var(--ink-soft);font-size:13px;font-weight:600;
+    margin-top:14px;animation:taphint 1.8s ease-in-out infinite}
+  @keyframes taphint{0%,100%{opacity:.45}50%{opacity:.95}}
   .flag-missing{font-size:13px;color:var(--ink-soft);font-weight:600;
     padding:10px 14px;border:1.5px dashed var(--line);border-radius:12px;display:inline-block}
   .qname{display:flex;align-items:center;justify-content:center;text-align:center;
@@ -307,6 +311,9 @@
   .overlay.open{display:flex}
   .sheet{width:100%;max-width:440px;background:var(--card);border-radius:26px 26px 0 0;padding:26px 22px 30px;
     animation:up .35s cubic-bezier(.2,.8,.2,1)}
+  #settingsOverlay .sheet{max-height:calc(100dvh - 34px - var(--sat));
+    overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;
+    padding-bottom:calc(30px + var(--sab))}
   @keyframes up{from{transform:translateY(40px);opacity:0}to{transform:none;opacity:1}}
   #overlay .sheet{transition:transform .35s cubic-bezier(.2,.8,.2,1);touch-action:none}
   .grabber{display:flex;justify-content:center;padding:0 0 14px;margin-top:-8px;cursor:pointer}
@@ -668,6 +675,7 @@
       <div class="silhouette" id="trainSilhouette"></div>
     </div>
     <div class="choices" id="choices"></div>
+    <div class="train-taphint" id="trainTapHint" style="display:none" data-i18n="trainTap">Tippen, um fortzufahren</div>
     <div class="train-foot">
       <div class="mastery" id="mastery"></div>
       <button class="isotoggle" id="isoBtn" data-i18n="iso">ISO-Modus</button>
@@ -735,6 +743,12 @@
       <button data-unit="km" data-i18n="unitKm">Kilometer</button>
       <button data-unit="mi" data-i18n="unitMi">Meilen</button>
     </div>
+    <h2 style="font-size:22px" data-i18n="trainAutoT">Training</h2>
+    <p data-i18n="trainAutoSub">Nach richtiger Antwort automatisch weiter</p>
+    <div class="seg" id="trainAutoSeg">
+      <button data-auto="1" data-i18n="autoOn">Ein</button>
+      <button data-auto="0" data-i18n="autoOff">Aus</button>
+    </div>
     <h2 style="font-size:22px" data-i18n="resetT">Zurücksetzen</h2>
     <p data-i18n="resetSub">Zweimal tippen zum Bestätigen</p>
     <button class="btn ghost" id="resetMasteryBtn" data-i18n="resetMastery">Lernstand (Sicher-Status)</button>
@@ -792,6 +806,8 @@ const STRINGS = {
     unitKm:'Kilometer', unitMi:'Meilen',
     lblDiff:'SCHWIERIGKEIT', diffs:['Einfach','Mittel','Schwer','Experte'], lblQtype:'FRAGETYP', qtypes:['Umriss','Flagge','Hauptstadt'],
     flagMissing:'Flagge konnte nicht geladen werden – Internetverbindung nötig',
+    trainAutoT:'Training', trainAutoSub:'Nach richtiger Antwort automatisch weiter',
+    autoOn:'Ein', autoOff:'Aus', trainTap:'Tippen, um fortzufahren',
     qxLocked:'Extremstufe gesperrt: Meistere im Training je 98 Länder, Flaggen und Hauptstädte, um sie freizuschalten.',
     qxActive:'Extremstufe: Hauptstadt am Umriss erraten – alle 233 Länder.',
     played:'Gespielt', newRound:'Neue Runde', trainDoneT:'Runde geschafft!',
@@ -895,6 +911,8 @@ const STRINGS = {
     unitKm:'Kilometres', unitMi:'Miles',
     lblDiff:'DIFFICULTY', diffs:['Easy','Medium','Hard','Expert'], lblQtype:'QUESTION TYPE', qtypes:['Outline','Flag','Capital'],
     flagMissing:'Flag could not be loaded – internet connection required',
+    trainAutoT:'Training', trainAutoSub:'Advance automatically after a correct answer',
+    autoOn:'On', autoOff:'Off', trainTap:'Tap to continue',
     qxLocked:'Extreme tier locked: master 98 countries, 98 flags and 98 capitals in training to unlock it.',
     qxActive:'Extreme tier: guess the capital from the outline – all 233 countries.',
     played:'Played', newRound:'New round', trainDoneT:'Round complete!',
@@ -1565,6 +1583,7 @@ function nextCard(){
   roundTries[trainTarget.a2] = (roundTries[trainTarget.a2] || 0) + 1;
   wrongThisCard = false; trainLocked = false;
   $('trainStreak').textContent = '🔥 ' + trainStreakN;
+  trainWait=0; $('trainTapHint').style.display='none';
   $('trainSilhouette').innerHTML =
     diff==='x'      ? svgFor(trainTarget) :
     qtype==='flag'  ? `<div class="qflag">${bigFlagHtml(trainTarget.a2)}</div>` :
@@ -1590,21 +1609,22 @@ function nextCard(){
   updateMastery();
 }
 function answer(btn, c){
-  if(trainLocked) return;
+  if(trainLocked || btn.classList.contains('locked')) return;
   const hit = c.a2===trainTarget.a2;
   if(isoMode) btn.textContent = c.a2 + ' · ' + (qtype==='cap' ? ccap(c) : cname(c));
   if(hit){
     trainLocked = true;
     btn.classList.add('right');
-    document.querySelectorAll('.choice').forEach(x=>x.disabled=true);
+    document.querySelectorAll('.choice').forEach(x=>x.classList.add('locked'));
     if(!wrongThisCard && !mSet().has(trainTarget.a2)){
       mSet().add(trainTarget.a2);
       saveMastered();
     }
     trainStreakN++;
-    setTimeout(nextCard, 750);
+    if(trainAuto) setTimeout(nextCard, 750);
+    else { trainWait=performance.now(); $('trainTapHint').style.display=''; }
   } else {
-    btn.classList.add('wrong'); btn.disabled = true;
+    btn.classList.add('wrong'); btn.classList.add('locked');
     if(!wrongThisCard){
       wrongThisCard = true;
       trainStreakN = 0;
@@ -1800,6 +1820,22 @@ document.querySelectorAll('#unitSeg button').forEach(b=>{
   b.onclick = ()=> applyUnit(b.dataset.unit);
 });
 applyUnit(unit);
+let trainAuto = store0('kontur.trainauto') === '1';
+function applyTrainAuto(v){
+  trainAuto = v;
+  store.set('kontur.trainauto', v ? '1' : '0');
+  document.querySelectorAll('#trainAutoSeg button').forEach(b=>b.classList.toggle('on', (b.dataset.auto==='1')===v));
+}
+document.querySelectorAll('#trainAutoSeg button').forEach(b=>{
+  b.onclick = ()=> applyTrainAuto(b.dataset.auto==='1');
+});
+applyTrainAuto(trainAuto);
+let trainWait=0;
+$('trainScreen').addEventListener('click', e=>{
+  if(!trainWait || performance.now()-trainWait < 300) return;  // Antwort-Tipp nicht durchrutschen lassen
+  if(e.target.closest('.train-foot')) return;                   // Fußzeile behält ihre eigenen Aufgaben
+  nextCard();
+});
 function armReset(btn, action){
   let armed=false, timer=null;
   btn.onclick=()=>{
