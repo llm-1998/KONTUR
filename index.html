@@ -133,6 +133,8 @@
   .qflag-img{max-height:min(32dvh,170px);max-width:88%;border-radius:14px;border:1px solid var(--line);
     box-shadow:0 10px 30px var(--shadow)}
   .qflag-emoji{font-size:110px;line-height:1}
+  .flag-missing{font-size:13px;color:var(--ink-soft);font-weight:600;
+    padding:10px 14px;border:1.5px dashed var(--line);border-radius:12px;display:inline-block}
   .qname{display:flex;align-items:center;justify-content:center;text-align:center;
     min-height:180px;padding:20px;font-size:clamp(26px,8vw,38px);font-weight:800;letter-spacing:-.02em}
   .gb-col{display:flex;flex-direction:column;align-items:flex-start;gap:2px;min-width:0}
@@ -789,6 +791,7 @@ const STRINGS = {
     unitT:'Einheiten', unitSub:'Für Entfernungsangaben im Spiel',
     unitKm:'Kilometer', unitMi:'Meilen',
     lblDiff:'SCHWIERIGKEIT', diffs:['Einfach','Mittel','Schwer','Experte'], lblQtype:'FRAGETYP', qtypes:['Umriss','Flagge','Hauptstadt'],
+    flagMissing:'Flagge konnte nicht geladen werden – Internetverbindung nötig',
     qxLocked:'Extremstufe gesperrt: Meistere im Training je 98 Länder, Flaggen und Hauptstädte, um sie freizuschalten.',
     qxActive:'Extremstufe: Hauptstadt am Umriss erraten – alle 233 Länder.',
     played:'Gespielt', newRound:'Neue Runde', trainDoneT:'Runde geschafft!',
@@ -891,6 +894,7 @@ const STRINGS = {
     unitT:'Units', unitSub:'For distances shown in the game',
     unitKm:'Kilometres', unitMi:'Miles',
     lblDiff:'DIFFICULTY', diffs:['Easy','Medium','Hard','Expert'], lblQtype:'QUESTION TYPE', qtypes:['Outline','Flag','Capital'],
+    flagMissing:'Flag could not be loaded – internet connection required',
     qxLocked:'Extreme tier locked: master 98 countries, 98 flags and 98 capitals in training to unlock it.',
     qxActive:'Extreme tier: guess the capital from the outline – all 233 countries.',
     played:'Played', newRound:'New round', trainDoneT:'Round complete!',
@@ -1105,7 +1109,7 @@ function qt(){ return mode==='daily' ? 'shape' : qtype; }
 function qLabel(c){ return qt()==='cap' ? ccap(c) : cname(c); }
 function bigFlagHtml(a2){
   const cc=a2.toLowerCase();
-  return `<img class="qflag-img" src="https://flagcdn.com/h120/${cc}.png" srcset="https://flagcdn.com/h240/${cc}.png 2x" alt="Flagge" onerror="this.outerHTML='<span class=qflag-emoji>${flagEmoji(a2)}</span>'">`;
+  return `<img class="qflag-img" src="https://flagcdn.com/h120/${cc}.png" srcset="https://flagcdn.com/h240/${cc}.png 2x" alt="Flagge" onerror="flagFallback(this,'${a2}',1)">`;
 }
 renderDiffs();
 function renderQtypes(){
@@ -1214,12 +1218,36 @@ function saveDaily(win){
 function flagEmoji(a2){
   return [...a2].map(c=>String.fromCodePoint(0x1F1A5 + c.charCodeAt(0))).join('');
 }
+let _feok=null;
+function flagEmojiOK(){
+  if(_feok!==null) return _feok;
+  try{
+    const c=document.createElement('canvas'); c.width=c.height=20;
+    const x=c.getContext('2d');
+    x.textBaseline='top'; x.font='16px sans-serif';
+    x.fillText('🇮🇹',0,0);
+    const d=x.getImageData(0,0,20,20).data;
+    let farbig=false;
+    for(let i=0;i<d.length;i+=4){
+      if(d[i+3]>0 && (d[i]!==d[i+1] || d[i+1]!==d[i+2])){ farbig=true; break; }
+    }
+    _feok=farbig;
+  }catch(_){ _feok=true; }
+  return _feok;
+}
+function flagFallback(el, a2, big){
+  if(flagEmojiOK()){
+    el.outerHTML='<span class="'+(big?'qflag-emoji':'flag')+'">'+flagEmoji(a2)+'</span>';
+  } else {
+    el.outerHTML='<span class="flag-missing">'+t('flagMissing')+'</span>';
+  }
+}
 function flagHtml(a2){
   const cc = a2.toLowerCase();
   // Windows zeigt Flaggen-Emojis nicht an -> echtes Bild, Emoji nur als Offline-Fallback
   return `<img class="flagimg" src="https://flagcdn.com/h24/${cc}.png"
     srcset="https://flagcdn.com/h48/${cc}.png 2x" alt="Flagge"
-    onerror="this.outerHTML='<span class=flag>${flagEmoji(a2)}</span>'">`;
+    onerror="flagFallback(this,'${a2}')">`;
 }
 function fmtPop(p){
   if(p == null) return '–';
@@ -2349,7 +2377,7 @@ function showInfo(c){
   const CONT_NAMES={AF:['Afrika','Africa'],AS:['Asien','Asia'],EU:['Europa','Europe'],
     NA:['Nordamerika','North America'],SA:['Südamerika','South America'],OC:['Ozeanien','Oceania']};
   const cc=c.a2.toLowerCase();
-  $('gpFlag').innerHTML=`<img src="https://flagcdn.com/h80/${cc}.png" srcset="https://flagcdn.com/h160/${cc}.png 2x" alt="Flagge" onerror="this.outerHTML='<span class=flag>${flagEmoji(c.a2)}</span>'">`;
+  $('gpFlag').innerHTML=`<img src="https://flagcdn.com/h80/${cc}.png" srcset="https://flagcdn.com/h160/${cc}.png 2x" alt="Flagge" onerror="flagFallback(this,'${c.a2}')">`;
   $('gpName').textContent=cname(c);
   $('gpCap').textContent=lang==='de'?c.cap:c.capEn;
   $('gpPop').textContent=fmtPop(c.pop);
