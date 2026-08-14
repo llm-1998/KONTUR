@@ -379,20 +379,17 @@
     width:100%;max-width:440px;box-sizing:border-box;z-index:15;
     padding:14px 18px calc(24px + env(safe-area-inset-bottom));
     background:var(--bg);transition:background .3s ease;
-    display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:10px}
-  .train-foot .mastery{justify-self:start}
-  .train-foot .skiplink{justify-self:end}
-  .foot-mid{display:flex;gap:8px;justify-content:center}
+    display:flex;align-items:center;justify-content:space-between}
   #trainScreen{padding-bottom:100px}
   .mastery{font-size:12.5px;font-weight:700;color:var(--ink-soft);font-variant-numeric:tabular-nums}
   .mastery b{color:var(--green)}
   .skiplink{border:0;background:none;font-family:inherit;font-size:13px;font-weight:700;
     color:var(--ink-soft);cursor:pointer;text-decoration:underline;text-underline-offset:3px}
-  .isotoggle,.twintoggle{display:none;border:1.5px solid var(--line);border-radius:99px;background:var(--card);
+  .isotoggle{display:none;border:1.5px solid var(--line);border-radius:99px;background:var(--card);
     font-family:inherit;font-size:11px;font-weight:800;letter-spacing:.08em;color:var(--ink-soft);
     padding:7px 12px;cursor:pointer}
   html.nerd .isotoggle{display:block}
-  .isotoggle.on,.twintoggle.on{border-color:var(--accent);color:var(--accent)}
+  .isotoggle.on{border-color:var(--accent);color:var(--accent)}
 
   /* ---------- Register ---------- */
   .reg-head{display:flex;align-items:baseline;justify-content:space-between;margin:14px 2px 12px}
@@ -500,7 +497,7 @@
         <div class="t">Solo</div><div class="s" data-i18n="soloS">Allein rätseln</div>
       </button>
       <button class="mode" id="trainBtn">
-        <div class="t">Training</div><div class="s" id="trainSubEl" data-i18n="trainS">Umrisse lernen</div>
+        <div class="t">Training</div><div class="s" data-i18n="trainS">Umrisse lernen</div>
       </button>
       <button class="mode" id="multiBtn" style="grid-column:1/-1">
         <div class="t" data-i18n="multiT">Mehrspieler</div><div class="s" data-i18n="multiS">Gegen Freunde – jeder auf seinem Gerät</div>
@@ -686,10 +683,8 @@
     <div class="train-taphint" id="trainTapHint" style="display:none" data-i18n="trainTap">Tippen, um fortzufahren</div>
     <div class="train-foot">
       <div class="mastery" id="mastery"></div>
-      <div class="foot-mid">
-        <button class="twintoggle" id="twinBtn" data-i18n="twins" style="display:none">Zwillinge</button>
-        <button class="isotoggle" id="isoBtn" data-i18n="iso">ISO-Modus</button>
-      </div>
+      <button class="isotoggle" id="twinBtn" data-i18n="twins" style="display:none">Zwillinge</button>
+      <button class="isotoggle" id="isoBtn" data-i18n="iso">ISO-Modus</button>
       <button class="skiplink" id="skipBtn" data-i18n="skip">Überspringen</button>
     </div>
   </section>
@@ -793,7 +788,7 @@ const STRINGS = {
     heroSub:'Sechs Versuche. Nach jedem Tipp verrät dir die Entfernung und Richtung, wo du suchen musst.',
     lblDaily:'TAGES-CHALLENGE', dailyT:'Land des Tages',
     dailyS:'Für alle dasselbe Rätsel – einmal pro Tag',
-    lblPlay:'FREIES SPIEL', soloS:'Allein rätseln', trainS:'Umrisse lernen', trainSubs:['Umrisse lernen','Flaggen lernen','Hauptstädte lernen'],
+    lblPlay:'FREIES SPIEL', soloS:'Allein rätseln', trainS:'Umrisse lernen',
     multiT:'Mehrspieler', multiS:'Gegen Freunde', soon:'BALD',
     lblRegion:'REGION', lblLookup:'NACHSCHLAGEN', regBtnT:'Länderregister',
     countries:'Länder', entries:'EINTRÄGE', play:'Spielen',
@@ -898,7 +893,7 @@ const STRINGS = {
     heroSub:'Six tries. After each guess you\'ll see how far off you were – and in which direction.',
     lblDaily:'DAILY CHALLENGE', dailyT:'Country of the day',
     dailyS:'The same puzzle for everyone – once a day',
-    lblPlay:'FREE PLAY', soloS:'Play on your own', trainS:'Learn the outlines', trainSubs:['Learn the outlines','Learn the flags','Learn the capitals'],
+    lblPlay:'FREE PLAY', soloS:'Play on your own', trainS:'Learn the outlines',
     multiT:'Multiplayer', multiS:'With friends', soon:'SOON',
     lblRegion:'REGION', lblLookup:'LOOK UP', regBtnT:'Country index',
     countries:'countries', entries:'ENTRIES', play:'Play',
@@ -1152,8 +1147,6 @@ function renderQtypes(){
     b.onclick=()=>{ qtype=vals[i]; store.set('kontur.qtype', qtype);
       if(diff==='x' && qtype!=='cap'){ diff=4; store.set('kontur.diff',4); renderDiffs(); updateDiffHint(); }
       if(window.refreshTwinBtn) refreshTwinBtn();
-      const subs=t('trainSubs');
-      if(subs) $('trainSubEl').textContent = subs[qtype==='flag'?1:qtype==='cap'?2:0];
       list.querySelectorAll('.region').forEach(x=>x.classList.remove('selected'));
       b.classList.add('selected'); };
     list.appendChild(b);
@@ -1588,7 +1581,7 @@ const TWINGROUP = {};
 TWINS.groups.forEach(g=>g.forEach(a=>TWINGROUP[a]=g));
 let twinMode = !!store.get('kontur.twins');
 function refreshTwinBtn(){
-  $('twinBtn').style.display = (qtype==='flag' && diff!=='x') ? 'block' : 'none';
+  $('twinBtn').style.display = (qtype==='flag' && diff!=='x') ? '' : 'none';
   $('twinBtn').classList.toggle('on', twinMode);
 }
 $('twinBtn').onclick = ()=>{
@@ -1839,8 +1832,6 @@ function applyLang(l){
   document.querySelectorAll('[data-i18n-ph]').forEach(el=>{ el.placeholder = t(el.dataset.i18nPh); });
   if(window.a2hsSync) window.a2hsSync();
   // Sichtbaren Flaggen-Fakt live mitübersetzen
-  const subs=t('trainSubs');
-  if(subs) $('trainSubEl').textContent = subs[qtype==='flag'?1:qtype==='cap'?2:0];
   const tf=$('trainFact');
   if(tf && tf.style.display!=='none' && trainTarget){
     const mark = twinMode && TWINS.marks[trainTarget.a2];
