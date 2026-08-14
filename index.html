@@ -138,6 +138,8 @@
     background:var(--card);border:1.5px solid var(--line);border-radius:14px;
     padding:11px 14px;font-size:13px;line-height:1.55;color:var(--ink);
     box-shadow:0 8px 24px var(--shadow)}
+  .verstamp{text-align:center;color:var(--ink-soft);opacity:.45;font-size:9.5px;
+    font-weight:600;letter-spacing:.08em;margin:14px 0 4px;font-variant-numeric:tabular-nums}
   .train-taphint{text-align:center;color:var(--ink-soft);font-size:13px;font-weight:600;
     margin-top:14px;animation:taphint 1.8s ease-in-out infinite}
   @keyframes taphint{0%,100%{opacity:.45}50%{opacity:.95}}
@@ -538,6 +540,7 @@
       <span data-i18n="play">Spielen</span>
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
     </button></div>
+    <div class="verstamp" id="verStamp"></div>
   </section>
 
   <!-- GLOBE -->
@@ -1117,6 +1120,7 @@ function renderDiffs(){
   };
   list.appendChild(bx);
 }
+const APP_VERSION = 'v76 · 14.08.2026';
 let qtype = store0('kontur.qtype') || 'shape';
 if(!['shape','flag','cap'].includes(qtype)) qtype='shape';
 { const qx=new URLSearchParams(location.search).get('qx');
@@ -1144,6 +1148,7 @@ function bigFlagHtml(a2){
   return `<img class="qflag-img" src="https://flagcdn.com/h120/${cc}.png" srcset="https://flagcdn.com/h240/${cc}.png 2x" alt="Flagge" onerror="flagFallback(this,'${a2}',1)">`;
 }
 renderDiffs();
+$('verStamp').textContent = APP_VERSION;
 function renderQtypes(){
   const list=$('qtypeList'); list.innerHTML='';
   const vals=['shape','flag','cap'];
