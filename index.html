@@ -1061,7 +1061,10 @@ const svgFor = c =>
 
 /* ---------- Suche (umlaut-tolerant) ---------- */
 const fold = s => s.toLowerCase().replaceAll('ä','a').replaceAll('ö','o').replaceAll('ü','u').replaceAll('ß','ss')
-  .normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+  .normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+  .replace(/\./g,'').replace(/-/g,' ')
+  .replace(/\b(sankt|saint|sint|sao|san)\b/g,'st')
+  .replace(/\s+/g,' ').trim();
 
 /* ---------- UI-Referenzen ---------- */
 const $ = id => document.getElementById(id);
@@ -1121,7 +1124,7 @@ function renderDiffs(){
   };
   list.appendChild(bx);
 }
-const APP_VERSION = 'v77 · 14.08.2026';
+const APP_VERSION = 'v78 · 15.08.2026';
 let qtype = store0('kontur.qtype') || 'shape';
 if(!['shape','flag','cap'].includes(qtype)) qtype='shape';
 { const qx=new URLSearchParams(location.search).get('qx');
@@ -2427,7 +2430,8 @@ function glide(){
     rot[0]+=vLon*dt;
     rot[1]=Math.max(-89, Math.min(89, rot[1]+vLat*dt));
     const f=Math.pow(0.93, dt/16.7);                 // Reibung
-    vLon*=f; vLat*=f;
+    vLon*=f;
+    vLat*=f*Math.pow(0.85, dt/16.7);                 // Kipp-Anteil extra beruhigen: Polachse stabilisiert sich
     render();
     if(Math.hypot(vLon,vLat) > 0.002) anim=requestAnimationFrame(step); else anim=0;
   };
