@@ -1134,7 +1134,7 @@ function renderDiffs(){
   };
   list.appendChild(bx);
 }
-const APP_VERSION = 'v82 · 16.08.2026';
+const APP_VERSION = 'v83 · 17.08.2026';
 let qtype = store0('kontur.qtype') || 'shape';
 if(!['shape','flag','cap'].includes(qtype)) qtype='shape';
 { const qx=new URLSearchParams(location.search).get('qx');
@@ -1864,6 +1864,7 @@ function applyLang(l){
   // Sichtbaren Flaggen-Fakt live mitübersetzen
   const subs=t('trainSubs');
   if(subs) $('trainSubEl').textContent = subs[qtype==='flag'?1:qtype==='cap'?2:0];
+  if(window.gTeaserC) $('globeTeaser').textContent = t('globeTeaser')(cname(window.gTeaserC));
   const tf=$('trainFact');
   if(tf && tf.style.display!=='none' && trainTarget){
     const mark = qtype==='flag' && twinMode && TWINS.marks[trainTarget.a2];
@@ -2579,6 +2580,7 @@ window.globeShow=(a2)=>{
 // Neugier-Frage: bei jedem App-Start ein anderes unbekannteres Land
 const tzPool=DATA.filter(c=>c.dl>=3);
 const teaser=tzPool[Math.floor(Math.random()*tzPool.length)];
+window.gTeaserC = teaser;
 $('globeTeaser').textContent=t('globeTeaser')(cname(teaser));
 let teaserFlown=false;
 $('globeBtn').onclick=()=>{
