@@ -619,6 +619,7 @@
       <div class="label" data-i18n="mpCodeLbl">RAUM-CODE</div>
       <div class="mp-code" id="mpCodeShow"></div>
       <button class="btn ghost" id="mpShareBtn" style="width:100%" data-i18n="mpShare">Einladungslink teilen</button>
+      <button class="btn ghost" id="mpCopyBtn" style="width:100%;margin-top:8px" data-i18n="mpCopy">Einladungslink kopieren</button>
       <div class="label" style="margin-top:22px" data-i18n="mpPlayers">SPIELER</div>
       <div id="mpPlayerList"></div>
       <div class="label" style="margin-top:22px" data-i18n="lblRegion">REGION</div>
@@ -862,7 +863,7 @@ const STRINGS = {
     mpIntro:'Spielt gleichzeitig auf euren eigenen Geräten: gleiche Länder, heimliche Tipps, Punkte nach Nähe. Region, Schwierigkeit und Rundenzahl legt der Host in der Lobby fest.',
     mpNameLbl:'DEIN NAME', mpNamePh:'Name eingeben …', mpCreate:'Runde erstellen',
     mpJoinLbl:'ODER MIT CODE BEITRETEN', mpJoin:'Beitreten', mpCodeLbl:'RAUM-CODE',
-    mpShare:'Einladungslink teilen', mpPlayers:'SPIELER', mpRounds:'LÄNDER PRO PARTIE',
+    mpShare:'Einladungslink teilen', mpCopy:'Einladungslink kopieren', mpCopyFail:'Kopieren nicht möglich – Code oben nutzen', mpPlayers:'SPIELER', mpRounds:'LÄNDER PRO PARTIE',
     mpWaitHost:'Warten auf den Start …', mpStart:'Partie starten', mpStand:'DEIN PUNKTESTAND',
     mpNeedName:'Bitte gib zuerst einen Namen ein', mpNeed2:'Mindestens 2 Spieler nötig',
     mpErrNo:'Raum nicht gefunden – Code prüfen', mpErrFull:'Der Raum ist voll (max. 4 Spieler)',
@@ -891,29 +892,46 @@ const STRINGS = {
        'Mittel ohne Fehler – deine Erdkunde-Lehrer wären stolz.'],
       ['Alles richtig auf Schwer?! Ha, da kennt sich aber jemand aus.',
        'Schwer, fehlerfrei. Wir tun jetzt mal so, als wäre das normal.'],
-      ['Perfekte Experten-Runde?! Meine Güte, mit dem Können gehörst du ins TV-Abendprogramm!',
-       'Alle 233er-Weihen auf Experte?! Sag mal … spielst du heimlich mit Atlas daneben?']
+      ['Perfekte Experten-Runde? Meine Güte, mit dem Können gehörst du ins TV-Abendprogramm.',
+       'Alle 233er-Weihen auf Experte?! Du spielst doch heimlich mit Atlas daneben …',
+       'Experte, fehlerfrei. Wir prüfen das mal auf Globus-Doping unterm Tisch.']
     ],
     mpQuipGold:['🥇 Platz 1 – die Weltkarte gehört heute dir!',
       '🥇 Sieg! Die anderen durften immerhin auch mal tippen.',
-      '🥇 Erster! Bescheidenheit ist ab jetzt optional.'],
+      '🥇 Erster! Bescheidenheit ist ab jetzt optional.',
+      '🥇 Gold! Bitte einmal freundlich fürs Kamerateam winken.',
+      '🥇 Sieg auf ganzer Linie – Breiten- wie Längengrad.',
+      '🥇 Platz 1! Der Globus dreht sich heute um dich.'],
     mpQuipLucky:['Null Treffer und trotzdem gewonnen. Sachen gibt\'s.',
-      'Kein einziger Treffer, aber der Pokal ist deiner. Effizienz nennt man das.'],
+      'Kein einziger Treffer, aber der Pokal ist deiner. Effizienz nennt man das.',
+      'Immer knapp daneben. Aber näher dran als alle anderen reicht auch manchmal.',
+      'Gewonnen ohne Volltreffer: Distanz-Punkte sind eben auch Punkte.'],
     mpQuipChicken:['Auch ein blindes Huhn findet mal ein Korn. *Gacker*',
-      'Ein Treffer, letzter Platz – Qualität statt Quantität, oder so.'],
+      'Ein Treffer, letzter Platz – Qualität statt Quantität, oder so.',
+      'Ein Volltreffer als Andenken … merk dir dieses Land gut.',
+      'Ein Treffer ist ein Anfang. Das Länderregister kennt den Rest.'],
     mpQuipSilver:['🥈 Hauchdünn am Thron vorbei. Riecht nach Revanche …',
-      '🥈 Silber! Fast-Ruhm ist auch Ruhm.'],
+      '🥈 Silber! Fast-Ruhm ist auch Ruhm.',
+      '🥈 Zweiter! Platz 1 hatte vermutlich nur Heimvorteil.',
+      '🥈 Silber – gefühlt nur ein Land von Gold entfernt.'],
     mpQuipBronze:['🥉 Aufs Treppchen gerettet – Bronze glänzt auch.',
-      '🥉 Bronze – von hier sieht man das Podium wenigstens von innen.'],
+      '🥉 Bronze – von hier sieht man das Podium zumindest von oben.',
+      '🥉 Dritter – die Medaille mit den besten Geschichten.',
+      '🥉 Bronze! Immerhin kannst du auch mal in eine Medaille beißen.'],
     mpQuipLast:['Letzter Platz … aber hey, jede Weltreise beginnt mit Verlaufen. 🧭',
       'Letzter. Aber im Länderregister wartet dein Comeback.',
       'Punkte sind auch nur Zahlen. Sagt der letzte Platz.',
-      'Kennst du eigentlich den Unterschied zwischen Frankfurt und Frankreich?'],
-    mpQuip233:['Alle? Wirklich alle? Was ist los mit euch …',
-      'Alle 233 … seid ihr euch da wirklich sicher?',
+      'Kennst du eigentlich den Unterschied zwischen Frankfurt und Frankreich?',
+      'Letzter … aber die Malediven hättest du erkannt, oder? 🏝️',
+      'Hinten ist streng genommen auch eine Himmelsrichtung.',
+      'Von hier kann es nur noch nordwärts gehen. 🧭'],
+    mpQuip233:['Was ist los mit euch?',
+      'Alle 233? Sicher?',
       'So viel Freizeit hätte ich auch gerne …',
       'Wer abbricht, muss einen ausgeben.',
-      'Da will es aber jemand wissen …'],
+      'Da will es aber jemand wissen …',
+      'Alle 233 – selbst der Vatikan musste antreten.',
+      'Komplette Weltumrundung? Seid ihr auch geimpft?'],
     mpQuipHits:(h,n)=>`${h} von ${n} direkt getroffen`,
     trainDoneText:(n,m)=>`Alle ${n} Umrisse dieser Auswahl richtig erkannt – ${m} davon gelten als sicher. Der Stapel wird neu gemischt. 🎉`,
     deckDone:n=>`Alle ${n} Länder dieser Auswahl durchgespielt – der Stapel wird neu gemischt. 🎉`,
@@ -968,7 +986,7 @@ const STRINGS = {
     mpIntro:'Play simultaneously on your own devices: same countries, secret guesses, points for proximity. The host sets region, difficulty and round count in the lobby.',
     mpNameLbl:'YOUR NAME', mpNamePh:'Enter a name …', mpCreate:'Create a room',
     mpJoinLbl:'OR JOIN WITH A CODE', mpJoin:'Join', mpCodeLbl:'ROOM CODE',
-    mpShare:'Share invite link', mpPlayers:'PLAYERS', mpRounds:'COUNTRIES PER MATCH',
+    mpShare:'Share invite link', mpCopy:'Copy invite link', mpCopyFail:'Copy failed – use the code above', mpPlayers:'PLAYERS', mpRounds:'COUNTRIES PER MATCH',
     mpWaitHost:'Waiting for the start …', mpStart:'Start match', mpStand:'YOUR SCORE',
     mpNeedName:'Please enter a name first', mpNeed2:'At least 2 players needed',
     mpErrNo:'Room not found – check the code', mpErrFull:'The room is full (max. 4 players)',
@@ -997,29 +1015,46 @@ const STRINGS = {
        'Medium without a miss – your geography teachers would be proud.'],
       ['Everything right on Hard?! Ha, someone knows their way around.',
        'Hard mode, flawless. Let us pretend that is normal.'],
-      ['A perfect Expert run?! My goodness, that skill belongs on prime-time TV!',
-       'All correct on Expert?! Be honest … is there an atlas next to you?']
+      ['A perfect Expert run? My goodness, that skill belongs on prime-time TV.',
+       'All correct on Expert?! You must be playing with an atlas on the side …',
+       'Expert, flawless. We are checking under the table for globe doping.']
     ],
     mpQuipGold:['🥇 First place – the world map is yours today!',
       '🥇 Victory! At least the others got to guess too.',
-      '🥇 First! Modesty is optional from now on.'],
+      '🥇 First! Modesty is optional from now on.',
+      '🥇 Gold! Please give the camera crew a friendly wave.',
+      '🥇 Victory across the board – latitude and longitude alike.',
+      '🥇 First place! Today the globe revolves around you.'],
     mpQuipLucky:['Zero hits and still won. Go figure.',
-      'Not a single hit, yet the trophy is yours. That is called efficiency.'],
+      'Not a single hit, yet the trophy is yours. That is called efficiency.',
+      'Always just off target. But closer than everyone else is sometimes enough.',
+      'Winning without a bullseye: distance points are points too.'],
     mpQuipChicken:['Even a blind chicken finds a grain sometimes. *Cluck*',
-      'One hit, last place – quality over quantity, or something.'],
+      'One hit, last place – quality over quantity, or something.',
+      'One bullseye as a souvenir … remember that country well.',
+      'One hit is a start. The country index knows the rest.'],
     mpQuipSilver:['🥈 So close to the throne. Smells like a rematch …',
-      '🥈 Silver! Almost-glory is still glory.'],
+      '🥈 Silver! Almost-glory is still glory.',
+      '🥈 Second! First place probably just had home advantage.',
+      '🥈 Silver – barely one country away from gold.'],
     mpQuipBronze:['🥉 Made it onto the podium – bronze still shines.',
-      '🥉 Bronze – at least you can see the podium from the inside.'],
+      '🥉 Bronze – at least you get to see the podium from above.',
+      '🥉 Third – the medal with the best stories.',
+      '🥉 Bronze! At least you get to bite a medal too.'],
     mpQuipLast:['Last place … but hey, every world trip starts with getting lost. 🧭',
       'Last. But the country index awaits your comeback.',
       'Points are just numbers. Says last place.',
-      'Do you actually know the difference between Austria and Australia?'],
-    mpQuip233:['All of them? Really all? What is wrong with you …',
-      'All 233 … are you really sure about this?',
+      'Do you actually know the difference between Austria and Australia?',
+      'Last … but you would have recognised the Maldives, right? 🏝️',
+      'Strictly speaking, behind is also a cardinal direction.',
+      'From here the only way is north. 🧭'],
+    mpQuip233:['What is wrong with you?',
+      'All 233? Sure?',
       'I wish I had that much free time …',
       'Whoever quits buys the next round.',
-      'Someone really wants to know …'],
+      'Someone really wants to know …',
+      'All 233 – even the Vatican had to line up.',
+      'A full lap around the world? Got your vaccinations?'],
     mpQuipHits:(h,n)=>`${h} of ${n} spot-on`,
     trainDoneText:(n,m)=>`All ${n} outlines in this selection recognized – ${m} of them mastered. Reshuffling the deck. 🎉`,
     deckDone:n=>`You've played all ${n} countries in this selection – reshuffling the deck. 🎉`,
@@ -1149,7 +1184,7 @@ function renderDiffs(){
   };
   list.appendChild(bx);
 }
-const APP_VERSION = 'v88 · Beta · 18.08.2026';
+const APP_VERSION = 'v80 · 16.08.2026';
 let qtype = store0('kontur.qtype') || 'shape';
 if(!['shape','flag','cap'].includes(qtype)) qtype='shape';
 { const qx=new URLSearchParams(location.search).get('qx');
@@ -2217,6 +2252,11 @@ $('mpShareBtn').onclick = async ()=>{
   const text=`KONTUR ${t('mpTitle')} – Code ${roomCode}\n${link}`;
   if(navigator.share){ try{ await navigator.share({text}); return; }catch(e){} }
   try{ await navigator.clipboard.writeText(text); mpToast(t('mpLinkCopied')); }catch(e){}
+};
+$('mpCopyBtn').onclick = async ()=>{
+  const link=APP_URL+'?join='+roomCode;
+  try{ await navigator.clipboard.writeText(link); mpToast(t('mpLinkCopied')); }
+  catch(e){ mpToast(t('mpCopyFail')); }
 };
 
 $('mpStartBtn').onclick = ()=>{
