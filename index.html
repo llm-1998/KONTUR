@@ -145,6 +145,8 @@
   .sugg-iso.hit{color:var(--accent)}
   #globeSuggest button{display:flex;align-items:center}
   .reg-row.isohit>button .iso{color:var(--accent);font-weight:800}
+  .mp-sharerow{display:flex;gap:8px}
+  .mp-sharerow .btn{flex:1;display:flex;align-items:center;justify-content:center;gap:7px}
   .offline-bar{position:fixed;top:0;left:50%;transform:translateX(-50%);
     width:100%;max-width:440px;box-sizing:border-box;z-index:60;
     padding:calc(8px + var(--sat)) 16px 8px;display:flex;gap:9px;align-items:center;
@@ -618,8 +620,16 @@
     <div class="mp-view" id="mpLobby">
       <div class="label" data-i18n="mpCodeLbl">RAUM-CODE</div>
       <div class="mp-code" id="mpCodeShow"></div>
-      <button class="btn ghost" id="mpShareBtn" style="width:100%" data-i18n="mpShare">Einladungslink teilen</button>
-      <button class="btn ghost" id="mpCopyBtn" style="width:100%;margin-top:8px" data-i18n="mpCopy">Einladungslink kopieren</button>
+      <div class="mp-sharerow">
+        <button class="btn ghost" id="mpShareBtn">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v7a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-7M16 6l-4-4-4 4M12 2v13"/></svg>
+          <span data-i18n="mpShare">Teilen</span>
+        </button>
+        <button class="btn ghost" id="mpCopyBtn">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1"/></svg>
+          <span data-i18n="mpCopy">Kopieren</span>
+        </button>
+      </div>
       <div class="label" style="margin-top:22px" data-i18n="mpPlayers">SPIELER</div>
       <div id="mpPlayerList"></div>
       <div class="label" style="margin-top:22px" data-i18n="lblRegion">REGION</div>
@@ -863,7 +873,7 @@ const STRINGS = {
     mpIntro:'Spielt gleichzeitig auf euren eigenen Geräten: gleiche Länder, heimliche Tipps, Punkte nach Nähe. Region, Schwierigkeit und Rundenzahl legt der Host in der Lobby fest.',
     mpNameLbl:'DEIN NAME', mpNamePh:'Name eingeben …', mpCreate:'Runde erstellen',
     mpJoinLbl:'ODER MIT CODE BEITRETEN', mpJoin:'Beitreten', mpCodeLbl:'RAUM-CODE',
-    mpShare:'Einladungslink teilen', mpCopy:'Einladungslink kopieren', mpCopyFail:'Kopieren nicht möglich – Code oben nutzen', mpPlayers:'SPIELER', mpRounds:'LÄNDER PRO PARTIE',
+    mpShare:'Teilen', mpCopy:'Link kopieren', mpCopyFail:'Kopieren nicht möglich – Code oben nutzen', mpPlayers:'SPIELER', mpRounds:'LÄNDER PRO PARTIE',
     mpWaitHost:'Warten auf den Start …', mpStart:'Partie starten', mpStand:'DEIN PUNKTESTAND',
     mpNeedName:'Bitte gib zuerst einen Namen ein', mpNeed2:'Mindestens 2 Spieler nötig',
     mpErrNo:'Raum nicht gefunden – Code prüfen', mpErrFull:'Der Raum ist voll (max. 4 Spieler)',
@@ -986,7 +996,7 @@ const STRINGS = {
     mpIntro:'Play simultaneously on your own devices: same countries, secret guesses, points for proximity. The host sets region, difficulty and round count in the lobby.',
     mpNameLbl:'YOUR NAME', mpNamePh:'Enter a name …', mpCreate:'Create a room',
     mpJoinLbl:'OR JOIN WITH A CODE', mpJoin:'Join', mpCodeLbl:'ROOM CODE',
-    mpShare:'Share invite link', mpCopy:'Copy invite link', mpCopyFail:'Copy failed – use the code above', mpPlayers:'PLAYERS', mpRounds:'COUNTRIES PER MATCH',
+    mpShare:'Share', mpCopy:'Copy link', mpCopyFail:'Copy failed – use the code above', mpPlayers:'PLAYERS', mpRounds:'COUNTRIES PER MATCH',
     mpWaitHost:'Waiting for the start …', mpStart:'Start match', mpStand:'YOUR SCORE',
     mpNeedName:'Please enter a name first', mpNeed2:'At least 2 players needed',
     mpErrNo:'Room not found – check the code', mpErrFull:'The room is full (max. 4 players)',
@@ -1184,7 +1194,7 @@ function renderDiffs(){
   };
   list.appendChild(bx);
 }
-const APP_VERSION = 'v90 · Beta · 18.08.2026';
+const APP_VERSION = 'v91 · Beta · 16.08.2026';
 let qtype = store0('kontur.qtype') || 'shape';
 if(!['shape','flag','cap'].includes(qtype)) qtype='shape';
 { const qx=new URLSearchParams(location.search).get('qx');
@@ -2058,7 +2068,11 @@ if(!pid){ pid='p'+Math.random().toString(36).slice(2,10); store.set('kontur.mp.p
 
 let roomCode=null, roomRef=null, room=null, isHost=false, leftHere=false, autoAdv='';
 
-function mpView(v){ ['mpSetup','mpLobby','mpPlay','mpFinal'].forEach(id=>$(id).classList.toggle('active', id===v)); window.scrollTo(0,0); }
+function mpView(v){
+  const changed = !$(v).classList.contains('active');
+  ['mpSetup','mpLobby','mpPlay','mpFinal'].forEach(id=>$(id).classList.toggle('active', id===v));
+  if(changed) window.scrollTo(0,0);
+}
 function mpToast(msg){ const el=$('toast'); el.textContent=msg; el.classList.add('show'); setTimeout(()=>el.classList.remove('show'), 2400); }
 function players(){ return room && room.players ? Object.entries(room.players) : []; }
 function nameOf(id){
