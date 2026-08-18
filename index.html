@@ -1149,7 +1149,7 @@ function renderDiffs(){
   };
   list.appendChild(bx);
 }
-const APP_VERSION = 'v87 · Beta · 17.08.2026';
+const APP_VERSION = 'v88 · Beta · 18.08.2026';
 let qtype = store0('kontur.qtype') || 'shape';
 if(!['shape','flag','cap'].includes(qtype)) qtype='shape';
 { const qx=new URLSearchParams(location.search).get('qx');
@@ -2247,12 +2247,12 @@ function renderPlay(){
   const phase=room.phase||'guess';
 
   $('mpGuessBox').style.display  = (phase==='guess' && !mine) ? '' : 'none';
-  $('mpWaitBox').style.display   = (phase==='guess' && mine)  ? '' : 'none';
+  $('mpWaitBox').style.display   = (phase==='guess')          ? '' : 'none';
   $('mpRevealBox').style.display = phase==='reveal' ? '' : 'none';
 
   if(phase==='guess'){
     const done=Object.keys(gs).length, total=players().length;
-    $('mpWaitText').textContent=t('mpYours')+'\n'+t('mpGuessed')(done,total);
+    $('mpWaitText').textContent=(mine ? t('mpYours')+'\n' : '')+t('mpGuessed')(done,total);
     const wl=$('mpWaitList'); wl.innerHTML='';
     players().forEach(([id,pl])=>{
       const div=document.createElement('div'); div.className='mp-player';
