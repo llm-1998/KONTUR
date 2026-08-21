@@ -52,7 +52,7 @@
   @media (prefers-reduced-motion: reduce){
     *,*::before,*::after{animation-duration:.01ms !important;transition-duration:.01ms !important}
   }
-  html,body{height:100%}
+  html,body{height:100%;overscroll-behavior-x:none}
   body{
     font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
     background:var(--bg);color:var(--ink);
@@ -1241,7 +1241,7 @@ function renderDiffs(){
   };
   list.appendChild(bx);
 }
-const APP_VERSION = 'v100 · Beta · 21.08.2026';
+const APP_VERSION = 'v80 · 16.08.2026';
 let qtype = store0('kontur.qtype') || 'shape';
 if(!['shape','flag','cap'].includes(qtype)) qtype='shape';
 { const qx=new URLSearchParams(location.search).get('qx');
@@ -1760,6 +1760,7 @@ $('menuBtn').onclick = ()=>{ closeOverlay(); refreshDailyState(); show(startScre
     e.stopPropagation();                               // hält am Rand das Globus-Drehen fern
     sw={c, x:e.clientX, y:e.clientY, id:e.pointerId, t:performance.now(), on:false};
   }, {capture:true, passive:true});
+  $('edgeStrip').addEventListener('touchstart', e=>{ e.preventDefault(); }, {passive:false}); // Safari: Rand gehört uns
   document.addEventListener('pointermove', e=>{
     if(!sw || e.pointerId!==sw.id) return;
     if(sw.on && e.cancelable) e.preventDefault();      // Fahrt läuft: X-Achse führt, Bogen egal
