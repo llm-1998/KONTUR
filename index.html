@@ -67,7 +67,9 @@
     position:fixed;top:0;left:50%;transform:translateX(-50%);
     width:100%;max-width:440px;height:calc(60px + var(--sat));
     padding:var(--sat) 20px 0;box-sizing:border-box;
-    z-index:16;background:var(--bg);transition:background .3s ease}
+    z-index:40;background:var(--bg);transition:background .3s ease}
+  header::before{content:'';position:absolute;top:0;bottom:0;left:50%;
+    width:100vw;transform:translateX(-50%);background:inherit;z-index:-1}
   .wordmark{font-size:17px;font-weight:800;letter-spacing:.22em;cursor:pointer;user-select:none}
   .wordmark span{color:var(--accent)}
   .meta{display:flex;gap:8px;align-items:center}
@@ -404,6 +406,9 @@
   .train-foot .skiplink{justify-self:end}
   .foot-mid{display:flex;gap:8px;justify-content:center}
   #registerScreen,#globeScreen{touch-action:pan-y}
+  #edgeStrip{position:fixed;left:0;top:0;bottom:0;width:26px;z-index:45;
+    touch-action:none;display:none}
+  .swiping .reg-searchwrap::before{left:0;right:0}
   .gload{position:absolute;inset:0;display:flex;flex-direction:column;gap:12px;
     align-items:center;justify-content:center;color:var(--ink-soft);
     font-size:13.5px;font-weight:600;pointer-events:none}
@@ -516,6 +521,7 @@
   <span data-i18n="offlineMsg">Offline! Umriss- &amp; Hauptstadt-Quiz laufen weiter. Flaggen und Mehrspieler brauchen Internet.</span>
   <button class="offline-x" id="offlineX" aria-label="Schließen">✕</button>
 </div>
+<div id="edgeStrip"></div>
 <div class="flag-lb" id="flagLb" hidden>
   <button class="flag-lb-x" id="flagLbX" aria-label="Schließen">✕</button>
   <div class="flag-zoom" id="flagZoom"><img id="flagLbImg" alt="Flagge" draggable="false"></div>
@@ -1235,7 +1241,7 @@ function renderDiffs(){
   };
   list.appendChild(bx);
 }
-const APP_VERSION = 'v80 · 16.08.2026';
+const APP_VERSION = 'v100 · Beta · 21.08.2026';
 let qtype = store0('kontur.qtype') || 'shape';
 if(!['shape','flag','cap'].includes(qtype)) qtype='shape';
 { const qx=new URLSearchParams(location.search).get('qx');
@@ -1406,6 +1412,7 @@ function show(screen){
   screen.classList.add('active');
   $('regionChip').style.display = (screen===gameScreen||screen===trainScreen)?'':'none';
   $('homeBtn').style.display    = screen===startScreen?'none':'';
+  $('edgeStrip').style.display  = (screen===registerScreen||screen===globeScreen)?'':'none';
   window.scrollTo(0, screen===startScreen ? startScroll : 0);                                       // heimkehren, wo man war
 }
 
@@ -1733,13 +1740,17 @@ $('menuBtn').onclick = ()=>{ closeOverlay(); refreshDailyState(); show(startScre
   const wrap = startScreen.parentElement;
   const cur = ()=> registerScreen.classList.contains('active') ? registerScreen
             : globeScreen.classList.contains('active') ? globeScreen : null;
-  function clean(c, sb){
+  function clean(c, sb, cta, nx){
     [c, startScreen].forEach(el=>{ if(!el) return;
       el.style.transform=''; el.style.transition=''; el.style.opacity='';
       el.style.position=''; el.style.zIndex=''; el.style.inset='';
       el.style.boxShadow=''; el.style.background=''; el.style.overflow='';
     });
-    if(sb){ sb.style.position=''; sb.style.top=''; sb.style.left=''; sb.style.width=''; sb.style.zIndex=''; }
+    if(sb){ sb.style.position=''; sb.style.top=''; sb.style.left=''; sb.style.width=''; sb.style.zIndex=''; sb.style.margin=''; }
+    if(cta){ cta.style.position=''; cta.style.bottom=''; cta.style.transform=''; cta.style.left=''; cta.style.width=''; cta.style.top=''; }
+    if(nx){ nx.style.marginTop=''; }
+    if(c) c.classList.remove('swiping');
+    document.documentElement.style.overflowX='';
     startScreen.style.width=''; startScreen.style.left='';
     wrap.style.position=''; wrap.style.overflow='';
   }
@@ -1754,19 +1765,25 @@ $('menuBtn').onclick = ()=>{ closeOverlay(); refreshDailyState(); show(startScre
     if(sw.on && e.cancelable) e.preventDefault();      // Fahrt läuft: X-Achse führt, Bogen egal
     const dx=e.clientX-sw.x, dy=e.clientY-sw.y;
     if(!sw.on){
-      if(Math.abs(dy)>26 && Math.abs(dy)>Math.abs(dx)){ sw=null; return; }  // vertikal: Scrollen gewinnt
-      if(!(dx>8 && dx>Math.abs(dy))) return;
+      if(dx < -14){ sw=null; return; }   // klar nach links: kein Wisch
+      if(dx <= 8) return;                // Randzone gehört der X-Achse – Höhe ist egal
       sw.on=true;                                      // Bühne herrichten: Ziel hinter die Bühne legen
-      wrap.style.position='relative'; wrap.style.overflow='hidden';
+      wrap.style.position='relative';
+      document.documentElement.style.overflowX='hidden';   // nur seitliches Überstehen kappen
       const c=sw.c;
+      c.classList.add('swiping');
       const sb=c.querySelector('.reg-searchwrap');
       if(sb){                                          // klebenden Suchbalken an Ort und Stelle einfrieren
         const r=sb.getBoundingClientRect(), cr=c.getBoundingClientRect();
+        const cs=getComputedStyle(sb);
+        const mt=parseFloat(cs.marginTop)||0, mb=parseFloat(cs.marginBottom)||0;
         sw.sb=sb;
+        sb.style.margin='0';                           // Außenabstände neutralisieren (sonst Mini-Versatz)
         sb.style.position='absolute'; sb.style.top=(r.top-cr.top)+'px';
         sb.style.left=(r.left-cr.left)+'px'; sb.style.width=r.width+'px'; sb.style.zIndex='3';
+        const nx=sb.nextElementSibling;
+        if(nx){ sw.nx=nx; nx.style.marginTop=(r.height+mt+mb)+'px'; }   // Platz samt Abständen freihalten
       }
-      c.style.overflow='hidden';                       // Seitenflügel bleiben im Panel
       c.style.position='relative'; c.style.zIndex='2';
       c.style.background='var(--bg)'; c.style.boxShadow='-18px 0 42px rgba(0,0,0,.38)';
       startScreen.classList.add('active');
@@ -1776,6 +1793,14 @@ $('menuBtn').onclick = ()=>{ closeOverlay(); refreshDailyState(); show(startScre
       startScreen.style.width=sw.c.offsetWidth+'px';
       startScreen.style.zIndex='1';
       sw.ty = window.scrollY - startScroll;            // Merk-Position schon in der Vorschau zeigen
+      const cta = startScreen.querySelector('.cta');
+      if(cta){                                         // fixierte Spielen-Karte: Fenstermaß einfrieren
+        const r=cta.getBoundingClientRect(), pr=startScreen.getBoundingClientRect();
+        sw.cta=cta;
+        cta.style.position='absolute'; cta.style.bottom='auto'; cta.style.transform='none';
+        cta.style.left=(r.left-pr.left)+'px'; cta.style.width=r.width+'px';
+        cta.style.top=((window.innerHeight - r.height) - pr.top - sw.ty)+'px';
+      }
     }
     const w=Math.max(1, wrap.clientWidth), p=Math.max(0, Math.min(1, dx/w));
     sw.vx=dx/(performance.now()-sw.t+1);
@@ -1785,17 +1810,17 @@ $('menuBtn').onclick = ()=>{ closeOverlay(); refreshDailyState(); show(startScre
     startScreen.style.transform='translate('+(-24*(1-p))+'%, '+sw.ty+'px)';  // Parallax + Vorschau-Position
   }, {passive:false});
   function finish(commit){
-    const c=sw.c, w=wrap.clientWidth, ty=sw.ty||0, sb=sw.sb; sw=null;
+    const c=sw.c, w=wrap.clientWidth, ty=sw.ty||0, sb=sw.sb, cta=sw.cta, nx=sw.nx; sw=null;
     c.style.transition='transform 190ms ease';
     startScreen.style.transition='transform 190ms ease, opacity 190ms ease';
     if(commit){
       c.style.transform='translateX('+w+'px)';
       startScreen.style.opacity='1'; startScreen.style.transform='translate(0, '+ty+'px)';
-      setTimeout(()=>{ clean(c, sb); closeOverlay(); refreshDailyState(); show(startScreen); }, 200);
+      setTimeout(()=>{ clean(c, sb, cta, nx); closeOverlay(); refreshDailyState(); show(startScreen); }, 200);
     } else {
       c.style.transform='translateX(0)';
       startScreen.style.opacity='0'; startScreen.style.transform='translate(-24%, '+ty+'px)';
-      setTimeout(()=>{ startScreen.classList.remove('active'); clean(c, sb); }, 200);
+      setTimeout(()=>{ startScreen.classList.remove('active'); clean(c, sb, cta, nx); }, 200);
     }
   }
   document.addEventListener('pointerup', e=>{
