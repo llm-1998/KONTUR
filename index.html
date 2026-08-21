@@ -129,10 +129,10 @@
   .a2hs-p b{color:var(--ink);font-weight:700}
   .a2hs-x{position:absolute;top:6px;right:8px;background:none;border:none;
     color:var(--ink-soft);font-size:20px;padding:6px;cursor:pointer;line-height:1}
-  .qflag{display:flex;align-items:center;justify-content:center;min-height:180px;padding:14px}
-  .qflag-img{max-height:min(32dvh,170px);max-width:88%;border-radius:14px;border:1px solid var(--line);
+  .qflag{display:flex;align-items:center;justify-content:center;min-height:210px;padding:14px}
+  .qflag-img{max-height:min(38dvh,230px);max-width:96%;border-radius:14px;border:1px solid var(--line);
     box-shadow:0 10px 30px var(--shadow)}
-  .qflag-emoji{font-size:110px;line-height:1}
+  .qflag-emoji{font-size:130px;line-height:1}
   .choice.locked:not(.right):not(.wrong){opacity:.5}
   .train-fact{position:absolute;left:12px;right:12px;bottom:12px;
     background:var(--card);border:1.5px solid var(--line);border-radius:14px;
@@ -424,7 +424,8 @@
     width:38px;height:38px;border-radius:50%;cursor:pointer}
   .flag-lb-name{font-size:17px;font-weight:800;color:#fff}
   .flag-lb-hint{font-size:12px;color:#ffffff88}
-  .flagimg,.gp-flag img{cursor:zoom-in}
+  .flagimg,.gp-flag img,.qflag-img{cursor:zoom-in}
+  .ic{vertical-align:-2.5px}
   .reg-flagtap{display:flex;align-items:center;min-width:64px;justify-content:center}
   .reg-flagtap .flagimg{height:58px;border-radius:6px;box-shadow:0 2px 10px rgba(0,0,0,.35)}
   .reg-row.spot{animation:regspot 1.6s ease}
@@ -1233,7 +1234,7 @@ function renderDiffs(){
   };
   list.appendChild(bx);
 }
-const APP_VERSION = 'v97 · Beta · 21.08.2026';
+const APP_VERSION = 'v98 · Beta · 21.08.2026';
 let qtype = store0('kontur.qtype') || 'shape';
 if(!['shape','flag','cap'].includes(qtype)) qtype='shape';
 { const qx=new URLSearchParams(location.search).get('qx');
@@ -1258,7 +1259,7 @@ function qt(){ return mode==='daily' ? 'shape' : qtype; }
 function qLabel(c){ return qt()==='cap' ? ccap(c) : cname(c); }
 function bigFlagHtml(a2){
   const cc=a2.toLowerCase();
-  return `<img class="qflag-img" src="https://flagcdn.com/h120/${cc}.png" srcset="https://flagcdn.com/h240/${cc}.png 2x" alt="Flagge" onerror="flagFallback(this,'${a2}',1)">`;
+  return `<img class="qflag-img" data-a2="${a2}" src="https://flagcdn.com/w320/${cc}.png" srcset="https://flagcdn.com/w640/${cc}.png 2x" alt="Flagge" onerror="flagFallback(this,'${a2}',1)">`;
 }
 renderDiffs();
 $('verStamp').textContent = APP_VERSION;
@@ -1335,6 +1336,10 @@ $('offlineX').onclick = ()=>{ netDismissed = true; syncNet(); };
     }
   });
   $('flagLbX').onclick=()=>{ lb.hidden=true; reset(); };
+  document.addEventListener('click', e=>{
+    const f=e.target.closest && e.target.closest('.qflag-img');
+    if(f && f.dataset.a2) openFlagLb(f.dataset.a2, '');   // ohne Namen: kein Lösungs-Spoiler
+  });
 })();
 function probeNet(){
   if(probing) return; probing = true;
@@ -1393,12 +1398,14 @@ $('dailyBtn').onclick = () => { startDaily(); show(gameScreen); };
 $('homeBtn').onclick  = () => { closeOverlay(); if(window.mpLeave) window.mpLeave(); refreshDailyState(); show(startScreen); };
 
 const registerScreen=$('registerScreen'), trainScreen=$('trainScreen'), mpScreen=$('mpScreen'), globeScreen=$('globeScreen');
+let startScroll=0;
 function show(screen){
+  if(screen!==startScreen && startScreen.classList.contains('active')) startScroll=window.scrollY;  // Position merken
   [startScreen,gameScreen,registerScreen,trainScreen,mpScreen,globeScreen].forEach(s=>s.classList.remove('active'));
   screen.classList.add('active');
   $('regionChip').style.display = (screen===gameScreen||screen===trainScreen)?'':'none';
   $('homeBtn').style.display    = screen===startScreen?'none':'';
-  window.scrollTo(0,0);
+  window.scrollTo(0, screen===startScreen ? startScroll : 0);                                       // heimkehren, wo man war
 }
 
 /* ---------- Runden ---------- */
@@ -1484,7 +1491,8 @@ function openFlagLb(a2, name){
   const img=$('flagLbImg');
   img.src='https://flagcdn.com/'+a2.toLowerCase()+'.svg';   // Vektor: verlustfrei in jeder Größe
   img.onerror=()=>flagFallback(img, a2, 1);
-  $('flagLbName').textContent=name;
+  $('flagLbName').textContent=name||'';
+  $('flagLbName').style.display = name ? '' : 'none';
   if(window.flagLbReset) flagLbReset();
   $('flagLb').hidden=false;
 }
@@ -1495,6 +1503,14 @@ function flagHtml(a2){
     srcset="https://flagcdn.com/h48/${cc}.png 2x" alt="Flagge"
     onerror="flagFallback(this,'${a2}')">`;
 }
+const IC = (d)=>'<svg class="ic" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'+d+'</svg>';
+const ICONS={
+  lock:  IC('<rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/>'),
+  flame: IC('<path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.07-2.14-.22-4.05 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.15.43-2.29 1-3a2.5 2.5 0 0 0 2.5 2.5z"/>'),
+  cap:   IC('<path d="M3 22h18M6 18v-7M10 18v-7M14 18v-7M18 18v-7M12 2l9 5H3l9-5z"/>'),
+  pop:   IC('<path d="M17 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="10" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>'),
+  flag:  IC('<path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><path d="M4 22v-7"/>')
+};
 function fmtPop(p){
   if(p == null) return '–';
   if(p >= 1e6) return (p/1e6).toLocaleString(t('locale'),{maximumFractionDigits:1}) + t('mio');
@@ -1505,15 +1521,15 @@ function renderHints(){
   const done = finished;
   const q = qt();
   const defs = [
-    {at:2, icon:'👥', locked:t('hintPop'), value: target.pop ? fmtPop(target.pop) : null},
-    q!=='flag' ? {at:3, icon:'🚩', locked:t('hintFlag'), value: flagHtml(target.a2)} : null,
-    q!=='cap'  ? {at:4, icon:'🏛️', locked:t('hintCap'), value: ccap(target) || null} : null,
+    {at:2, icon:ICONS.pop, locked:t('hintPop'), value: target.pop ? fmtPop(target.pop) : null},
+    q!=='flag' ? {at:3, icon:ICONS.flag, locked:t('hintFlag'), value: flagHtml(target.a2)} : null,
+    q!=='cap'  ? {at:4, icon:ICONS.cap, locked:t('hintCap'), value: ccap(target) || null} : null,
   ].filter(h=>h && h.value !== null);
   box.innerHTML = defs.map(h=>{
     const open = done || guesses.length >= h.at;
     return open
       ? `<div class="hint unlocked">${h.icon} ${h.value}</div>`
-      : `<div class="hint">🔒 ${h.locked} ${t('fromTry')} ${h.at+1}</div>`;
+      : `<div class="hint">${ICONS.lock} ${h.locked} ${t('fromTry')} ${h.at+1}</div>`;
   }).join('');
 }
 
@@ -1644,8 +1660,8 @@ function showResult(win, animate){
   const rf=$('resFacts');
   rf.className='sheet-facts show';
   rf.innerHTML = `${flagHtml(target.a2)}<div>
-    ${ccap(target) ? `<div class="fact">🏛️ ${t('hintCap')}: <b>${ccap(target)}</b></div>` : ''}
-    ${target.pop ? `<div class="fact">👥 ${t('hintPop')}: <b>${fmtPop(target.pop)}</b></div>` : ''}
+    ${ccap(target) ? `<div class="fact">${ICONS.cap} ${t('hintCap')}: <b>${ccap(target)}</b></div>` : ''}
+    ${target.pop ? `<div class="fact">${ICONS.pop} ${t('hintPop')}: <b>${fmtPop(target.pop)}</b></div>` : ''}
   </div>`;
   let txt = win ? t('winText')(guesses.length) : t('loseText');
   if (mode==='solo' && !soloDeck.length) txt += ' ' + t('deckDone')(pool.length);
@@ -1708,6 +1724,73 @@ document.addEventListener('keydown', e=>{
   if($('nextBtn').style.display !== 'none') $('nextBtn').click();
 });
 $('menuBtn').onclick = ()=>{ closeOverlay(); refreshDailyState(); show(startScreen); };
+
+/* Interaktiver Rand-Wisch zurück zum Start (Globus & Register): Seite folgt dem Finger */
+(function(){
+  const EDGE=26;
+  let sw=null;
+  const wrap = startScreen.parentElement;
+  const cur = ()=> registerScreen.classList.contains('active') ? registerScreen
+            : globeScreen.classList.contains('active') ? globeScreen : null;
+  function clean(c){
+    [c, startScreen].forEach(el=>{ if(!el) return;
+      el.style.transform=''; el.style.transition=''; el.style.opacity='';
+      el.style.position=''; el.style.zIndex=''; el.style.inset='';
+      el.style.boxShadow=''; el.style.background='';
+    });
+    wrap.style.position=''; wrap.style.overflow='';
+  }
+  document.addEventListener('pointerdown', e=>{
+    const c=cur();
+    if(e.clientX>EDGE || !c) return;
+    e.stopPropagation();                               // hält am Rand das Globus-Drehen fern
+    sw={c, x:e.clientX, y:e.clientY, id:e.pointerId, t:performance.now(), on:false};
+  }, {capture:true, passive:true});
+  document.addEventListener('pointermove', e=>{
+    if(!sw || e.pointerId!==sw.id) return;
+    const dx=e.clientX-sw.x, dy=e.clientY-sw.y;
+    if(!sw.on){
+      if(Math.abs(dy)>26 && Math.abs(dy)>Math.abs(dx)){ sw=null; return; }  // vertikal: Scrollen gewinnt
+      if(!(dx>8 && dx>Math.abs(dy))) return;
+      sw.on=true;                                      // Bühne herrichten: Ziel hinter die Bühne legen
+      wrap.style.position='relative'; wrap.style.overflow='hidden';
+      const c=sw.c;
+      c.style.position='relative'; c.style.zIndex='2';
+      c.style.background='var(--bg)'; c.style.boxShadow='-18px 0 42px rgba(0,0,0,.38)';
+      startScreen.classList.add('active');
+      startScreen.style.position='absolute';
+      startScreen.style.top=(sw.c.offsetTop||0)+'px';  // exakt auf Bildschirm-Oberkante (unter der Kopfzeile)
+      startScreen.style.left='0'; startScreen.style.right='0'; startScreen.style.zIndex='1';
+      sw.ty = window.scrollY - startScroll;            // Merk-Position schon in der Vorschau zeigen
+    }
+    const w=Math.max(1, wrap.clientWidth), p=Math.max(0, Math.min(1, dx/w));
+    sw.vx=dx/(performance.now()-sw.t+1);
+    sw.dx=dx;
+    sw.c.style.transform='translateX('+Math.max(0,dx)+'px)';
+    startScreen.style.opacity=(0.10+0.90*p).toFixed(3);          // Fade wächst mit dem Weg (startet fast schwarz)
+    startScreen.style.transform='translate('+(-24*(1-p))+'%, '+sw.ty+'px)';  // Parallax + Vorschau-Position
+  }, {passive:true});
+  function finish(commit){
+    const c=sw.c, w=wrap.clientWidth, ty=sw.ty||0; sw=null;
+    c.style.transition='transform 190ms ease';
+    startScreen.style.transition='transform 190ms ease, opacity 190ms ease';
+    if(commit){
+      c.style.transform='translateX('+w+'px)';
+      startScreen.style.opacity='1'; startScreen.style.transform='translate(0, '+ty+'px)';
+      setTimeout(()=>{ clean(c); closeOverlay(); refreshDailyState(); show(startScreen); }, 200);
+    } else {
+      c.style.transform='translateX(0)';
+      startScreen.style.opacity='0'; startScreen.style.transform='translate(-24%, '+ty+'px)';
+      setTimeout(()=>{ startScreen.classList.remove('active'); clean(c); }, 200);
+    }
+  }
+  document.addEventListener('pointerup', e=>{
+    if(!sw || e.pointerId!==sw.id) return;
+    if(!sw.on){ sw=null; return; }
+    finish(sw.dx > Math.min(110, wrap.clientWidth*0.3) || (sw.vx>0.55 && sw.dx>40));
+  }, {passive:true});
+  document.addEventListener('pointercancel', ()=>{ if(sw && sw.on) finish(false); else sw=null; }, {passive:true});
+})();
 function syncScrollLock(){
   const o = $('overlay');
   const lock = o.classList.contains('open') && !o.classList.contains('peek');
@@ -1827,7 +1910,7 @@ function nextCard(){
   trainTarget = trainQueue.shift();
   roundTries[trainTarget.a2] = (roundTries[trainTarget.a2] || 0) + 1;
   wrongThisCard = false; trainLocked = false;
-  $('trainStreak').textContent = '🔥 ' + trainStreakN;
+  $('trainStreak').innerHTML = ICONS.flame + ' ' + trainStreakN;
   trainWait=0; $('trainTapHint').style.display='none'; $('trainFact').style.display='none';
   $('trainSilhouette').innerHTML =
     diff==='x'      ? svgFor(trainTarget) :
@@ -1887,7 +1970,7 @@ function answer(btn, c){
     if(!wrongThisCard){
       wrongThisCard = true;
       trainStreakN = 0;
-      $('trainStreak').textContent = '🔥 0';
+      $('trainStreak').innerHTML = ICONS.flame + ' 0';
       // Land kommt bald wieder dran
       trainQueue.splice(Math.min(3, trainQueue.length), 0, trainTarget);
       // War es vorher "sicher", ist es das jetzt nicht mehr
@@ -1949,8 +2032,8 @@ function buildRegister(){
            <div class="reg-facts">
              <span class="reg-flagtap">${flagHtml(c.a2).replace('h24','h60').replace('h48','h120')}</span>
              <div>
-               ${ccap(c) ? `<div class="fact">🏛️ ${t('hintCap')}: <b>${ccap(c)}</b></div>` : ''}
-               ${c.pop ? `<div class="fact">👥 ${t('hintPop')}: <b>${fmtPop(c.pop)}</b></div>` : ''}
+               ${ccap(c) ? `<div class="fact">${ICONS.cap} ${t('hintCap')}: <b>${ccap(c)}</b></div>` : ''}
+               ${c.pop ? `<div class="fact">${ICONS.pop} ${t('hintPop')}: <b>${fmtPop(c.pop)}</b></div>` : ''}
              </div>
            </div>
            <div class="coords">${t('centroid')} ${c.lat.toFixed(2)}°, ${c.lon.toFixed(2)}° · ${t('conts')[c.cont]}</div>
