@@ -403,6 +403,7 @@
   .train-foot .mastery{justify-self:start}
   .train-foot .skiplink{justify-self:end}
   .foot-mid{display:flex;gap:8px;justify-content:center}
+  #registerScreen,#globeScreen{touch-action:pan-y}
   .gload{position:absolute;inset:0;display:flex;flex-direction:column;gap:12px;
     align-items:center;justify-content:center;color:var(--ink-soft);
     font-size:13.5px;font-weight:600;pointer-events:none}
@@ -1234,7 +1235,7 @@ function renderDiffs(){
   };
   list.appendChild(bx);
 }
-const APP_VERSION = 'v98 · Beta · 21.08.2026';
+const APP_VERSION = 'v80 · 16.08.2026';
 let qtype = store0('kontur.qtype') || 'shape';
 if(!['shape','flag','cap'].includes(qtype)) qtype='shape';
 { const qx=new URLSearchParams(location.search).get('qx');
@@ -1732,12 +1733,14 @@ $('menuBtn').onclick = ()=>{ closeOverlay(); refreshDailyState(); show(startScre
   const wrap = startScreen.parentElement;
   const cur = ()=> registerScreen.classList.contains('active') ? registerScreen
             : globeScreen.classList.contains('active') ? globeScreen : null;
-  function clean(c){
+  function clean(c, sb){
     [c, startScreen].forEach(el=>{ if(!el) return;
       el.style.transform=''; el.style.transition=''; el.style.opacity='';
       el.style.position=''; el.style.zIndex=''; el.style.inset='';
-      el.style.boxShadow=''; el.style.background='';
+      el.style.boxShadow=''; el.style.background=''; el.style.overflow='';
     });
+    if(sb){ sb.style.position=''; sb.style.top=''; sb.style.left=''; sb.style.width=''; sb.style.zIndex=''; }
+    startScreen.style.width=''; startScreen.style.left='';
     wrap.style.position=''; wrap.style.overflow='';
   }
   document.addEventListener('pointerdown', e=>{
@@ -1748,6 +1751,7 @@ $('menuBtn').onclick = ()=>{ closeOverlay(); refreshDailyState(); show(startScre
   }, {capture:true, passive:true});
   document.addEventListener('pointermove', e=>{
     if(!sw || e.pointerId!==sw.id) return;
+    if(sw.on && e.cancelable) e.preventDefault();      // Fahrt läuft: X-Achse führt, Bogen egal
     const dx=e.clientX-sw.x, dy=e.clientY-sw.y;
     if(!sw.on){
       if(Math.abs(dy)>26 && Math.abs(dy)>Math.abs(dx)){ sw=null; return; }  // vertikal: Scrollen gewinnt
@@ -1755,12 +1759,22 @@ $('menuBtn').onclick = ()=>{ closeOverlay(); refreshDailyState(); show(startScre
       sw.on=true;                                      // Bühne herrichten: Ziel hinter die Bühne legen
       wrap.style.position='relative'; wrap.style.overflow='hidden';
       const c=sw.c;
+      const sb=c.querySelector('.reg-searchwrap');
+      if(sb){                                          // klebenden Suchbalken an Ort und Stelle einfrieren
+        const r=sb.getBoundingClientRect(), cr=c.getBoundingClientRect();
+        sw.sb=sb;
+        sb.style.position='absolute'; sb.style.top=(r.top-cr.top)+'px';
+        sb.style.left=(r.left-cr.left)+'px'; sb.style.width=r.width+'px'; sb.style.zIndex='3';
+      }
+      c.style.overflow='hidden';                       // Seitenflügel bleiben im Panel
       c.style.position='relative'; c.style.zIndex='2';
       c.style.background='var(--bg)'; c.style.boxShadow='-18px 0 42px rgba(0,0,0,.38)';
       startScreen.classList.add('active');
       startScreen.style.position='absolute';
-      startScreen.style.top=(sw.c.offsetTop||0)+'px';  // exakt auf Bildschirm-Oberkante (unter der Kopfzeile)
-      startScreen.style.left='0'; startScreen.style.right='0'; startScreen.style.zIndex='1';
+      startScreen.style.top=(sw.c.offsetTop||0)+'px';    // exakt auf Bildschirm-Oberkante (unter der Kopfzeile)
+      startScreen.style.left=(sw.c.offsetLeft||0)+'px';  // Innenränder des Containers respektieren
+      startScreen.style.width=sw.c.offsetWidth+'px';
+      startScreen.style.zIndex='1';
       sw.ty = window.scrollY - startScroll;            // Merk-Position schon in der Vorschau zeigen
     }
     const w=Math.max(1, wrap.clientWidth), p=Math.max(0, Math.min(1, dx/w));
@@ -1769,19 +1783,19 @@ $('menuBtn').onclick = ()=>{ closeOverlay(); refreshDailyState(); show(startScre
     sw.c.style.transform='translateX('+Math.max(0,dx)+'px)';
     startScreen.style.opacity=(0.10+0.90*p).toFixed(3);          // Fade wächst mit dem Weg (startet fast schwarz)
     startScreen.style.transform='translate('+(-24*(1-p))+'%, '+sw.ty+'px)';  // Parallax + Vorschau-Position
-  }, {passive:true});
+  }, {passive:false});
   function finish(commit){
-    const c=sw.c, w=wrap.clientWidth, ty=sw.ty||0; sw=null;
+    const c=sw.c, w=wrap.clientWidth, ty=sw.ty||0, sb=sw.sb; sw=null;
     c.style.transition='transform 190ms ease';
     startScreen.style.transition='transform 190ms ease, opacity 190ms ease';
     if(commit){
       c.style.transform='translateX('+w+'px)';
       startScreen.style.opacity='1'; startScreen.style.transform='translate(0, '+ty+'px)';
-      setTimeout(()=>{ clean(c); closeOverlay(); refreshDailyState(); show(startScreen); }, 200);
+      setTimeout(()=>{ clean(c, sb); closeOverlay(); refreshDailyState(); show(startScreen); }, 200);
     } else {
       c.style.transform='translateX(0)';
       startScreen.style.opacity='0'; startScreen.style.transform='translate(-24%, '+ty+'px)';
-      setTimeout(()=>{ startScreen.classList.remove('active'); clean(c); }, 200);
+      setTimeout(()=>{ startScreen.classList.remove('active'); clean(c, sb); }, 200);
     }
   }
   document.addEventListener('pointerup', e=>{
