@@ -406,7 +406,7 @@
   .train-foot .skiplink{justify-self:end}
   .foot-mid{display:flex;gap:8px;justify-content:center}
   #registerScreen,#globeScreen{touch-action:pan-y}
-  #edgeStrip{position:fixed;left:0;top:0;bottom:0;width:26px;z-index:45;
+  #edgeStrip{position:fixed;left:0;top:0;bottom:0;width:30px;z-index:45;
     touch-action:none;display:none}
   .swiping .reg-searchwrap::before{left:0;right:0}
   .gload{position:absolute;inset:0;display:flex;flex-direction:column;gap:12px;
@@ -1241,7 +1241,7 @@ function renderDiffs(){
   };
   list.appendChild(bx);
 }
-const APP_VERSION = 'v103 · Beta · 22.08.2026';
+const APP_VERSION = 'v104 · Beta · 22.08.2026';
 let qtype = store0('kontur.qtype') || 'shape';
 if(!['shape','flag','cap'].includes(qtype)) qtype='shape';
 { const qx=new URLSearchParams(location.search).get('qx');
@@ -1735,7 +1735,7 @@ $('menuBtn').onclick = ()=>{ closeOverlay(); refreshDailyState(); show(startScre
 
 /* Interaktiver Rand-Wisch zurück zum Start (Globus & Register): Seite folgt dem Finger */
 (function(){
-  const EDGE=26;
+  const EDGE=42;
   let sw=null;
   const wrap = startScreen.parentElement;
   const cur = ()=> registerScreen.classList.contains('active') ? registerScreen
