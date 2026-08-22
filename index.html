@@ -175,8 +175,8 @@
     display:flex;align-items:center;justify-content:center;gap:8px}
   .reg-globe:active,.gp-reg:active{transform:scale(.99)}
   .globe-wrap{position:relative;background:var(--card);border:1.5px solid var(--line);
-    border-radius:var(--radius);overflow:hidden}
-  #globeSvg{display:block;width:100%;height:auto;touch-action:none;cursor:grab}
+    border-radius:var(--radius);overflow:hidden;isolation:isolate;transform:translateZ(0)}
+  #globeSvg{display:block;width:100%;height:auto;touch-action:none;cursor:grab;border-radius:inherit}
   #globeSvg:active{cursor:grabbing}
   #gSphere{fill:var(--bg);stroke:var(--line);stroke-width:1.5}
   #gGrat{fill:none;stroke:var(--line);stroke-width:.7;opacity:.85}
@@ -1241,7 +1241,7 @@ function renderDiffs(){
   };
   list.appendChild(bx);
 }
-const APP_VERSION = 'v105 · Beta · 22.08.2026';
+const APP_VERSION = 'v106 · Beta · 22.08.2026';
 let qtype = store0('kontur.qtype') || 'shape';
 if(!['shape','flag','cap'].includes(qtype)) qtype='shape';
 { const qx=new URLSearchParams(location.search).get('qx');
@@ -1749,7 +1749,11 @@ $('menuBtn').onclick = ()=>{ closeOverlay(); refreshDailyState(); show(startScre
     if(sb){ sb.style.position=''; sb.style.top=''; sb.style.left=''; sb.style.width=''; sb.style.zIndex=''; sb.style.margin=''; }
     if(cta){ cta.style.position=''; cta.style.bottom=''; cta.style.transform=''; cta.style.left=''; cta.style.width=''; cta.style.top=''; }
     if(nx){ nx.style.marginTop=''; }
-    if(c) c.classList.remove('swiping');
+    if(c){ c.classList.remove('swiping');
+      c.style.marginLeft=''; c.style.marginRight='';
+      c.style.paddingLeft=''; c.style.paddingRight='';
+      c.style.minHeight=''; }
+    startScreen.style.paddingLeft=''; startScreen.style.paddingRight='';
     document.documentElement.style.overflowX='';
     startScreen.style.width=''; startScreen.style.left='';
     wrap.style.position=''; wrap.style.overflow='';
@@ -1779,6 +1783,10 @@ $('menuBtn').onclick = ()=>{ closeOverlay(); refreshDailyState(); show(startScre
       document.documentElement.style.overflowX='hidden';   // nur seitliches Überstehen kappen
       const c=sw.c;
       c.classList.add('swiping');
+      const pad=getComputedStyle(wrap).paddingLeft||'18px';
+      c.style.marginLeft='-'+pad; c.style.marginRight='-'+pad;   // Panel annektiert die Container-Polsterung ...
+      c.style.paddingLeft=pad;    c.style.paddingRight=pad;      // ... und polstert sich selbst identisch
+      c.style.minHeight=Math.max(0, window.innerHeight - c.getBoundingClientRect().top)+'px'; // Puffer: Hintergrund bis ganz unten
       const sb=c.querySelector('.reg-searchwrap');
       if(sb){                                          // klebenden Suchbalken an Ort und Stelle einfrieren
         const r=sb.getBoundingClientRect(), cr=c.getBoundingClientRect();
@@ -1798,6 +1806,7 @@ $('menuBtn').onclick = ()=>{ closeOverlay(); refreshDailyState(); show(startScre
       startScreen.style.top=(sw.c.offsetTop||0)+'px';    // exakt auf Bildschirm-Oberkante (unter der Kopfzeile)
       startScreen.style.left=(sw.c.offsetLeft||0)+'px';  // Innenränder des Containers respektieren
       startScreen.style.width=sw.c.offsetWidth+'px';
+      startScreen.style.paddingLeft=pad; startScreen.style.paddingRight=pad;  // Kulisse gleich polstern
       startScreen.style.zIndex='1';
       sw.ty = window.scrollY - startScroll;            // Merk-Position schon in der Vorschau zeigen
       const cta = startScreen.querySelector('.cta');
