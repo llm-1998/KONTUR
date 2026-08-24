@@ -491,6 +491,20 @@
   .reg-facts .fact{font-size:13px;color:var(--ink-soft)}
   .reg-facts .fact b{color:var(--ink);font-weight:700}
   .reg-facts .fact + .fact{margin-top:3px}
+  .reg-tablesec{margin-top:26px}
+  .reg-tablesec .regions{margin:10px 0 12px}
+  .reg-tablewrap{background:var(--card);border:1.5px solid var(--line);border-radius:16px;
+    overflow-x:auto;-webkit-overflow-scrolling:touch;touch-action:pan-x pan-y}
+  .reg-table{width:100%;border-collapse:collapse;font-size:12.5px}
+  .reg-table th{text-align:left;font-size:10.5px;font-weight:800;letter-spacing:.08em;
+    text-transform:uppercase;color:var(--ink-soft);padding:10px 10px 9px;
+    border-bottom:1.5px solid var(--line);white-space:nowrap}
+  .reg-table th.sortable{cursor:pointer;user-select:none}
+  .reg-table th .arr{margin-left:4px;color:var(--accent)}
+  .reg-table td{padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top;white-space:nowrap}
+  .reg-table tr:last-child td{border-bottom:none}
+  .reg-table td.rg{color:var(--ink-soft);font-size:11px;white-space:nowrap}
+  .reg-table th.num,.reg-table td.num{text-align:right;font-variant-numeric:tabular-nums}
   .nerdbox{margin:18px 0 6px;background:var(--card);border:1px dashed var(--line);border-radius:16px;padding:16px}
   .nerdbox .t{font-size:11px;font-weight:800;letter-spacing:.14em;color:var(--accent);margin-bottom:8px}
   .nerdbox p{font-size:13px;line-height:1.6;color:var(--ink-soft)}
@@ -785,6 +799,21 @@
       <input class="reg-search" id="regSearch" type="search" enterkeyhint="search" placeholder="Register durchsuchen …" data-i18n-ph="regSearchPh" autocomplete="off">
     </div>
     <div id="regList"></div>
+    <div class="reg-tablesec">
+      <div class="sec-label" data-i18n="tblT">DATENTABELLE</div>
+      <div class="regions" id="tblRegions"></div>
+      <div class="reg-tablewrap">
+        <table class="reg-table">
+          <thead><tr>
+            <th data-i18n="tblRegion">Region</th>
+            <th class="sortable" data-key="name"><span data-i18n="tblLand">Land</span><span class="arr" id="arr-name"></span></th>
+            <th class="sortable" data-key="cap"><span data-i18n="gpCap">Hauptstadt</span><span class="arr" id="arr-cap"></span></th>
+            <th class="sortable num" data-key="pop"><span data-i18n="gpPop">Einwohner</span><span class="arr" id="arr-pop"></span></th>
+          </tr></thead>
+          <tbody id="regTableBody"></tbody>
+        </table>
+      </div>
+    </div>
     <div class="nerdbox">
       <div class="t" data-i18n="nerdT">FÜR NERDS 🤓</div>
       <div data-i18n-html="nerdBody">
@@ -880,7 +909,7 @@ const STRINGS = {
     multiT:'Mehrspieler', multiS:'Gegen Freunde', soon:'BALD',
     lblRegion:'REGION', lblLookup:'NACHSCHLAGEN', regBtnT:'Länderregister',
     countries:'Länder', entries:'EINTRÄGE', play:'Spielen',
-    regSearchPh:'Register durchsuchen …', inputPh:'Deine Antwort …',
+    regSearchPh:'Register durchsuchen …', tblT:'DATENTABELLE', tblRegion:'Region', tblLand:'Land', inputPh:'Deine Antwort …',
     training:'TRAINING', iso:'ISO-Modus', skip:'Überspringen', mastered:'Sicher',
     hit:'Getroffen', hintPop:'Einwohner', hintCap:'Hauptstadt', hintFlag:'Flagge',
     fromTry:'ab Versuch', stateOpen:'OFFEN', stateOver:'VORBEI', stateSolved:'GELÖST',
@@ -992,7 +1021,8 @@ const STRINGS = {
     mpQuipHits:(h,n)=>`${h} von ${n} direkt getroffen`,
     trainDoneText:(n,m)=>`Alle ${n} Umrisse dieser Auswahl richtig erkannt – ${m} davon gelten als sicher. Der Stapel wird neu gemischt. 🎉`,
     deckDone:n=>`Alle ${n} Länder dieser Auswahl durchgespielt – der Stapel wird neu gemischt. 🎉`,
-    diffDescs:['Ikonische Formen zum Einstieg','Bekannte Länder mit gut lernbaren Umrissen','Fast alle Staaten der Welt','Wirklich alle – inklusive Zwergstaaten und Insel-Archipele']
+    diffDescs:['Ikonische Formen zum Einstieg','Bekannte Länder mit gut lernbaren Umrissen','Fast alle Staaten der Welt','Wirklich alle – inklusive Zwergstaaten und Insel-Archipele'],
+    qxDesc:'Extremstufe: errate die Hauptstadt am Umriss'
   },
   en: {
     heroTitle:'Guess the country<br>by its outline.',
@@ -1003,7 +1033,7 @@ const STRINGS = {
     multiT:'Multiplayer', multiS:'With friends', soon:'SOON',
     lblRegion:'REGION', lblLookup:'LOOK UP', regBtnT:'Country index',
     countries:'countries', entries:'ENTRIES', play:'Play',
-    regSearchPh:'Search the index …', inputPh:'Your answer …',
+    regSearchPh:'Search the index …', tblT:'DATA TABLE', tblRegion:'Region', tblLand:'Country', inputPh:'Your answer …',
     training:'TRAINING', iso:'ISO mode', skip:'Skip', mastered:'Mastered',
     hit:'Correct', hintPop:'Population', hintCap:'Capital', hintFlag:'Flag',
     fromTry:'from guess', stateOpen:'OPEN', stateOver:'DONE', stateSolved:'SOLVED',
@@ -1115,7 +1145,8 @@ const STRINGS = {
     mpQuipHits:(h,n)=>`${h} of ${n} spot-on`,
     trainDoneText:(n,m)=>`All ${n} outlines in this selection recognized – ${m} of them mastered. Reshuffling the deck. 🎉`,
     deckDone:n=>`You've played all ${n} countries in this selection – reshuffling the deck. 🎉`,
-    diffDescs:['Iconic shapes to get started','Well-known countries with learnable outlines','Almost every state in the world','Truly all of them – including microstates and island archipelagos']
+    diffDescs:['Iconic shapes to get started','Well-known countries with learnable outlines','Almost every state in the world','Truly all of them – including microstates and island archipelagos'],
+    qxDesc:'Extreme: guess the capital from the outline'
   }
 };
 let lang = store0('kontur.lang') || 'de';
@@ -1213,6 +1244,11 @@ refreshDailyState();
 
 let diff = store0('kontur.diff') || 4;
 function updateDiffHint(){
+  if(diff === 'x'){
+    const n = DATA.filter(c => !region.conts || region.conts.includes(c.cont)).length;
+    $('diffHint').innerHTML = `<b>${n} ${t('countries')}</b> · ${t('qxDesc')}`;
+    return;
+  }
   const n = DATA.filter(c => (!region.conts || region.conts.includes(c.cont)) && c.dl <= diff).length;
   $('diffHint').innerHTML = `<b>${n} ${t('countries')}</b> · ${t('diffDescs')[diff-1]}`;
 }
@@ -1241,7 +1277,7 @@ function renderDiffs(){
   };
   list.appendChild(bx);
 }
-const APP_VERSION = 'v106 · Beta · 22.08.2026';
+const APP_VERSION = 'v107 · Beta · 24.08.2026';
 let qtype = store0('kontur.qtype') || 'shape';
 if(!['shape','flag','cap'].includes(qtype)) qtype='shape';
 { const qx=new URLSearchParams(location.search).get('qx');
@@ -1762,7 +1798,7 @@ $('menuBtn').onclick = ()=>{ closeOverlay(); refreshDailyState(); show(startScre
     const c=cur();
     if(!c) return;
     // Schutzklauseln: Galerie, Einstellungen, Kopfzeile, Banner und Textfelder wischen nie
-    if(e.target.closest && e.target.closest('#flagLb,#settingsOverlay,header,.offline-bar,input,textarea')) return;
+    if(e.target.closest && e.target.closest('#flagLb,#settingsOverlay,header,.offline-bar,input,textarea,.reg-tablewrap')) return;
     const inEdge = e.clientX<=EDGE;
     const wide = (c===registerScreen)                                  // Register: volle Fläche
               || (c===globeScreen && !(e.target.closest && e.target.closest('.globe-wrap'))); // Globus: unterhalb der Kugel
@@ -2108,7 +2144,7 @@ function buildRegister(){
     list.appendChild(group);
   });
 }
-$('regBtn').onclick = ()=>{ buildRegister(); show(registerScreen); };
+$('regBtn').onclick = ()=>{ buildRegister(); buildTableChips(); buildTableRows(); show(registerScreen); };
 $('gpRegBtn').onclick = ()=>{
   const sel = window.gFocusC;
   if(!sel || !sel.a2) return;
@@ -2125,6 +2161,51 @@ $('gpRegBtn').onclick = ()=>{
     row.classList.remove('spot'); void row.offsetWidth; row.classList.add('spot');
   }, 350);
 };
+/* ---------- Datentabelle im Register ---------- */
+const TBL_CONT={de:{EU:'Europa',AF:'Afrika',AS:'Asien',NA:'Nordamerika',SA:'Südamerika',OC:'Ozeanien'},
+                en:{EU:'Europe',AF:'Africa',AS:'Asia',NA:'North America',SA:'South America',OC:'Oceania'}};
+let tblRegion=0, tblSort={key:'name', dir:1};
+function buildTableChips(){
+  const box=$('tblRegions'); box.innerHTML='';
+  REGIONS.forEach((rg,i)=>{
+    const b=document.createElement('button');
+    b.className='region'+(tblRegion===i?' selected':'');
+    b.textContent=rg[lang];
+    b.onclick=()=>{ tblRegion=i; buildTableChips(); buildTableRows(); };
+    box.appendChild(b);
+  });
+}
+function buildTableRows(){
+  const reg=REGIONS[tblRegion];
+  const rows=DATA.filter(c=>!reg.conts || reg.conts.includes(c.cont));
+  const key=tblSort.key, dir=tblSort.dir;
+  rows.sort((a,b)=>{
+    if(key==='pop'){
+      if(a.pop==null && b.pop==null) return 0;
+      if(a.pop==null) return 1;                        // Striche stets ans Ende
+      if(b.pop==null) return -1;
+      return (a.pop-b.pop)*dir;
+    }
+    const av=key==='cap'?(ccap(a)||''):cname(a), bv=key==='cap'?(ccap(b)||''):cname(b);
+    return av.localeCompare(bv, lang)*dir;
+  });
+  ['name','cap','pop'].forEach(k=>{ $('arr-'+k).textContent = tblSort.key===k ? (dir===1?'▲':'▼') : ''; });
+  const tb=$('regTableBody'); tb.innerHTML='';
+  for(const c of rows){
+    const tr=document.createElement('tr');
+    tr.innerHTML=`<td class="rg">${TBL_CONT[lang][c.cont]}</td><td><b>${cname(c)}</b></td>`+
+      `<td>${ccap(c)||'–'}</td><td class="num">${fmtPop(c.pop)}</td>`;
+    tb.appendChild(tr);
+  }
+}
+document.querySelectorAll('.reg-table th.sortable').forEach(th=>{
+  th.onclick=()=>{
+    const k=th.dataset.key;
+    if(tblSort.key===k) tblSort.dir*=-1;
+    else tblSort={key:k, dir: k==='pop' ? -1 : 1};     // Einwohner startet absteigend
+    buildTableRows();
+  };
+});
 $('regSearch').addEventListener('input', ()=>{
   const q = fold($('regSearch').value.trim());
   document.querySelectorAll('.reg-row').forEach(r=>{
