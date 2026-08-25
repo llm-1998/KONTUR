@@ -1277,7 +1277,7 @@ function renderDiffs(){
   };
   list.appendChild(bx);
 }
-const APP_VERSION = 'v107 · Beta · 24.08.2026';
+const APP_VERSION = 'v108 · Beta · 25.08.2026';
 let qtype = store0('kontur.qtype') || 'shape';
 if(!['shape','flag','cap'].includes(qtype)) qtype='shape';
 { const qx=new URLSearchParams(location.search).get('qx');
@@ -2208,6 +2208,12 @@ document.querySelectorAll('.reg-table th.sortable').forEach(th=>{
 });
 $('regSearch').addEventListener('input', ()=>{
   const q = fold($('regSearch').value.trim());
+  if(q){                                              // beim Suchen aus der Tiefe zu den Treffern springen
+    const sb=document.querySelector('.reg-searchwrap');
+    const y = window.scrollY + $('regList').getBoundingClientRect().top
+            - (sb ? sb.getBoundingClientRect().height : 0) - 70;
+    if(window.scrollY > y + 4) window.scrollTo({top: Math.max(0, y), behavior:'smooth'});
+  }
   document.querySelectorAll('.reg-row').forEach(r=>{
     const isoHit = q.length===2 && r.dataset.a2===q;
     r.style.display = !q || r.dataset.q.includes(q) || isoHit ? '' : 'none';
