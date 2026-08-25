@@ -1282,7 +1282,7 @@ function renderDiffs(){
   };
   list.appendChild(bx);
 }
-const APP_VERSION = 'v109 · Beta · 25.08.2026';
+const APP_VERSION = 'v110 · Beta · 25.08.2026';
 let qtype = store0('kontur.qtype') || 'shape';
 if(!['shape','flag','cap'].includes(qtype)) qtype='shape';
 { const qx=new URLSearchParams(location.search).get('qx');
@@ -2300,6 +2300,7 @@ function applyLang(l){
   document.querySelectorAll('[data-i18n-html]').forEach(el=>{ el.innerHTML = t(el.dataset.i18nHtml); });
   document.querySelectorAll('[data-i18n-ph]').forEach(el=>{ el.placeholder = t(el.dataset.i18nPh); });
   if(window.a2hsSync) window.a2hsSync();
+  if(window.mpLangSync) window.mpLangSync();                 // Mehrspieler-Chips live mitübersetzen
   // Sichtbaren Flaggen-Fakt live mitübersetzen
   const subs=t('trainSubs');
   if(subs) $('trainSubEl').textContent = subs[qtype==='flag'?1:qtype==='cap'?2:0];
@@ -2428,6 +2429,7 @@ let pid = store0('kontur.mp.pid');
 if(!pid){ pid='p'+Math.random().toString(36).slice(2,10); store.set('kontur.mp.pid', pid); }
 
 let roomCode=null, roomRef=null, room=null, isHost=false, leftHere=false, autoAdv='';
+window.mpLangSync = ()=>{ if(room) renderRoom(); };
 
 function mpView(v){
   const changed = !$(v).classList.contains('active');
