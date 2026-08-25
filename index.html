@@ -218,6 +218,9 @@
     letter-spacing:7px;font-weight:800}
   #mpScreen{overflow-x:clip}
   .mp-err{color:var(--red);font-size:13.5px;font-weight:600;margin-top:12px;min-height:18px}
+  .mp-timer{font-size:12.5px;font-weight:800;border:1.5px solid var(--line);border-radius:99px;
+    padding:5px 11px;background:var(--card);font-variant-numeric:tabular-nums}
+  .mp-timer.hot{background:var(--accent);border-color:var(--accent);color:#fff}
   .mp-code{font-size:36px;font-weight:800;letter-spacing:10px;text-align:center;background:var(--card);
     border:1.5px solid var(--line);border-radius:16px;padding:18px;margin:4px 0 12px;user-select:all}
   .mp-player{display:flex;align-items:center;gap:11px;background:var(--card);border:1.5px solid var(--line);
@@ -703,6 +706,8 @@
       <div class="regions" id="mpRoundsList"></div>
       <div class="regions" id="mpFullRoundRow"></div>
       <div class="diff-hint" id="mpPoolHint"></div>
+      <div class="label" style="margin-top:18px" data-i18n="mpTimerT">TIMER PRO RUNDE</div>
+      <div class="regions" id="mpTimerList"></div>
       <p class="mp-quip" id="mp233Quip" style="display:none"></p>
       <p class="mp-wait" id="mpLobbyWait" data-i18n="mpWaitHost">Warten auf den Start …</p>
       <div class="mp-finalbar" id="mpLobbyBar" style="display:none">
@@ -711,7 +716,7 @@
     </div>
 
     <div class="mp-view" id="mpPlay">
-      <div class="mp-topline"><span class="modechip" id="mpRoundChip"></span><span class="mp-info" id="mpInfoChip"></span></div>
+      <div class="mp-topline"><span class="modechip" id="mpRoundChip"></span><span class="mp-timer" id="mpTimer" style="display:none"></span><span class="mp-info" id="mpInfoChip"></span></div>
       <div class="silhouette" id="mpSil"></div>
       <div id="mpGuessBox">
         <div class="inputrow" style="position:relative;margin-top:14px">
@@ -949,7 +954,7 @@ const STRINGS = {
     mpIntro:'Spielt gleichzeitig auf euren eigenen Geräten: gleiche Länder, heimliche Tipps, Punkte nach Nähe. Region, Schwierigkeit und Rundenzahl legt der Host in der Lobby fest.',
     mpNameLbl:'DEIN NAME', mpNamePh:'Name eingeben …', mpCreate:'Runde erstellen',
     mpJoinLbl:'ODER MIT CODE BEITRETEN', mpJoin:'Beitreten', mpCodeLbl:'RAUM-CODE',
-    mpShare:'Teilen', mpCopy:'Link kopieren', mpCopyFail:'Kopieren nicht möglich – Code oben nutzen', mpPlayers:'SPIELER', mpRounds:'LÄNDER PRO PARTIE',
+    mpShare:'Teilen', mpCopy:'Link kopieren', mpCopyFail:'Kopieren nicht möglich – Code oben nutzen', mpPlayers:'SPIELER', mpRounds:'LÄNDER PRO PARTIE', mpTimerT:'TIMER PRO RUNDE', mpTimerOff:'Aus', mpNoTip:'Kein Tipp',
     mpWaitHost:'Warten auf den Start …', mpStart:'Partie starten', mpStand:'DEIN PUNKTESTAND',
     mpNeedName:'Bitte gib zuerst einen Namen ein', mpNeed2:'Mindestens 2 Spieler nötig',
     mpErrNo:'Raum nicht gefunden – Code prüfen', mpErrFull:'Der Raum ist voll (max. 4 Spieler)',
@@ -1073,7 +1078,7 @@ const STRINGS = {
     mpIntro:'Play simultaneously on your own devices: same countries, secret guesses, points for proximity. The host sets region, difficulty and round count in the lobby.',
     mpNameLbl:'YOUR NAME', mpNamePh:'Enter a name …', mpCreate:'Create a room',
     mpJoinLbl:'OR JOIN WITH A CODE', mpJoin:'Join', mpCodeLbl:'ROOM CODE',
-    mpShare:'Share', mpCopy:'Copy link', mpCopyFail:'Copy failed – use the code above', mpPlayers:'PLAYERS', mpRounds:'COUNTRIES PER MATCH',
+    mpShare:'Share', mpCopy:'Copy link', mpCopyFail:'Copy failed – use the code above', mpPlayers:'PLAYERS', mpRounds:'COUNTRIES PER MATCH', mpTimerT:'TIMER PER ROUND', mpTimerOff:'Off', mpNoTip:'No guess',
     mpWaitHost:'Waiting for the start …', mpStart:'Start match', mpStand:'YOUR SCORE',
     mpNeedName:'Please enter a name first', mpNeed2:'At least 2 players needed',
     mpErrNo:'Room not found – check the code', mpErrFull:'The room is full (max. 4 players)',
@@ -1277,7 +1282,7 @@ function renderDiffs(){
   };
   list.appendChild(bx);
 }
-const APP_VERSION = 'v108 · Beta · 25.08.2026';
+const APP_VERSION = 'v109 · Beta · 25.08.2026';
 let qtype = store0('kontur.qtype') || 'shape';
 if(!['shape','flag','cap'].includes(qtype)) qtype='shape';
 { const qx=new URLSearchParams(location.search).get('qx');
@@ -2406,13 +2411,14 @@ const FB_CONFIG = {
   messagingSenderId: "876644380115",
   appId: "1:876644380115:web:6e0d5c8935b7516bef5326"
 };
-let db=null, fbPromise=null;
+let db=null, fbPromise=null, svOff=0;
 function loadScript(src){ return new Promise((res,rej)=>{ const el=document.createElement('script'); el.src=src; el.onload=res; el.onerror=rej; document.head.appendChild(el); }); }
 function fb(){
   if(!fbPromise){
     fbPromise = loadScript('https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js')
       .then(()=>loadScript('https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js'))
-      .then(()=>{ firebase.initializeApp(FB_CONFIG); db=firebase.database(); });
+      .then(()=>{ firebase.initializeApp(FB_CONFIG); db=firebase.database();
+        db.ref('.info/serverTimeOffset').on('value', sn=>{ svOff=sn.val()||0; }); });
   }
   return fbPromise;
 }
@@ -2470,7 +2476,7 @@ $('mpCreateBtn').onclick = async ()=>{
     await ref.set({
       created: firebase.database.ServerValue.TIMESTAMP,
       host: pid, state:'lobby',
-      cfg:{ r: Math.max(0,REGIONS.indexOf(region)), d: (diff==='x'?4:diff), n: 5, q: (qtype==='flag'?1:qtype==='cap'?2:0) },
+      cfg:{ r: Math.max(0,REGIONS.indexOf(region)), d: (diff==='x'?4:diff), n: 5, t: 0, q: (qtype==='flag'?1:qtype==='cap'?2:0) },
       players:{ [pid]: { name } }
     });
     ref.onDisconnect().remove();
@@ -2604,6 +2610,15 @@ function renderLobby(){
       roomRef.child('cfg/n').set(room.cfg.n > poolSize ? poolSize : valid[0]);
     }
     $('mpPoolHint').innerHTML = `<b>${poolSize} ${t('countries')}</b> · ${t('mpPoolHint')}`;
+    const tl=$('mpTimerList'); tl.innerHTML='';
+    tl.classList.toggle('ro', !isHost);
+    [0,15,30,45].forEach(tv=>{
+      const b=document.createElement('button');
+      b.className='region'+(((room.cfg.t||0)===tv)?' selected':'');
+      b.textContent = tv===0 ? t('mpTimerOff') : tv+' s';
+      if(isHost) b.onclick=()=>roomRef.child('cfg/t').set(tv);
+      tl.appendChild(b);
+    });
   }
   const reg=REGIONS[room.cfg.r]||REGIONS[0];
   $('mpInfoChip').textContent=(reg[lang]+' · '+t('diffs')[room.cfg.d-1]).toUpperCase();
@@ -2635,11 +2650,41 @@ $('mpStartBtn').onclick = ()=>{
   const n=Math.min(room.cfg.n, mpPool.length);
   const countries=shuffle([...mpPool]).slice(0,n).map(c=>c.a2);
   roomRef.onDisconnect().cancel();
-  roomRef.update({ state:'playing', round:0, phase:'guess', countries });
+  roomRef.update({ state:'playing', round:0, phase:'guess', countries,
+    roundAt: firebase.database.ServerValue.TIMESTAMP });
 };
 
 /* ---- Spielrunden ---- */
 let shownRound=-1;
+
+/* ---- Runden-Timer ---- */
+let mpToDone='';
+function mpTimerTick(){
+  const el=$('mpTimer');
+  const act = room && room.state==='playing' && (room.phase||'guess')==='guess'
+           && room.cfg && (room.cfg.t||0)>0 && room.roundAt;
+  if(!act){ if(el.style.display!=='none'){ el.style.display='none'; el.classList.remove('hot'); } return; }
+  const r=room.round;
+  const rem=Math.max(0, (room.roundAt + room.cfg.t*1000) - (Date.now()+svOff));
+  const sec=Math.ceil(rem/1000);
+  el.style.display=''; el.textContent=sec+' s';
+  el.classList.toggle('hot', sec<=5);
+  if(rem<=0 && mpToDone!==roomCode+':'+r){
+    mpToDone=roomCode+':'+r;
+    const gs=(room.guesses&&room.guesses[r])||{};
+    if(!gs[pid]){                                     // eigene Abgabe erzwingen
+      const c=mpExact(mpInput.value||'');
+      if(c) mpSubmit();
+      else roomRef.child('guesses/'+r+'/'+pid).set({ to:1, pts:0 });
+    }
+    if(isHost) setTimeout(()=>{                       // Absicherung: stumme Nachzügler
+      if(!room || room.state!=='playing' || room.round!==r || (room.phase||'guess')!=='guess') return;
+      const g2=(room.guesses&&room.guesses[r])||{};
+      players().forEach(([id])=>{ if(!g2[id]) roomRef.child('guesses/'+r+'/'+id).set({ to:1, pts:0 }); });
+    }, 2500);
+  }
+}
+setInterval(mpTimerTick, 250);
 function renderPlay(){
   const r=room.round, target=byA2[room.countries[r]];
   $('mpRoundChip').textContent=t('mpRound')(r+1, room.countries.length);
@@ -2680,8 +2725,11 @@ function renderPlay(){
       const pl={name:nameOf(id)};
       const hit=g.a2===target.a2;
       const div=document.createElement('div'); div.className='mp-row'+(id===pid?' me':'');
+      const gtxt = hit ? t('mpHit')
+        : g.a2 ? esc(mpLabel(byA2[g.a2]))+' · '+fmtDist(g.km)+' '+DIR_EMOJI[Math.round(g.brg/45)%8]
+        : t('mpNoTip');
       div.innerHTML=`<span class="n">${esc(pl.name)}</span>`+
-        `<span class="g">${hit?t('mpHit'):esc(mpLabel(byA2[g.a2]))+' · '+fmtDist(g.km)+' '+DIR_EMOJI[Math.round(g.brg/45)%8]}</span>`+
+        `<span class="g">${gtxt}</span>`+
         `<span class="p${hit?' hit':''}">+${fmtPts(g.pts)}</span>`;
       rows.appendChild(div);
     });
@@ -2694,7 +2742,7 @@ function renderPlay(){
     $('mpNextBtn').style.display=isHost?'':'none';
     $('mpRevealWait').style.display=isHost?'none':'';
     $('mpNextBtn').textContent=last?t('mpFinish'):t('mpNext');
-    $('mpNextBtn').onclick=()=> last ? roomRef.update({state:'done'}) : roomRef.update({round:r+1, phase:'guess'});
+    $('mpNextBtn').onclick=()=> last ? roomRef.update({state:'done'}) : roomRef.update({round:r+1, phase:'guess', roundAt: firebase.database.ServerValue.TIMESTAMP});
   }
 }
 
