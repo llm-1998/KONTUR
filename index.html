@@ -990,7 +990,7 @@ const STRINGS = {
     mpQuipGold:['🥇 Platz 1 – die Weltkarte gehört heute dir!',
       '🥇 Sieg! Die anderen durften immerhin auch mal tippen.',
       '🥇 Erster! Bescheidenheit ist ab jetzt optional.',
-      '🥇 Gold! Bitte einmal freundlich fürs Kamerateam winken.',
+      '🥇 Gold! Bitte einmal freundlich in die Kamera winken.',
       '🥇 Sieg auf ganzer Linie – Breiten- wie Längengrad.',
       '🥇 Platz 1! Der Globus dreht sich heute um dich.'],
     mpQuipLucky:['Null Treffer und trotzdem gewonnen. Sachen gibt\'s.',
@@ -1004,24 +1004,24 @@ const STRINGS = {
     mpQuipSilver:['🥈 Hauchdünn am Thron vorbei. Riecht nach Revanche …',
       '🥈 Silber! Fast-Ruhm ist auch Ruhm.',
       '🥈 Zweiter! Platz 1 hatte vermutlich nur Heimvorteil.',
-      '🥈 Silber – gefühlt nur ein Land von Gold entfernt.'],
-    mpQuipBronze:['🥉 Aufs Treppchen gerettet – Bronze glänzt auch.',
-      '🥉 Bronze – von hier sieht man das Podium zumindest von oben.',
-      '🥉 Dritter – die Medaille mit den besten Geschichten.',
+      '🥈 Silber. Gefühlt nur ein Land von Gold entfernt.'],
+    mpQuipBronze:['🥉 Aufs Treppchen gerettet. Bronze glänzt auch.',
+      '🥉 Bronze. Von hier sieht man das Podium auch von oben.',
+      '🥉 Dritter. Die Medaille mit den besten Geschichten.',
       '🥉 Bronze! Immerhin kannst du auch mal in eine Medaille beißen.'],
     mpQuipLast:['Letzter Platz … aber hey, jede Weltreise beginnt mit Verlaufen. 🧭',
       'Letzter. Aber im Länderregister wartet dein Comeback.',
-      'Punkte sind auch nur Zahlen. Sagt der letzte Platz.',
+      'Punkte sind auch nur Zahlen. Sagte der letzte Platz.',
       'Kennst du eigentlich den Unterschied zwischen Frankfurt und Frankreich?',
-      'Letzter … aber die Malediven hättest du erkannt, oder? 🏝️',
+      'Letzter … aber Deutschland hättest du erkannt, oder?',
       'Hinten ist streng genommen auch eine Himmelsrichtung.',
       'Von hier kann es nur noch nordwärts gehen. 🧭'],
     mpQuip233:['Was ist los mit euch?',
       'Alle 233? Sicher?',
       'So viel Freizeit hätte ich auch gerne …',
       'Wer abbricht, muss einen ausgeben.',
-      'Da will es aber jemand wissen …',
-      'Alle 233 – selbst der Vatikan musste antreten.',
+      'Da will es aber jemand wissen.',
+      'Alle 233 – selbst der Vatikan muss antreten.',
       'Komplette Weltumrundung? Seid ihr auch geimpft?'],
     mpQuipHits:(h,n)=>`${h} von ${n} direkt getroffen`,
     trainDoneText:(n,m)=>`Alle ${n} Umrisse dieser Auswahl richtig erkannt – ${m} davon gelten als sicher. Der Stapel wird neu gemischt. 🎉`,
@@ -1135,7 +1135,7 @@ const STRINGS = {
       '🥉 Bronze! At least you get to bite a medal too.'],
     mpQuipLast:['Last place … but hey, every world trip starts with getting lost. 🧭',
       'Last. But the country index awaits your comeback.',
-      'Points are just numbers. Says last place.',
+      'Points are just numbers. Said last place.',
       'Do you actually know the difference between Austria and Australia?',
       'Last … but you would have recognised the Maldives, right? 🏝️',
       'Strictly speaking, behind is also a cardinal direction.',
@@ -1282,7 +1282,7 @@ function renderDiffs(){
   };
   list.appendChild(bx);
 }
-const APP_VERSION = 'v110 · Beta · 25.08.2026';
+const APP_VERSION = 'v111 · Beta · 26.08.2026';
 let qtype = store0('kontur.qtype') || 'shape';
 if(!['shape','flag','cap'].includes(qtype)) qtype='shape';
 { const qx=new URLSearchParams(location.search).get('qx');
@@ -2614,7 +2614,7 @@ function renderLobby(){
     $('mpPoolHint').innerHTML = `<b>${poolSize} ${t('countries')}</b> · ${t('mpPoolHint')}`;
     const tl=$('mpTimerList'); tl.innerHTML='';
     tl.classList.toggle('ro', !isHost);
-    [0,15,30,45].forEach(tv=>{
+    [0,15,30,45,60].forEach(tv=>{
       const b=document.createElement('button');
       b.className='region'+(((room.cfg.t||0)===tv)?' selected':'');
       b.textContent = tv===0 ? t('mpTimerOff') : tv+' s';
