@@ -286,7 +286,7 @@
     background-size:22px 22px;opacity:.55}
   .silhouette{position:relative;width:100%;aspect-ratio:1/1;max-height:min(42dvh,380px);
     display:flex;align-items:center;justify-content:center;margin:0 auto}
-  .silhouette svg{width:88%;height:88%}
+  .silhouette svg{max-width:92%;max-height:92%;width:auto;height:auto}
   .silhouette path{fill:var(--ink);opacity:0;animation:reveal .5s ease forwards}
   .silhouette path.dots{stroke:var(--ink);stroke-width:10;stroke-linejoin:round;stroke-linecap:round}
   .reg-mini path.dots{stroke:var(--ink-soft);stroke-width:28;stroke-linejoin:round;stroke-linecap:round}
@@ -485,7 +485,8 @@
   .reg-big::before{content:'';position:absolute;inset:0;
     background-image:radial-gradient(var(--line) 1px, transparent 1px);
     background-size:16px 16px;opacity:.5}
-  .reg-big svg{position:relative;width:160px;height:160px}
+  .reg-big svg{position:relative;max-width:min(92%,250px);max-height:200px;width:auto;height:auto}
+  .reg-big{cursor:zoom-in}
   .reg-big path{fill:var(--ink)}
   .reg-big path.dots{stroke:var(--ink);stroke-width:10;stroke-linejoin:round;stroke-linecap:round}
   .reg-facts{display:flex;gap:12px;align-items:center;margin-bottom:8px}
@@ -1207,9 +1208,30 @@ function distColor(km){
 
 /* ---------- SVG-Helfer ---------- */
 const PARTNER={MF:'SX',SX:'MF'};
+const _boxCache=new Map();
+function pathBounds(d){
+  let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;
+  const re=/(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?)/g; let m;
+  while((m=re.exec(d))){ const x=+m[1], y=+m[2];
+    if(x<x0)x0=x; if(x>x1)x1=x; if(y<y0)y0=y; if(y>y1)y1=y; }
+  return [x0,y0,x1,y1];
+}
+function boxFor(key, d, ghostD){
+  if(_boxCache.has(key)) return _boxCache.get(key);
+  let [x0,y0,x1,y1]=pathBounds(d);
+  if(ghostD){ const g=pathBounds(ghostD);
+    x0=Math.min(x0,g[0]); y0=Math.min(y0,g[1]); x1=Math.max(x1,g[2]); y1=Math.max(y1,g[3]); }
+  const pad=Math.max(x1-x0, y1-y0)*0.02 || 10;
+  const b={x:x0-pad, y:y0-pad, w:(x1-x0)+2*pad, h:(y1-y0)+2*pad};
+  _boxCache.set(key, b);
+  return b;
+}
 const svgFor = c => {
   const p = PARTNER[c.a2] && DATA.find(x=>x.a2===PARTNER[c.a2]);
-  return `<svg viewBox="0 0 800 800" xmlns="http://www.w3.org/2000/svg">${p?`<path class="ghost" d="${p.d}"/>`:''}<path d="${c.d}"${c.st?' class="dots"':''}/></svg>`;
+  const b = boxFor(c.a2, c.d, p && p.d);
+  const W = b.w>=b.h ? 800 : Math.round(800*b.w/b.h);
+  const H = b.w>=b.h ? Math.round(800*b.h/b.w) : 800;
+  return `<svg viewBox="${b.x.toFixed(1)} ${b.y.toFixed(1)} ${b.w.toFixed(1)} ${b.h.toFixed(1)}" width="${W}" height="${H}" xmlns="http://www.w3.org/2000/svg">${p?`<path class="ghost" d="${p.d}"/>`:''}<path d="${c.d}"${c.st?' class="dots"':''}/></svg>`;
 };
 
 /* ---------- Suche (umlaut-tolerant) ---------- */
@@ -1282,7 +1304,7 @@ function renderDiffs(){
   };
   list.appendChild(bx);
 }
-const APP_VERSION = 'v113 · Beta · 05.09.2026';
+const APP_VERSION = 'v111 · Beta · 26.08.2026';
 let qtype = store0('kontur.qtype') || 'shape';
 if(!['shape','flag','cap'].includes(qtype)) qtype='shape';
 { const qx=new URLSearchParams(location.search).get('qx');
@@ -1542,6 +1564,26 @@ function openFlagLb(a2, name){
   img.onerror=()=>flagFallback(img, a2, 1);
   $('flagLbName').textContent=name||'';
   $('flagLbName').style.display = name ? '' : 'none';
+  if(window.flagLbReset) flagLbReset();
+  $('flagLb').hidden=false;
+}
+function openOutlineLb(c){
+  const INK='#e8edf4', SOFT='#8b94a3';
+  const p = PARTNER[c.a2] && DATA.find(x=>x.a2===PARTNER[c.a2]);
+  const main = c.st
+    ? `<path d="${c.d}" fill="${INK}" stroke="${INK}" stroke-width="10" stroke-linejoin="round" stroke-linecap="round"/>`
+    : `<path d="${c.d}" fill="${INK}"/>`;
+  const ghost = p ? `<path d="${p.d}" fill="none" stroke="${SOFT}" stroke-width="5" stroke-dasharray="12 9" opacity=".45"/>` : '';
+  const b = boxFor(c.a2, c.d, p && p.d);
+  const W = b.w>=b.h ? 840 : Math.round(840*b.w/b.h);
+  const H = b.w>=b.h ? Math.round(840*b.h/b.w) : 840;
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="${b.x.toFixed(1)} ${b.y.toFixed(1)} ${b.w.toFixed(1)} ${b.h.toFixed(1)}">${ghost}${main}</svg>`;
+  const img=$('flagLbImg');
+  img.onerror=null;
+  img.src='data:image/svg+xml;utf8,'+encodeURIComponent(svg);
+  img.alt=cname(c);
+  $('flagLbName').textContent=cname(c);
+  $('flagLbName').style.display='';
   if(window.flagLbReset) flagLbReset();
   $('flagLb').hidden=false;
 }
@@ -2098,7 +2140,8 @@ const svgObserver = new IntersectionObserver(entries=>{
   entries.forEach(e=>{
     if(!e.isIntersecting) return;
     const el=e.target;
-    el.innerHTML = `<svg viewBox="0 0 800 800">${el.dataset.ghost?`<path class="ghost" d="${el.dataset.ghost}"/>`:''}<path d="${el.dataset.d}"${el.dataset.st?' class="dots"':''}/></svg>`;
+    const b = boxFor('m'+el.dataset.d.length+el.dataset.d.slice(0,24), el.dataset.d, el.dataset.ghost);
+    el.innerHTML = `<svg viewBox="${b.x.toFixed(1)} ${b.y.toFixed(1)} ${b.w.toFixed(1)} ${b.h.toFixed(1)}">${el.dataset.ghost?`<path class="ghost" d="${el.dataset.ghost}"/>`:''}<path d="${el.dataset.d}"${el.dataset.st?' class="dots"':''}/></svg>`;
     svgObserver.unobserve(el);
   });
 },{rootMargin:'200px'});
@@ -2141,6 +2184,7 @@ function buildRegister(){
         if(row.classList.contains('open') && !big.innerHTML) big.innerHTML = svgFor(c);
       };
       row.querySelector('.reg-globe').onclick = (e)=>{ e.stopPropagation(); if(window.globeShow) window.globeShow(c.a2); };
+      row.querySelector('.reg-big').onclick = (e)=>{ e.stopPropagation(); openOutlineLb(c); };
       row.querySelector('.reg-flagtap').onclick = (e)=>{ e.stopPropagation(); openFlagLb(c.a2, cname(c)); };
       svgObserver.observe(row.querySelector('.reg-mini'));
       rows.appendChild(row);
