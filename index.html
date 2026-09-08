@@ -286,7 +286,8 @@
     background-size:22px 22px;opacity:.55}
   .silhouette{position:relative;width:100%;aspect-ratio:1/1;max-height:min(42dvh,380px);
     display:flex;align-items:center;justify-content:center;margin:0 auto}
-  .silhouette svg{max-width:92%;max-height:92%;width:auto;height:auto}
+  .silhouette svg{max-width:92%;max-height:min(38dvh,350px);width:auto;height:auto}
+  .silhouette{overflow:hidden}
   .silhouette path{fill:var(--ink);opacity:0;animation:reveal .5s ease forwards}
   .silhouette path.dots{stroke:var(--ink);stroke-width:10;stroke-linejoin:round;stroke-linecap:round}
   .reg-mini path.dots{stroke:var(--ink-soft);stroke-width:28;stroke-linejoin:round;stroke-linecap:round}
@@ -1304,7 +1305,7 @@ function renderDiffs(){
   };
   list.appendChild(bx);
 }
-const APP_VERSION = 'v117 · Beta · 07.09.2026';
+const APP_VERSION = 'v118 · Beta · 08.09.2026';
 let qtype = store0('kontur.qtype') || 'shape';
 if(!['shape','flag','cap'].includes(qtype)) qtype='shape';
 { const qx=new URLSearchParams(location.search).get('qx');
