@@ -1377,7 +1377,7 @@ function renderDiffs(){
   };
   list.appendChild(bx);
 }
-const APP_VERSION = 'v121 · Beta · 23.09.2026';
+const APP_VERSION = 'v120 · Beta · 23.09.2026';
 let qtype = store0('kontur.qtype') || 'shape';
 if(!['shape','flag','cap'].includes(qtype)) qtype='shape';
 { const qx=new URLSearchParams(location.search).get('qx');
@@ -2299,6 +2299,7 @@ $('regBtn').onclick = ()=>{ buildRegister(); buildTableChips(); buildTableRows()
 
 /* ---------- Faktenbuch ---------- */
 const FB_CONTS=['EU','AF','AS','NA','SA','OC'];
+const DEV_EARTH = new URLSearchParams(location.search).get('dev')==='earth';
 let fbDcur=null;
 function fbUnlocked(c){ return ['l','f','c'].filter(k=>seenFacts[k][c.a2]).length; }
 function buildFB(){
@@ -2306,7 +2307,7 @@ function buildFB(){
   const q=fold($('fbSearch').value.trim());
   const langIdx = lang==='de'?0:1;
   const list=$('fbList'); list.innerHTML='';
-  if(totalSeen() === DATA.length*3){
+  if(DEV_EARTH || totalSeen() === DATA.length*3){
     const eg=document.createElement('div'); eg.className='fb-group';
     const grid=document.createElement('div'); grid.className='fb-grid';
     const b=document.createElement('button');
@@ -2375,6 +2376,7 @@ function openFB(){ buildFB(); show(fbScreen); }
 $('fbBtn').onclick=openFB;
 $('gpFbBtn').onclick=openFB;
 $('fbMini').textContent = totalSeen()+' / '+(DATA.length*3);
+if(DEV_EARTH){ openFB(); openEarth(); }                    // Entwickler-Direktflug zum Geheimfach
 window.fbLangSync = ()=>{
   $('fbMini').textContent = totalSeen()+' / '+(DATA.length*3);
   if(fbScreen.classList.contains('active')){ buildFB(); if(fbDcur==='earth') openEarth(); else if(fbDcur) openFbDetail(fbDcur); }
