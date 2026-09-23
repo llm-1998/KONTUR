@@ -1242,9 +1242,24 @@ const todayKey = () => new Date().toISOString().slice(0,10); // YYYY-MM-DD
 function seededIndex(str, n){          // deterministischer Index aus Datum
   let h = 2166136261;
   for(const c of str){ h ^= c.charCodeAt(0); h = Math.imul(h, 16777619); }
-  return Math.abs(h) % n;
+  h ^= h >>> 16; h = Math.imul(h, 2246822507);   // Nachmischen: ähnliche Eingaben
+  h ^= h >>> 13; h = Math.imul(h, 3266489909);   // landen weit auseinander
+  h ^= h >>> 16;
+  return (h >>> 0) % n;
 }
-const dailyCountry = () => DATA[seededIndex('kontur-'+todayKey(), DATA.length)];
+const dailyCountry = () => {
+  // Gemischter Kartenstapel: alle 233 genau einmal pro Zyklus, dann neu gemischt
+  const n = DATA.length;
+  const days = Math.floor(Date.parse(todayKey()+'T00:00:00Z') / 86400000);
+  const cycle = Math.floor(days / n), pos = days % n;
+  let seed = 2166136261;
+  for(const c of ('kontur-cycle-'+cycle)){ seed ^= c.charCodeAt(0); seed = Math.imul(seed, 16777619); }
+  seed = seed || 1;
+  const rnd = () => { seed ^= seed<<13; seed ^= seed>>>17; seed ^= seed<<5; return (seed>>>0)/4294967296; };
+  const order = [...Array(n).keys()];
+  for(let i=n-1; i>0; i--){ const j=Math.floor(rnd()*(i+1)); [order[i],order[j]]=[order[j],order[i]]; }
+  return DATA[order[pos]];
+};
 const getDaily = () => { const d = store.get('kontur.daily'); return (d && d.date===todayKey()) ? d : null; };
 
 /* ---------- Geo-Mathe ---------- */
