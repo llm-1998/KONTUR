@@ -510,6 +510,38 @@
   .reg-table tr:last-child td{border-bottom:none}
   .reg-table td.rg{color:var(--ink-soft);font-size:11px;white-space:nowrap}
   .reg-table th.num,.reg-table td.num{text-align:right;font-variant-numeric:tabular-nums}
+  .fb-sticky{position:sticky;top:0;z-index:6;background:var(--bg);padding:6px 0 10px}
+  .fb-toprow{display:flex;align-items:baseline;gap:10px;margin-bottom:10px}
+  .fb-title{font-size:12px;font-weight:800;letter-spacing:.14em;color:var(--ink-soft)}
+  .fb-total{margin-left:auto;font-size:13.5px;font-weight:800;color:var(--accent);font-variant-numeric:tabular-nums}
+  .fb-group{margin-top:20px}
+  .fb-ghead{display:flex;justify-content:space-between;font-size:11px;font-weight:800;
+    letter-spacing:.1em;color:var(--ink-soft);margin-bottom:8px}
+  .fb-ghead .n{color:var(--accent);font-variant-numeric:tabular-nums}
+  .fb-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(62px,1fr));gap:8px}
+  .fb-tile{background:var(--card);border:1.5px solid var(--line);border-radius:12px;
+    padding:8px 4px 7px;display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer}
+  .fb-tile .iso{font-size:12px;font-weight:800;letter-spacing:.06em;color:var(--ink)}
+  .fb-tile .slots{display:flex;gap:4px}
+  .fb-tile .slot{display:flex;color:var(--ink-soft);opacity:.55}
+  .fb-tile .slot.on{color:var(--accent);opacity:1}
+  .fb-tile.dim{opacity:.38}
+  .fb-tile.fb-earth{border-color:var(--accent)}
+  .fb-tile.fb-earth .iso{font-size:16px}
+  .fb-tile.fb-earth .slot.on{color:#d9a93c;font-size:12px;line-height:1}
+  .fb-sig{display:block;margin-top:7px;color:var(--ink-soft);font-style:italic;font-size:12.5px}
+  .fb-mini{margin-left:auto;font-size:12px;font-weight:800;color:var(--accent);font-variant-numeric:tabular-nums}
+  .fb-detail{position:fixed;inset:0;z-index:70;background:rgba(6,10,14,.6);
+    backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;padding:22px}
+  .fb-detail[hidden]{display:none}
+  .fb-dcard{position:relative;background:var(--card);border:1.5px solid var(--line);border-radius:16px;
+    padding:18px;width:100%;max-width:420px;max-height:78dvh;overflow:auto}
+  .fb-dx{position:absolute;top:8px;right:10px;background:none;border:none;color:var(--ink-soft);font-size:16px;cursor:pointer}
+  .fb-dhead{display:flex;align-items:center;gap:10px;margin-bottom:10px;font-size:16px}
+  .fb-drow{display:flex;gap:9px;align-items:flex-start;font-size:13.5px;line-height:1.5;padding:9px 0;border-top:1px solid var(--line)}
+  .fb-drow svg{flex:none;margin-top:3px}
+  .fb-drow.locked{color:var(--ink-soft)}
+  .mp-factline{font-size:13px;color:var(--ink-soft);margin:2px 0 10px}
   .nerdbox{margin:18px 0 6px;background:var(--card);border:1px dashed var(--line);border-radius:16px;padding:16px}
   .nerdbox .t{font-size:11px;font-weight:800;letter-spacing:.14em;color:var(--accent);margin-bottom:8px}
   .nerdbox p{font-size:13px;line-height:1.6;color:var(--ink-soft)}
@@ -601,6 +633,12 @@
     <div class="diff-hint" id="diffHint"></div>
     <div class="label" data-i18n="lblQtype">FRAGETYP</div>
     <div class="regions" id="qtypeList"></div>
+    <div class="label" data-i18n="fbLbl">SAMMLUNG</div>
+    <button class="reg-open" id="fbBtn">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+      <span data-i18n="fbOpen">Faktenbuch</span>
+      <span class="fb-mini" id="fbMini"></span>
+    </button>
     <div class="label" data-i18n="lblLookup">NACHSCHLAGEN</div>
     <button class="reg-open" id="regBtn">
       <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
@@ -663,6 +701,7 @@
         <div class="gp-row"><span class="gp-l" data-i18n="gpPop">Einwohner</span><span id="gpPop"></span></div>
         <div class="gp-row"><span class="gp-l" data-i18n="gpCont">Kontinent</span><span id="gpCont"></span></div>
         <div class="gp-row"><span class="gp-l" data-i18n="gpIso">ISO-Code</span><span id="gpIso"></span></div>
+        <button class="gp-reg" id="gpFbBtn"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg><span data-i18n="fbOpen">Faktenbuch</span></button>
         <button class="gp-reg" id="gpRegBtn"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16a1 1 0 0 0 1-1V8a1 1 0 0 0-1-1h-8l-2-3H4a1 1 0 0 0-1 1v14a1 1 0 0 0 1 1z"/><path d="M3 10h18"/></svg><span data-i18n="gpReg">Im Länderregister zeigen</span></button>
       </div>
     </div>
@@ -735,6 +774,7 @@
       </div>
       <div id="mpRevealBox" style="display:none">
         <h2 class="mp-target" id="mpTargetName"></h2>
+        <div class="mp-factline" id="mpFactLine" style="display:none"></div>
         <div id="mpRevealRows"></div>
         <div class="label" style="margin-top:20px" data-i18n="mpStand">ZWISCHENSTAND</div>
         <div id="mpStandRows"></div>
@@ -776,7 +816,24 @@
   </section>
 
   <!-- TRAINING -->
-  <section class="screen" id="trainScreen">
+  <section class="screen" id="fbScreen">
+  <div class="fb-sticky">
+    <div class="fb-toprow">
+      <div class="fb-title" data-i18n="fbT">FAKTENBUCH</div>
+      <div class="fb-total" id="fbTotal"></div>
+    </div>
+    <input class="reg-search" id="fbSearch" type="search" enterkeyhint="search" placeholder="Faktenbuch durchsuchen …" data-i18n-ph="fbSearchPh" autocomplete="off">
+  </div>
+  <div id="fbList"></div>
+  <div class="fb-detail" id="fbDetail" hidden>
+    <div class="fb-dcard">
+      <button class="fb-dx" id="fbDx" aria-label="Schließen">✕</button>
+      <div class="fb-dhead"><span id="fbDFlag"></span><b id="fbDName"></b></div>
+      <div id="fbDRows"></div>
+    </div>
+  </div>
+</section>
+<section class="screen" id="trainScreen">
     <div class="board">
       <div class="graticule"></div>
       <div class="modechip" style="display:block">TRAINING</div>
@@ -956,7 +1013,7 @@ const STRINGS = {
     mpIntro:'Spielt gleichzeitig auf euren eigenen Geräten: gleiche Länder, heimliche Tipps, Punkte nach Nähe. Region, Schwierigkeit und Rundenzahl legt der Host in der Lobby fest.',
     mpNameLbl:'DEIN NAME', mpNamePh:'Name eingeben …', mpCreate:'Runde erstellen',
     mpJoinLbl:'ODER MIT CODE BEITRETEN', mpJoin:'Beitreten', mpCodeLbl:'RAUM-CODE',
-    mpShare:'Teilen', mpCopy:'Link kopieren', mpCopyFail:'Kopieren nicht möglich – Code oben nutzen', mpPlayers:'SPIELER', mpRounds:'LÄNDER PRO PARTIE', mpTimerT:'TIMER PRO RUNDE', mpTimerOff:'Aus', mpNoTip:'Kein Tipp',
+    mpShare:'Teilen', mpCopy:'Link kopieren', mpCopyFail:'Kopieren nicht möglich – Code oben nutzen', mpPlayers:'SPIELER', mpRounds:'LÄNDER PRO PARTIE', mpTimerT:'TIMER PRO RUNDE', mpTimerOff:'Aus', mpNoTip:'Kein Tipp', fbLbl:'SAMMLUNG', fbOpen:'Faktenbuch', fbT:'FAKTENBUCH', fbSearchPh:'Faktenbuch durchsuchen …', fbLocked:'Noch nicht freigeschaltet', fbEarth:'Erde', fbEarthFact:'Von hier oben ist keine einzige der 233 Grenzen zu sehen.', fbEarthSig:'„Überwiegend harmlos.“',
     mpWaitHost:'Warten auf den Start …', mpStart:'Partie starten', mpStand:'DEIN PUNKTESTAND',
     mpNeedName:'Bitte gib zuerst einen Namen ein', mpNeed2:'Mindestens 2 Spieler nötig',
     mpErrNo:'Raum nicht gefunden – Code prüfen', mpErrFull:'Der Raum ist voll (max. 4 Spieler)',
@@ -1080,7 +1137,7 @@ const STRINGS = {
     mpIntro:'Play simultaneously on your own devices: same countries, secret guesses, points for proximity. The host sets region, difficulty and round count in the lobby.',
     mpNameLbl:'YOUR NAME', mpNamePh:'Enter a name …', mpCreate:'Create a room',
     mpJoinLbl:'OR JOIN WITH A CODE', mpJoin:'Join', mpCodeLbl:'ROOM CODE',
-    mpShare:'Share', mpCopy:'Copy link', mpCopyFail:'Copy failed – use the code above', mpPlayers:'PLAYERS', mpRounds:'COUNTRIES PER MATCH', mpTimerT:'TIMER PER ROUND', mpTimerOff:'Off', mpNoTip:'No guess',
+    mpShare:'Share', mpCopy:'Copy link', mpCopyFail:'Copy failed – use the code above', mpPlayers:'PLAYERS', mpRounds:'COUNTRIES PER MATCH', mpTimerT:'TIMER PER ROUND', mpTimerOff:'Off', mpNoTip:'No guess', fbLbl:'COLLECTION', fbOpen:'Fact book', fbT:'FACT BOOK', fbSearchPh:'Search the fact book …', fbLocked:'Not unlocked yet', fbEarth:'Earth', fbEarthFact:'From up here, not a single one of the 233 borders can be seen.', fbEarthSig:'“Mostly harmless.”',
     mpWaitHost:'Waiting for the start …', mpStart:'Start match', mpStand:'YOUR SCORE',
     mpNeedName:'Please enter a name first', mpNeed2:'At least 2 players needed',
     mpErrNo:'Room not found – check the code', mpErrFull:'The room is full (max. 4 players)',
@@ -1236,7 +1293,7 @@ const svgFor = c => {
 };
 
 /* ---------- Suche (umlaut-tolerant) ---------- */
-const fold = s => s.toLowerCase().replaceAll('ä','a').replaceAll('ö','o').replaceAll('ü','u').replaceAll('ß','ss')
+const fold = s => (s||'').toLowerCase().replaceAll('ä','a').replaceAll('ö','o').replaceAll('ü','u').replaceAll('ß','ss')
   .normalize('NFD').replace(/[\u0300-\u036f]/g,'')
   .replace(/\./g,'').replace(/-/g,' ')
   .replace(/\b(sankt|saint|sint|sao|san)\b/g,'st')
@@ -1305,7 +1362,7 @@ function renderDiffs(){
   };
   list.appendChild(bx);
 }
-const APP_VERSION = 'v118 · Beta · 08.09.2026';
+const APP_VERSION = 'v119 · Beta · 23.09.2026';
 let qtype = store0('kontur.qtype') || 'shape';
 if(!['shape','flag','cap'].includes(qtype)) qtype='shape';
 { const qx=new URLSearchParams(location.search).get('qx');
@@ -1326,8 +1383,22 @@ function qxUnlocked(){
   return store0('kontur.unlockx')==='1' ||
     (masteredMap.shape.size>=98 && masteredMap.flag.size>=98 && masteredMap.cap.size>=98);
 }
+let seenFacts = store.get('kontur.facts') || {l:{},f:{},c:{}};
+['l','f','c'].forEach(k=>{ if(!seenFacts[k]) seenFacts[k]={}; });
+function totalSeen(){ return ['l','f','c'].reduce((a,k)=>a+Object.keys(seenFacts[k]).length,0); }
+function markSeen(k,a2){
+  if(seenFacts[k][a2]) return;
+  seenFacts[k][a2]=1; store.set('kontur.facts', seenFacts);
+  const el=$('fbMini'); if(el) el.textContent=totalSeen()+' / '+(DATA.length*3);
+}
+const FB_IC={
+ l:'<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"><path d="M5 4l6-1 8 3-2 8 3 6-8 2-7-3z"/></svg>',
+ f:'<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21V4"/><path d="M5 4h12l-2.5 4L17 12H5"/></svg>',
+ c:'<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M4 21h16M6 21V10M10 21V10M14 21V10M18 21V10M3 10h18L12 3z"/></svg>'
+};
+const FB_LOCK='<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>';
 function qt(){ return mode==='daily' ? 'shape' : qtype; }
-function qLabel(c){ return qt()==='cap' ? ccap(c) : cname(c); }
+function qLabel(c){ return qt()==='cap' ? (ccap(c) || cname(c)) : cname(c); }
 function bigFlagHtml(a2){
   const cc=a2.toLowerCase();
   return `<img class="qflag-img" data-a2="${a2}" src="https://flagcdn.com/w320/${cc}.png" srcset="https://flagcdn.com/w640/${cc}.png 2x" alt="Flagge" onerror="flagFallback(this,'${a2}',1)">`;
@@ -1470,9 +1541,10 @@ $('homeBtn').onclick  = () => { closeOverlay(); if(window.mpLeave) window.mpLeav
 
 const registerScreen=$('registerScreen'), trainScreen=$('trainScreen'), mpScreen=$('mpScreen'), globeScreen=$('globeScreen');
 let startScroll=0;
+const fbScreen=$('fbScreen');
 function show(screen){
   if(screen!==startScreen && startScreen.classList.contains('active')) startScroll=window.scrollY;  // Position merken
-  [startScreen,gameScreen,registerScreen,trainScreen,mpScreen,globeScreen].forEach(s=>s.classList.remove('active'));
+  [startScreen,gameScreen,registerScreen,trainScreen,mpScreen,globeScreen,fbScreen].forEach(s=>s.classList.remove('active'));
   screen.classList.add('active');
   $('regionChip').style.display = (screen===gameScreen||screen===trainScreen)?'':'none';
   $('homeBtn').style.display    = screen===startScreen?'none':'';
@@ -1758,10 +1830,14 @@ function showResult(win, animate){
   $('resCountry').textContent = qt()==='cap' ? ccap(target)+' · '+cname(target) : cname(target);
   const rf=$('resFacts');
   rf.className='sheet-facts show';
+  const famKey = qt()==='cap' ? 'c' : qt()==='flag' ? 'f' : 'l';
+  const famFact = (famKey==='c'?CFACT:famKey==='f'?FFACT:LFACT)[target.a2];
   rf.innerHTML = `${flagHtml(target.a2)}<div>
     ${ccap(target) ? `<div class="fact">${ICONS.cap} ${t('hintCap')}: <b>${ccap(target)}</b></div>` : ''}
     ${target.pop ? `<div class="fact">${ICONS.pop} ${t('hintPop')}: <b>${fmtPop(target.pop)}</b></div>` : ''}
+    ${famFact ? `<div class="fact">💡 ${famFact[lang==='de'?0:1]}</div>` : ''}
   </div>`;
+  if(famFact) markSeen(famKey, target.a2);
   let txt = win ? t('winText')(guesses.length) : t('loseText');
   if (mode==='solo' && !soloDeck.length) txt += ' ' + t('deckDone')(pool.length);
   $('resText').textContent = txt;
@@ -2107,6 +2183,7 @@ function answer(btn, c){
       if(fact){
         $('trainFact').textContent = (mark ? '🔍 ' : '💡 ') + fact[lang==='de'?0:1];
         $('trainFact').style.display='';
+        if(!mark) markSeen(qtype==='cap'?'c':qtype==='flag'?'f':'l', trainTarget.a2);
       }
     }
     if(trainAuto) setTimeout(nextCard, 750);
@@ -2202,6 +2279,89 @@ function buildRegister(){
   });
 }
 $('regBtn').onclick = ()=>{ buildRegister(); buildTableChips(); buildTableRows(); show(registerScreen); };
+
+/* ---------- Faktenbuch ---------- */
+const FB_CONTS=['EU','AF','AS','NA','SA','OC'];
+let fbDcur=null;
+function fbUnlocked(c){ return ['l','f','c'].filter(k=>seenFacts[k][c.a2]).length; }
+function buildFB(){
+  $('fbTotal').textContent = totalSeen()+' / '+(DATA.length*3);
+  const q=fold($('fbSearch').value.trim());
+  const langIdx = lang==='de'?0:1;
+  const list=$('fbList'); list.innerHTML='';
+  if(totalSeen() === DATA.length*3){
+    const eg=document.createElement('div'); eg.className='fb-group';
+    const grid=document.createElement('div'); grid.className='fb-grid';
+    const b=document.createElement('button');
+    b.className='fb-tile fb-earth';
+    b.innerHTML='<span class="iso">🌍</span><span class="slots"><span class="slot on">★</span></span>';
+    b.onclick=openEarth;
+    grid.appendChild(b); eg.appendChild(grid); list.appendChild(eg);
+  }
+  for(const ct of FB_CONTS){
+    const cs=DATA.filter(c=>c.cont===ct).sort((a,b)=>cname(a).localeCompare(cname(b),lang));
+    const match=cs.filter(c=>{
+      if(!q) return true;
+      if(fold(cname(c)).includes(q) || c.a2.toLowerCase()===q) return true;
+      return ['l','f','c'].some(k=>{
+        if(!seenFacts[k][c.a2]) return false;
+        const f=(k==='c'?CFACT:k==='f'?FFACT:LFACT)[c.a2];
+        return f && fold(f[langIdx]).includes(q);
+      });
+    });
+    if(!match.length) continue;
+    const done=cs.reduce((a,c)=>a+fbUnlocked(c),0);
+    const g=document.createElement('div'); g.className='fb-group';
+    g.innerHTML=`<div class="fb-ghead"><span>${TBL_CONT[lang][ct]}</span><span class="n">${done} / ${cs.length*3}</span></div>`;
+    const grid=document.createElement('div'); grid.className='fb-grid';
+    match.forEach(c=>{
+      const b=document.createElement('button');
+      b.className='fb-tile'+(fbUnlocked(c)===0?' dim':'');
+      b.innerHTML=`<span class="iso">${c.a2}</span><span class="slots">`+
+        ['l','f','c'].map(k=>`<span class="slot${seenFacts[k][c.a2]?' on':''}">${seenFacts[k][c.a2]?FB_IC[k]:FB_LOCK}</span>`).join('')+`</span>`;
+      b.onclick=()=>openFbDetail(c);
+      grid.appendChild(b);
+    });
+    g.appendChild(grid); list.appendChild(g);
+  }
+}
+function openFbDetail(c){
+  fbDcur=c;
+  $('fbDFlag').innerHTML=flagHtml(c.a2);
+  $('fbDName').textContent=cname(c);
+  const rows=$('fbDRows'); rows.innerHTML='';
+  const langIdx = lang==='de'?0:1;
+  ['l','f','c'].forEach(k=>{
+    const f=(k==='c'?CFACT:k==='f'?FFACT:LFACT)[c.a2];
+    const open=!!seenFacts[k][c.a2];
+    const div=document.createElement('div');
+    div.className='fb-drow'+(open?'':' locked');
+    div.innerHTML=(open?FB_IC[k]:FB_LOCK)+`<span>${open && f ? f[langIdx] : t('fbLocked')}</span>`;
+    rows.appendChild(div);
+  });
+  $('fbDetail').hidden=false;
+}
+function openEarth(){
+  fbDcur='earth';
+  $('fbDFlag').textContent='🌍';
+  $('fbDName').textContent=t('fbEarth');
+  const rows=$('fbDRows'); rows.innerHTML='';
+  const div=document.createElement('div'); div.className='fb-drow';
+  div.innerHTML=FB_IC.l+`<span>${t('fbEarthFact')}<i class="fb-sig">${t('fbEarthSig')}</i></span>`;
+  rows.appendChild(div);
+  $('fbDetail').hidden=false;
+}
+$('fbDx').onclick=()=>{ $('fbDetail').hidden=true; fbDcur=null; };
+$('fbDetail').addEventListener('click', e=>{ if(e.target===$('fbDetail')){ $('fbDetail').hidden=true; fbDcur=null; } });
+$('fbSearch').addEventListener('input', buildFB);
+function openFB(){ buildFB(); show(fbScreen); }
+$('fbBtn').onclick=openFB;
+$('gpFbBtn').onclick=openFB;
+$('fbMini').textContent = totalSeen()+' / '+(DATA.length*3);
+window.fbLangSync = ()=>{
+  $('fbMini').textContent = totalSeen()+' / '+(DATA.length*3);
+  if(fbScreen.classList.contains('active')){ buildFB(); if(fbDcur==='earth') openEarth(); else if(fbDcur) openFbDetail(fbDcur); }
+};
 $('gpRegBtn').onclick = ()=>{
   const sel = window.gFocusC;
   if(!sel || !sel.a2) return;
@@ -2353,6 +2513,7 @@ function applyLang(l){
   document.querySelectorAll('[data-i18n-ph]').forEach(el=>{ el.placeholder = t(el.dataset.i18nPh); });
   if(window.a2hsSync) window.a2hsSync();
   if(window.mpLangSync) window.mpLangSync();                 // Mehrspieler-Chips live mitübersetzen
+  if(window.fbLangSync) window.fbLangSync();                 // Faktenbuch live mitübersetzen
   // Sichtbaren Flaggen-Fakt live mitübersetzen
   const subs=t('trainSubs');
   if(subs) $('trainSubEl').textContent = subs[qtype==='flag'?1:qtype==='cap'?2:0];
@@ -2779,6 +2940,11 @@ function renderPlay(){
   }
   if(phase==='reveal'){
     $('mpTargetName').textContent = mq()==='cap' ? ccap(target)+' · '+cname(target) : cname(target);
+    const mpFam = mq()==='cap' ? 'c' : mq()==='flag' ? 'f' : 'l';
+    const mpFf = (mpFam==='c'?CFACT:mpFam==='f'?FFACT:LFACT)[target.a2];
+    const mfl=$('mpFactLine');
+    if(mpFf){ mfl.textContent='💡 '+mpFf[lang==='de'?0:1]; mfl.style.display=''; markSeen(mpFam, target.a2); }
+    else mfl.style.display='none';
     const rows=$('mpRevealRows'); rows.innerHTML='';
     Object.entries(gs).sort((a,b)=>b[1].pts-a[1].pts).forEach(([id,g])=>{
       const pl={name:nameOf(id)};
@@ -2941,6 +3107,8 @@ function render(){
   $('gBorders').setAttribute('d', path(BORDERS)||'');
   const gc=$('gCaps');
   if(scale >= BASE*3){
+    // Sanftes Einblenden: ab Faktor 3 zart, bis Faktor 10 voll deckend
+    gc.style.opacity = Math.min(1, 0.3 + 0.7*((scale/BASE)-3)/7).toFixed(2);
     const cx=[-rot[0],-rot[1]], LIM=Math.PI/2-0.05;
     let caps='';
     for(const c of DATA){
