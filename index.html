@@ -1362,7 +1362,7 @@ function renderDiffs(){
   };
   list.appendChild(bx);
 }
-const APP_VERSION = 'v119 · Beta · 23.09.2026';
+const APP_VERSION = 'v120 · Beta · 23.09.2026';
 let qtype = store0('kontur.qtype') || 'shape';
 if(!['shape','flag','cap'].includes(qtype)) qtype='shape';
 { const qx=new URLSearchParams(location.search).get('qx');
@@ -1396,6 +1396,7 @@ const FB_IC={
  f:'<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21V4"/><path d="M5 4h12l-2.5 4L17 12H5"/></svg>',
  c:'<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M4 21h16M6 21V10M10 21V10M14 21V10M18 21V10M3 10h18L12 3z"/></svg>'
 };
+const FB_BULB='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><path d="M9 18h6"/><path d="M10 21h4"/><path d="M12 3a6 6 0 0 1 4 10.4c-.7.7-1 1.6-1 2.6h-6c0-1-.3-1.9-1-2.6A6 6 0 0 1 12 3z"/></svg>';
 const FB_LOCK='<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>';
 function qt(){ return mode==='daily' ? 'shape' : qtype; }
 function qLabel(c){ return qt()==='cap' ? (ccap(c) || cname(c)) : cname(c); }
@@ -1835,7 +1836,7 @@ function showResult(win, animate){
   rf.innerHTML = `${flagHtml(target.a2)}<div>
     ${ccap(target) ? `<div class="fact">${ICONS.cap} ${t('hintCap')}: <b>${ccap(target)}</b></div>` : ''}
     ${target.pop ? `<div class="fact">${ICONS.pop} ${t('hintPop')}: <b>${fmtPop(target.pop)}</b></div>` : ''}
-    ${famFact ? `<div class="fact">💡 ${famFact[lang==='de'?0:1]}</div>` : ''}
+    ${famFact ? `<div class="fact">${FB_BULB} ${famFact[lang==='de'?0:1]}</div>` : ''}
   </div>`;
   if(famFact) markSeen(famKey, target.a2);
   let txt = win ? t('winText')(guesses.length) : t('loseText');
@@ -2181,7 +2182,7 @@ function answer(btn, c){
       const mark = qtype==='flag' && twinMode && TWINS.marks[trainTarget.a2];
       const fact = mark || (qtype==='cap' ? CFACT : qtype==='flag' ? FFACT : LFACT)[trainTarget.a2];
       if(fact){
-        $('trainFact').textContent = (mark ? '🔍 ' : '💡 ') + fact[lang==='de'?0:1];
+        $('trainFact').innerHTML = (mark ? '🔍 ' : FB_BULB+' ') + esc(fact[lang==='de'?0:1]);
         $('trainFact').style.display='';
         if(!mark) markSeen(qtype==='cap'?'c':qtype==='flag'?'f':'l', trainTarget.a2);
       }
@@ -2522,7 +2523,7 @@ function applyLang(l){
   if(tf && tf.style.display!=='none' && trainTarget){
     const mark = qtype==='flag' && twinMode && TWINS.marks[trainTarget.a2];
     const fact = mark || (qtype==='cap' ? CFACT : qtype==='flag' ? FFACT : LFACT)[trainTarget.a2];
-    if(fact) tf.textContent = (mark ? '🔍 ' : '💡 ') + fact[l==='de'?0:1];
+    if(fact) tf.innerHTML = (mark ? '🔍 ' : FB_BULB+' ') + esc(fact[l==='de'?0:1]);
   }
   $('calMonth').textContent = now.toLocaleDateString(t('locale'),{month:'short'}).replace('.','').toUpperCase();
   document.querySelectorAll('#langSeg button').forEach(b=>b.classList.toggle('on', b.dataset.lang===l));
@@ -2943,7 +2944,7 @@ function renderPlay(){
     const mpFam = mq()==='cap' ? 'c' : mq()==='flag' ? 'f' : 'l';
     const mpFf = (mpFam==='c'?CFACT:mpFam==='f'?FFACT:LFACT)[target.a2];
     const mfl=$('mpFactLine');
-    if(mpFf){ mfl.textContent='💡 '+mpFf[lang==='de'?0:1]; mfl.style.display=''; markSeen(mpFam, target.a2); }
+    if(mpFf){ mfl.innerHTML=FB_BULB+' '+esc(mpFf[lang==='de'?0:1]); mfl.style.display=''; markSeen(mpFam, target.a2); }
     else mfl.style.display='none';
     const rows=$('mpRevealRows'); rows.innerHTML='';
     Object.entries(gs).sort((a,b)=>b[1].pts-a[1].pts).forEach(([id,g])=>{
