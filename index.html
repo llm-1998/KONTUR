@@ -701,8 +701,8 @@
         <div class="gp-row"><span class="gp-l" data-i18n="gpPop">Einwohner</span><span id="gpPop"></span></div>
         <div class="gp-row"><span class="gp-l" data-i18n="gpCont">Kontinent</span><span id="gpCont"></span></div>
         <div class="gp-row"><span class="gp-l" data-i18n="gpIso">ISO-Code</span><span id="gpIso"></span></div>
-        <button class="gp-reg" id="gpFbBtn"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg><span data-i18n="fbOpen">Faktenbuch</span></button>
         <button class="gp-reg" id="gpRegBtn"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16a1 1 0 0 0 1-1V8a1 1 0 0 0-1-1h-8l-2-3H4a1 1 0 0 0-1 1v14a1 1 0 0 0 1 1z"/><path d="M3 10h18"/></svg><span data-i18n="gpReg">Im Länderregister zeigen</span></button>
+        <button class="gp-reg" id="gpFbBtn"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg><span data-i18n="gpFb">Im Faktenbuch zeigen</span></button>
       </div>
     </div>
     <p class="globe-hint" data-i18n="globeHint">Ziehen zum Drehen · Zwei Finger oder Scrollen zum Zoomen</p>
@@ -830,6 +830,7 @@
       <button class="fb-dx" id="fbDx" aria-label="Schließen">✕</button>
       <div class="fb-dhead"><span id="fbDFlag"></span><b id="fbDName"></b></div>
       <div id="fbDRows"></div>
+      <button class="gp-reg" id="fbDGlobe" style="margin-top:14px"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 2.5 15.4 0 18M12 3c-2.5 2.6-2.5 15.4 0 18"/></svg><span data-i18n="fbToGlobe">Auf dem Globus zeigen</span></button>
     </div>
   </div>
 </section>
@@ -1013,7 +1014,7 @@ const STRINGS = {
     mpIntro:'Spielt gleichzeitig auf euren eigenen Geräten: gleiche Länder, heimliche Tipps, Punkte nach Nähe. Region, Schwierigkeit und Rundenzahl legt der Host in der Lobby fest.',
     mpNameLbl:'DEIN NAME', mpNamePh:'Name eingeben …', mpCreate:'Runde erstellen',
     mpJoinLbl:'ODER MIT CODE BEITRETEN', mpJoin:'Beitreten', mpCodeLbl:'RAUM-CODE',
-    mpShare:'Teilen', mpCopy:'Link kopieren', mpCopyFail:'Kopieren nicht möglich – Code oben nutzen', mpPlayers:'SPIELER', mpRounds:'LÄNDER PRO PARTIE', mpTimerT:'TIMER PRO RUNDE', mpTimerOff:'Aus', mpNoTip:'Kein Tipp', fbLbl:'SAMMLUNG', fbOpen:'Faktenbuch', fbT:'FAKTENBUCH', fbSearchPh:'Faktenbuch durchsuchen …', fbLocked:'Noch nicht freigeschaltet', fbEarth:'Erde', fbEarthFact:'Von hier oben ist keine einzige der 233 Grenzen zu sehen. Raumfahrer beschreiben bei diesem Anblick ein tiefes Gemeinschaftsgefühl mit allen Menschen dort unten: den Overview-Effekt.', fbEarthCtx:'Seinen Namen erhielt das Phänomen 1987 vom Raumfahrt-Philosophen Frank White, der dafür Dutzende Astronauten interviewte. Viele berichteten dasselbe: Aus der Umlaufbahn wirkt die Erde wie ein einziger, zerbrechlicher Organismus, und Grenzen verlieren ihre Selbstverständlichkeit. Apollo-14-Astronaut Edgar Mitchell beschrieb ein schlagartiges Gefühl weltumspannenden Bewusstseins, und Kosmonaut Juri Gagarin bat schon 1961 darum, die Schönheit dieses Planeten zu bewahren statt sie zu zerstören.<br><br>Die Psychologie zählt das Erlebnis heute zur Ehrfurchts-Forschung: Wer etwas so Überwältigendes sieht, spürt das eigene Ich zurücktreten und die Verbundenheit mit dem großen Ganzen wachsen.',
+    mpShare:'Teilen', mpCopy:'Link kopieren', mpCopyFail:'Kopieren nicht möglich – Code oben nutzen', mpPlayers:'SPIELER', mpRounds:'LÄNDER PRO PARTIE', mpTimerT:'TIMER PRO RUNDE', mpTimerOff:'Aus', mpNoTip:'Kein Tipp', fbLbl:'SAMMLUNG', fbOpen:'Faktenbuch', fbT:'FAKTENBUCH', fbSearchPh:'Faktenbuch durchsuchen …', fbLocked:'Noch nicht freigeschaltet', gpFb:'Im Faktenbuch zeigen', fbToGlobe:'Auf dem Globus zeigen', fbEarth:'Erde', fbEarthFact:'Von hier oben ist keine einzige der 233 Grenzen zu sehen. Raumfahrer beschreiben bei diesem Anblick ein tiefes Gemeinschaftsgefühl mit allen Menschen dort unten: den Overview-Effekt.', fbEarthCtx:'Seinen Namen erhielt das Phänomen 1987 vom Raumfahrt-Philosophen Frank White, der dafür Dutzende Astronauten interviewte. Viele berichteten dasselbe: Aus der Umlaufbahn wirkt die Erde wie ein einziger, zerbrechlicher Organismus, und Grenzen verlieren ihre Selbstverständlichkeit. Apollo-14-Astronaut Edgar Mitchell beschrieb ein schlagartiges Gefühl weltumspannenden Bewusstseins, und Kosmonaut Juri Gagarin bat schon 1961 darum, die Schönheit dieses Planeten zu bewahren statt sie zu zerstören.<br><br>Die Psychologie zählt das Erlebnis heute zur Ehrfurchts-Forschung: Wer etwas so Überwältigendes sieht, spürt das eigene Ich zurücktreten und die Verbundenheit mit dem großen Ganzen wachsen.',
     mpWaitHost:'Warten auf den Start …', mpStart:'Partie starten', mpStand:'DEIN PUNKTESTAND',
     mpNeedName:'Bitte gib zuerst einen Namen ein', mpNeed2:'Mindestens 2 Spieler nötig',
     mpErrNo:'Raum nicht gefunden – Code prüfen', mpErrFull:'Der Raum ist voll (max. 4 Spieler)',
@@ -1137,7 +1138,7 @@ const STRINGS = {
     mpIntro:'Play simultaneously on your own devices: same countries, secret guesses, points for proximity. The host sets region, difficulty and round count in the lobby.',
     mpNameLbl:'YOUR NAME', mpNamePh:'Enter a name …', mpCreate:'Create a room',
     mpJoinLbl:'OR JOIN WITH A CODE', mpJoin:'Join', mpCodeLbl:'ROOM CODE',
-    mpShare:'Share', mpCopy:'Copy link', mpCopyFail:'Copy failed – use the code above', mpPlayers:'PLAYERS', mpRounds:'COUNTRIES PER MATCH', mpTimerT:'TIMER PER ROUND', mpTimerOff:'Off', mpNoTip:'No guess', fbLbl:'COLLECTION', fbOpen:'Fact book', fbT:'FACT BOOK', fbSearchPh:'Search the fact book …', fbLocked:'Not unlocked yet', fbEarth:'Earth', fbEarthFact:'From up here, not a single one of the 233 borders can be seen. Looking at Earth like this, space travelers describe a deep sense of community with everyone below: the overview effect.', fbEarthCtx:'The phenomenon was named in 1987 by space philosopher Frank White, who interviewed dozens of astronauts for his research. Many reported the same thing: from orbit, Earth appears as a single fragile organism, and borders lose their self-evidence. Apollo 14 astronaut Edgar Mitchell described a sudden sense of global consciousness, and cosmonaut Yuri Gagarin asked as early as 1961 that the beauty of this planet be preserved, not destroyed.<br><br>Psychology today counts the experience as part of awe research: seeing something this overwhelming lets the self step back and deepens the bond with the greater whole.',
+    mpShare:'Share', mpCopy:'Copy link', mpCopyFail:'Copy failed – use the code above', mpPlayers:'PLAYERS', mpRounds:'COUNTRIES PER MATCH', mpTimerT:'TIMER PER ROUND', mpTimerOff:'Off', mpNoTip:'No guess', fbLbl:'COLLECTION', fbOpen:'Fact book', fbT:'FACT BOOK', fbSearchPh:'Search the fact book …', fbLocked:'Not unlocked yet', gpFb:'Show in fact book', fbToGlobe:'Show on the globe', fbEarth:'Earth', fbEarthFact:'From up here, not a single one of the 233 borders can be seen. Looking at Earth like this, space travelers describe a deep sense of community with everyone below: the overview effect.', fbEarthCtx:'The phenomenon was named in 1987 by space philosopher Frank White, who interviewed dozens of astronauts for his research. Many reported the same thing: from orbit, Earth appears as a single fragile organism, and borders lose their self-evidence. Apollo 14 astronaut Edgar Mitchell described a sudden sense of global consciousness, and cosmonaut Yuri Gagarin asked as early as 1961 that the beauty of this planet be preserved, not destroyed.<br><br>Psychology today counts the experience as part of awe research: seeing something this overwhelming lets the self step back and deepens the bond with the greater whole.',
     mpWaitHost:'Waiting for the start …', mpStart:'Start match', mpStand:'YOUR SCORE',
     mpNeedName:'Please enter a name first', mpNeed2:'At least 2 players needed',
     mpErrNo:'Room not found – check the code', mpErrFull:'The room is full (max. 4 players)',
@@ -1377,7 +1378,7 @@ function renderDiffs(){
   };
   list.appendChild(bx);
 }
-const APP_VERSION = 'v123 · Beta · 23.09.2026';
+const APP_VERSION = 'v120 · Beta · 23.09.2026';
 let qtype = store0('kontur.qtype') || 'shape';
 if(!['shape','flag','cap'].includes(qtype)) qtype='shape';
 { const qx=new URLSearchParams(location.search).get('qx');
@@ -2345,6 +2346,7 @@ function buildFB(){
 }
 function openFbDetail(c){
   fbDcur=c;
+  $('fbDGlobe').style.display='';
   $('fbDFlag').innerHTML=flagHtml(c.a2);
   $('fbDName').textContent=cname(c);
   const rows=$('fbDRows'); rows.innerHTML='';
@@ -2361,6 +2363,7 @@ function openFbDetail(c){
 }
 function openEarth(){
   fbDcur='earth';
+  $('fbDGlobe').style.display='none';
   $('fbDFlag').textContent='🌍';
   $('fbDName').textContent=t('fbEarth');
   const rows=$('fbDRows'); rows.innerHTML='';
@@ -2369,14 +2372,22 @@ function openEarth(){
   rows.appendChild(div);
   $('fbDetail').hidden=false;
 }
+$('fbDGlobe').onclick=()=>{
+  const c=fbDcur; $('fbDetail').hidden=true; fbDcur=null;
+  if(c && c.a2 && window.globeShow) globeShow(c.a2);
+};
 $('fbDx').onclick=()=>{ $('fbDetail').hidden=true; fbDcur=null; };
 $('fbDetail').addEventListener('click', e=>{ if(e.target===$('fbDetail')){ $('fbDetail').hidden=true; fbDcur=null; } });
 $('fbSearch').addEventListener('input', buildFB);
 function openFB(){ buildFB(); show(fbScreen); }
 $('fbBtn').onclick=openFB;
-$('gpFbBtn').onclick=openFB;
+$('gpFbBtn').onclick=()=>{
+  const sel=window.gFocusC;
+  openFB();
+  if(sel && sel.a2) openFbDetail(sel);
+};
 $('fbMini').textContent = totalSeen()+' / '+(DATA.length*3);
-if(DEV_EARTH){ openFB(); openEarth(); }                    // Entwickler-Direktflug zum Geheimfach
+if(DEV_EARTH) setTimeout(()=>{ openFB(); openEarth(); }, 0);   // Direktflug NACH der restlichen Initialisierung
 window.fbLangSync = ()=>{
   $('fbMini').textContent = totalSeen()+' / '+(DATA.length*3);
   if(fbScreen.classList.contains('active')){ buildFB(); if(fbDcur==='earth') openEarth(); else if(fbDcur) openFbDetail(fbDcur); }
