@@ -935,6 +935,12 @@
       <button data-auto="1" data-i18n="autoOn">Ein</button>
       <button data-auto="0" data-i18n="autoOff">Aus</button>
     </div>
+    <h2 style="font-size:22px" data-i18n="trainFactT">Fakten im Training</h2>
+    <p data-i18n="trainFactSub">Nach richtiger Antwort einen Fakt einblenden</p>
+    <div class="seg" id="trainFactSeg">
+      <button data-fact="1" data-i18n="autoOn">Ein</button>
+      <button data-fact="0" data-i18n="autoOff">Aus</button>
+    </div>
     <h2 style="font-size:22px" data-i18n="resetT">Zurücksetzen</h2>
     <p data-i18n="resetSub">Zweimal tippen zum Bestätigen</p>
     <button class="btn ghost" id="resetMasteryBtn" data-i18n="resetMastery">Lernstand (Sicher-Status)</button>
@@ -997,6 +1003,7 @@ const STRINGS = {
     lblDiff:'SCHWIERIGKEIT', diffs:['Einfach','Mittel','Schwer','Experte'], lblQtype:'FRAGETYP', qtypes:['Umriss','Flagge','Hauptstadt'],
     flagMissing:'Flagge konnte nicht geladen werden – Internetverbindung nötig',
     trainAutoT:'Training', trainAutoSub:'Nach richtiger Antwort automatisch weiter',
+    trainFactT:'Fakten im Training', trainFactSub:'Nach richtiger Antwort einen Fakt einblenden',
     autoOn:'Ein', autoOff:'Aus', trainTap:'Tippen, um fortzufahren', twins:'Zwillinge',
     offlineMsg:'Offline! Umriss- & Hauptstadt-Quiz laufen weiter. Flaggen und Mehrspieler brauchen Internet.',
     qxLocked:'Extremstufe gesperrt: Meistere im Training je 98 Länder, Flaggen und Hauptstädte, um sie freizuschalten.',
@@ -1121,6 +1128,7 @@ const STRINGS = {
     lblDiff:'DIFFICULTY', diffs:['Easy','Medium','Hard','Expert'], lblQtype:'QUESTION TYPE', qtypes:['Outline','Flag','Capital'],
     flagMissing:'Flag could not be loaded – internet connection required',
     trainAutoT:'Training', trainAutoSub:'Advance automatically after a correct answer',
+    trainFactT:'Facts in training', trainFactSub:'Show a fact after a correct answer',
     autoOn:'On', autoOff:'Off', trainTap:'Tap to continue', twins:'Twins',
     offlineMsg:'Offline! Outline & capital quizzes keep working. Flags and multiplayer need internet.',
     qxLocked:'Extreme tier locked: master 98 countries, 98 flags and 98 capitals in training to unlock it.',
@@ -1378,7 +1386,7 @@ function renderDiffs(){
   };
   list.appendChild(bx);
 }
-const APP_VERSION = 'v120 · Beta · 23.09.2026';
+const APP_VERSION = 'v126 · Beta · 25.09.2026';
 let qtype = store0('kontur.qtype') || 'shape';
 if(!['shape','flag','cap'].includes(qtype)) qtype='shape';
 { const qx=new URLSearchParams(location.search).get('qx');
@@ -2195,16 +2203,18 @@ function answer(btn, c){
       saveMastered();
     }
     trainStreakN++;
-    if(!trainAuto){
+    let factShown=false;
+    if(trainFactsOn){
       const mark = qtype==='flag' && twinMode && TWINS.marks[trainTarget.a2];
       const fact = mark || (qtype==='cap' ? CFACT : qtype==='flag' ? FFACT : LFACT)[trainTarget.a2];
       if(fact){
+        factShown=true;
         $('trainFact').innerHTML = (mark ? '🔍 ' : FB_BULB+' ') + esc(fact[lang==='de'?0:1]);
         $('trainFact').style.display='';
         if(!mark) markSeen(qtype==='cap'?'c':qtype==='flag'?'f':'l', trainTarget.a2);
       }
     }
-    if(trainAuto) setTimeout(nextCard, 750);
+    if(trainAuto) setTimeout(nextCard, factShown ? 2600 : 750);
     else { trainWait=performance.now(); $('trainTapHint').style.display=''; }
   } else {
     btn.classList.add('wrong'); btn.classList.add('locked');
@@ -2593,6 +2603,16 @@ document.querySelectorAll('#trainAutoSeg button').forEach(b=>{
   b.onclick = ()=> applyTrainAuto(b.dataset.auto==='1');
 });
 applyTrainAuto(trainAuto);
+let trainFactsOn = store0('kontur.trainfacts') !== '0';
+function applyTrainFacts(v){
+  trainFactsOn = v;
+  store.set('kontur.trainfacts', v ? '1' : '0');
+  document.querySelectorAll('#trainFactSeg button').forEach(b=>b.classList.toggle('on', (b.dataset.fact==='1')===v));
+}
+document.querySelectorAll('#trainFactSeg button').forEach(b=>{
+  b.onclick = ()=> applyTrainFacts(b.dataset.fact==='1');
+});
+applyTrainFacts(trainFactsOn);
 let trainWait=0;
 $('trainScreen').addEventListener('click', e=>{
   if(!trainWait || performance.now()-trainWait < 300) return;  // Antwort-Tipp nicht durchrutschen lassen
