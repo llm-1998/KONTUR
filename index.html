@@ -1317,6 +1317,7 @@ const svgFor = c => {
 };
 
 /* ---------- Suche (umlaut-tolerant) ---------- */
+const escH = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 const fold = s => (s||'').toLowerCase().replaceAll('ä','a').replaceAll('ö','o').replaceAll('ü','u').replaceAll('ß','ss')
   .normalize('NFD').replace(/[\u0300-\u036f]/g,'')
   .replace(/\./g,'').replace(/-/g,' ')
@@ -1386,7 +1387,7 @@ function renderDiffs(){
   };
   list.appendChild(bx);
 }
-const APP_VERSION = 'v126 · Beta · 25.09.2026';
+const APP_VERSION = 'v127 · Beta · 25.09.2026';
 let qtype = store0('kontur.qtype') || 'shape';
 if(!['shape','flag','cap'].includes(qtype)) qtype='shape';
 { const qx=new URLSearchParams(location.search).get('qx');
@@ -2209,7 +2210,7 @@ function answer(btn, c){
       const fact = mark || (qtype==='cap' ? CFACT : qtype==='flag' ? FFACT : LFACT)[trainTarget.a2];
       if(fact){
         factShown=true;
-        $('trainFact').innerHTML = (mark ? '🔍 ' : FB_BULB+' ') + esc(fact[lang==='de'?0:1]);
+        $('trainFact').innerHTML = (mark ? '🔍 ' : FB_BULB+' ') + escH(fact[lang==='de'?0:1]);
         $('trainFact').style.display='';
         if(!mark) markSeen(qtype==='cap'?'c':qtype==='flag'?'f':'l', trainTarget.a2);
       }
@@ -2562,7 +2563,7 @@ function applyLang(l){
   if(tf && tf.style.display!=='none' && trainTarget){
     const mark = qtype==='flag' && twinMode && TWINS.marks[trainTarget.a2];
     const fact = mark || (qtype==='cap' ? CFACT : qtype==='flag' ? FFACT : LFACT)[trainTarget.a2];
-    if(fact) tf.innerHTML = (mark ? '🔍 ' : FB_BULB+' ') + esc(fact[l==='de'?0:1]);
+    if(fact) tf.innerHTML = (mark ? '🔍 ' : FB_BULB+' ') + escH(fact[l==='de'?0:1]);
   }
   $('calMonth').textContent = now.toLocaleDateString(t('locale'),{month:'short'}).replace('.','').toUpperCase();
   document.querySelectorAll('#langSeg button').forEach(b=>b.classList.toggle('on', b.dataset.lang===l));
