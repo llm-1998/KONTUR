@@ -1420,7 +1420,7 @@ function renderDiffs(){
   };
   list.appendChild(bx);
 }
-const APP_VERSION = 'v130 · Beta · 27.09.2026';
+const APP_VERSION = 'v132 · Beta · 27.09.2026';
 let qtype = store0('kontur.qtype') || 'shape';
 if(!['shape','flag','cap'].includes(qtype)) qtype='shape';
 { const qx=new URLSearchParams(location.search).get('qx');
@@ -2356,22 +2356,26 @@ function dbApplyFilter(){
   });
 }
 $('dbSearch').addEventListener('input', dbApplyFilter);
-(function(){   // Wisch-Achse einrasten: kein Diagonal-Verrutschen beim Nachschlagen
+(function(){   // Wisch-Achse einrasten: Querachse wird positionsfest gehalten (kein Reset, kein Diagonal-Drift)
   const w=document.querySelector('.reg-tablewrap');
   if(!w) return;
-  let sx=0, sy=0, lock='';
+  let sx=0, sy=0, st=0, sl=0, lock='', tmr=0;
   w.addEventListener('touchstart', e=>{
-    lock=''; sx=e.touches[0].clientX; sy=e.touches[0].clientY;
+    clearTimeout(tmr); lock='';
+    sx=e.touches[0].clientX; sy=e.touches[0].clientY;
+    st=w.scrollTop; sl=w.scrollLeft;
   }, {passive:true});
   w.addEventListener('touchmove', e=>{
     if(lock) return;
     const dx=Math.abs(e.touches[0].clientX-sx), dy=Math.abs(e.touches[0].clientY-sy);
     if(dx<8 && dy<8) return;
     lock = dx>dy ? 'x' : 'y';
-    w.style.overflowX = lock==='x' ? 'auto' : 'hidden';
-    w.style.overflowY = lock==='y' ? 'auto' : 'hidden';
   }, {passive:true});
-  const free=()=>{ lock=''; w.style.overflowX='auto'; w.style.overflowY='auto'; };
+  w.addEventListener('scroll', ()=>{
+    if(lock==='x'){ w.scrollTop=st; sl=w.scrollLeft; }
+    else if(lock==='y'){ w.scrollLeft=sl; st=w.scrollTop; }
+  }, {passive:true});
+  const free=()=>{ clearTimeout(tmr); tmr=setTimeout(()=>{ lock=''; }, 500); };  // Ausrollen bleibt geklemmt
   w.addEventListener('touchend', free);
   w.addEventListener('touchcancel', free);
 })();
