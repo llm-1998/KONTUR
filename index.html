@@ -507,8 +507,8 @@
     max-height:max(340px, calc(100dvh - 300px - var(--sat)))}
   .reg-table{width:100%;border-collapse:separate;border-spacing:0;font-size:12.5px}
   .reg-table th{text-align:left;font-size:10.5px;font-weight:800;letter-spacing:.08em;
-    text-transform:uppercase;color:var(--ink-soft);padding:10px 10px 9px;
-    position:sticky;top:0;background:var(--card);z-index:2;
+    text-transform:uppercase;color:var(--ink-soft);padding:11px 10px 9px;
+    position:sticky;top:-1px;background:var(--card);z-index:2;
     box-shadow:0 1.5px 0 var(--line);white-space:nowrap}
   .reg-table th.sortable{cursor:pointer;user-select:none}
   .reg-table th .arr{margin-left:4px;color:var(--accent)}
@@ -1420,7 +1420,7 @@ function renderDiffs(){
   };
   list.appendChild(bx);
 }
-const APP_VERSION = 'v132 · Beta · 27.09.2026';
+const APP_VERSION = 'v133 · Beta · 27.09.2026';
 let qtype = store0('kontur.qtype') || 'shape';
 if(!['shape','flag','cap'].includes(qtype)) qtype='shape';
 { const qx=new URLSearchParams(location.search).get('qx');
@@ -2356,28 +2356,42 @@ function dbApplyFilter(){
   });
 }
 $('dbSearch').addEventListener('input', dbApplyFilter);
-(function(){   // Wisch-Achse einrasten: Querachse wird positionsfest gehalten (kein Reset, kein Diagonal-Drift)
+(function(){   // Achsen-Lock mit eigener Trägheit (Globus-Prinzip): Touch steuern wir selbst, Maus bleibt nativ
   const w=document.querySelector('.reg-tablewrap');
   if(!w) return;
-  let sx=0, sy=0, st=0, sl=0, lock='', tmr=0;
+  w.style.touchAction='none';
+  let sx=0, sy=0, st=0, sl=0, lock='', lx=0, ly=0, lt=0, v=0, raf=0;
+  const clampX=x=>Math.max(0, Math.min(w.scrollWidth-w.clientWidth, x));
+  const clampY=y=>Math.max(0, Math.min(w.scrollHeight-w.clientHeight, y));
+  function glide(ts){
+    const dt=Math.min(40, ts-lt); lt=ts;
+    v*=Math.pow(0.94, dt/16.7);
+    if(Math.abs(v)<0.02){ raf=0; return; }
+    if(lock==='x') w.scrollLeft=clampX(w.scrollLeft+v*dt);
+    else w.scrollTop=clampY(w.scrollTop+v*dt);
+    raf=requestAnimationFrame(glide);
+  }
   w.addEventListener('touchstart', e=>{
-    clearTimeout(tmr); lock='';
-    sx=e.touches[0].clientX; sy=e.touches[0].clientY;
-    st=w.scrollTop; sl=w.scrollLeft;
+    if(raf){ cancelAnimationFrame(raf); raf=0; }
+    lock=''; v=0;
+    sx=lx=e.touches[0].clientX; sy=ly=e.touches[0].clientY;
+    st=w.scrollTop; sl=w.scrollLeft; lt=performance.now();
   }, {passive:true});
   w.addEventListener('touchmove', e=>{
-    if(lock) return;
-    const dx=Math.abs(e.touches[0].clientX-sx), dy=Math.abs(e.touches[0].clientY-sy);
-    if(dx<8 && dy<8) return;
-    lock = dx>dy ? 'x' : 'y';
+    const x=e.touches[0].clientX, y=e.touches[0].clientY;
+    if(!lock){
+      const dx=Math.abs(x-sx), dy=Math.abs(y-sy);
+      if(dx<8 && dy<8) return;
+      lock = dx>dy ? 'x' : 'y';
+    }
+    const now=performance.now(), dt=Math.max(1, now-lt);
+    if(lock==='x'){ w.scrollLeft=clampX(sl-(x-sx)); v=(lx-x)/dt; }
+    else{ w.scrollTop=clampY(st-(y-sy)); v=(ly-y)/dt; }
+    lx=x; ly=y; lt=now;
   }, {passive:true});
-  w.addEventListener('scroll', ()=>{
-    if(lock==='x'){ w.scrollTop=st; sl=w.scrollLeft; }
-    else if(lock==='y'){ w.scrollLeft=sl; st=w.scrollTop; }
-  }, {passive:true});
-  const free=()=>{ clearTimeout(tmr); tmr=setTimeout(()=>{ lock=''; }, 500); };  // Ausrollen bleibt geklemmt
-  w.addEventListener('touchend', free);
-  w.addEventListener('touchcancel', free);
+  const fling=()=>{ if(lock && Math.abs(v)>0.05){ lt=performance.now(); raf=requestAnimationFrame(glide); } };
+  w.addEventListener('touchend', fling);
+  w.addEventListener('touchcancel', ()=>{ v=0; });
 })();
 $('dbBtn').onclick = ()=>{ buildTableChips(); buildTableRows(); show(dbScreen); };
 
