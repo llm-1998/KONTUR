@@ -503,23 +503,32 @@
   .reg-tablesec{margin-top:26px}
   .reg-tablesec .regions{margin:10px 0 12px}
   .reg-tablewrap{background:var(--card);border:1.5px solid var(--line);border-radius:16px;
-    overflow-x:auto;-webkit-overflow-scrolling:touch;touch-action:pan-x pan-y}
+    overflow:auto;-webkit-overflow-scrolling:touch;touch-action:pan-x pan-y;
+    max-height:max(340px, calc(100dvh - 300px - var(--sat)))}
   .reg-table{width:100%;border-collapse:collapse;font-size:12.5px}
   .reg-table th{text-align:left;font-size:10.5px;font-weight:800;letter-spacing:.08em;
     text-transform:uppercase;color:var(--ink-soft);padding:10px 10px 9px;
-    border-bottom:1.5px solid var(--line);white-space:nowrap}
+    position:sticky;top:0;background:var(--card);z-index:2;
+    box-shadow:0 1.5px 0 var(--line);white-space:nowrap}
   .reg-table th.sortable{cursor:pointer;user-select:none}
   .reg-table th .arr{margin-left:4px;color:var(--accent)}
   .reg-table td{padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top;white-space:nowrap}
   .reg-table tr:last-child td{border-bottom:none}
   .reg-table td.rg{color:var(--ink-soft);font-size:11px;white-space:nowrap}
   .reg-table th.num,.reg-table td.num{text-align:right;font-variant-numeric:tabular-nums}
-  .fb-sticky{position:sticky;top:0;z-index:6;background:var(--bg);padding:6px 0 10px}
+  .fb-sticky{position:sticky;top:calc(60px + var(--sat));z-index:14;background:var(--bg);padding:6px 0 10px}
   .fb-toprow{display:flex;align-items:baseline;gap:10px;margin-bottom:10px}
   .fb-title{font-size:12px;font-weight:800;letter-spacing:.14em;color:var(--ink-soft)}
   .fb-total{margin-left:auto;font-size:13.5px;font-weight:800;color:var(--accent);font-variant-numeric:tabular-nums}
   .fb-group{margin-top:20px}
   #fbList{padding-bottom:calc(38px + env(safe-area-inset-bottom))}
+  #dbScreen{padding-bottom:calc(38px + env(safe-area-inset-bottom))}
+  #dbScreen .reg-tablesec{margin-top:4px}
+  .reg-tablewrap{scrollbar-width:thin;scrollbar-color:var(--ink-soft) var(--line)}
+  .reg-tablewrap::-webkit-scrollbar{height:9px;width:9px}
+  .reg-tablewrap::-webkit-scrollbar-track{background:var(--line);border-radius:99px}
+  .reg-tablewrap::-webkit-scrollbar-thumb{background:var(--ink-soft);border-radius:99px}
+  .reg-tablewrap::-webkit-scrollbar-thumb:hover{background:var(--accent)}
   .fb-ghead{display:flex;justify-content:space-between;font-size:11px;font-weight:800;
     letter-spacing:.1em;color:var(--ink-soft);margin-bottom:8px}
   .fb-ghead .n{color:var(--accent);font-variant-numeric:tabular-nums}
@@ -655,6 +664,10 @@
       <span class="gb-col"><span data-i18n="globeBtnT">Weltglobus</span>
         <span class="gb-teaser" id="globeTeaser"></span></span>
     </button>
+      <button class="reg-open" id="dbBtn" style="margin-top:10px">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 5h16M4 12h16M4 19h16M10 5v14M16 5v14"/></svg>
+        <span data-i18n="dbOpen">Datenbank</span>
+      </button>
     <div class="a2hs" id="a2hsCard" style="display:none">
       <button class="a2hs-x" id="a2hsClose" aria-label="Schließen">×</button>
       <div class="a2hs-t">📲 <span data-i18n="a2hsT">KONTUR als App</span></div>
@@ -821,7 +834,30 @@
   </section>
 
   <!-- TRAINING -->
-  <section class="screen" id="fbScreen">
+  <section class="screen" id="dbScreen">
+  <div class="fb-sticky">
+    <div class="fb-toprow">
+      <div class="fb-title" data-i18n="dbT">DATENBANK</div>
+    </div>
+    <input class="reg-search" id="dbSearch" type="search" enterkeyhint="search" placeholder="Datenbank durchsuchen …" data-i18n-ph="dbSearchPh" autocomplete="off">
+  </div>
+  <div class="reg-tablesec">
+      <div class="sec-label" data-i18n="tblT">DATENTABELLE</div>
+      <div class="regions" id="tblRegions"></div>
+      <div class="reg-tablewrap">
+        <table class="reg-table">
+          <thead><tr>
+            <th data-i18n="tblRegion">Region</th>
+            <th class="sortable" data-key="name"><span data-i18n="tblLand">Land</span><span class="arr" id="arr-name"></span></th>
+            <th class="sortable" data-key="cap"><span data-i18n="gpCap">Hauptstadt</span><span class="arr" id="arr-cap"></span></th>
+            <th class="sortable num" data-key="pop"><span data-i18n="gpPop">Einwohner</span><span class="arr" id="arr-pop"></span></th>
+          </tr></thead>
+          <tbody id="regTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+</section>
+<section class="screen" id="fbScreen">
   <div class="fb-sticky">
     <div class="fb-toprow">
       <div class="fb-title" data-i18n="fbT">FAKTENBUCH</div>
@@ -869,21 +905,6 @@
       <input class="reg-search" id="regSearch" type="search" enterkeyhint="search" placeholder="Register durchsuchen …" data-i18n-ph="regSearchPh" autocomplete="off">
     </div>
     <div id="regList"></div>
-    <div class="reg-tablesec">
-      <div class="sec-label" data-i18n="tblT">DATENTABELLE</div>
-      <div class="regions" id="tblRegions"></div>
-      <div class="reg-tablewrap">
-        <table class="reg-table">
-          <thead><tr>
-            <th data-i18n="tblRegion">Region</th>
-            <th class="sortable" data-key="name"><span data-i18n="tblLand">Land</span><span class="arr" id="arr-name"></span></th>
-            <th class="sortable" data-key="cap"><span data-i18n="gpCap">Hauptstadt</span><span class="arr" id="arr-cap"></span></th>
-            <th class="sortable num" data-key="pop"><span data-i18n="gpPop">Einwohner</span><span class="arr" id="arr-pop"></span></th>
-          </tr></thead>
-          <tbody id="regTableBody"></tbody>
-        </table>
-      </div>
-    </div>
     <div class="nerdbox">
       <div class="t" data-i18n="nerdT">WUSSTEST DU?</div>
       <div data-i18n-html="nerdBody">
@@ -1023,7 +1044,7 @@ const STRINGS = {
     mpIntro:'Spielt gleichzeitig auf euren eigenen Geräten: gleiche Länder, heimliche Tipps, Punkte nach Nähe. Region, Schwierigkeit und Rundenzahl legt der Host in der Lobby fest.',
     mpNameLbl:'DEIN NAME', mpNamePh:'Name eingeben …', mpCreate:'Runde erstellen',
     mpJoinLbl:'ODER MIT CODE BEITRETEN', mpJoin:'Beitreten', mpCodeLbl:'RAUM-CODE',
-    mpShare:'Teilen', mpCopy:'Link kopieren', mpCopyFail:'Kopieren nicht möglich – Code oben nutzen', mpPlayers:'SPIELER', mpRounds:'LÄNDER PRO PARTIE', mpTimerT:'TIMER PRO RUNDE', mpTimerOff:'Aus', mpNoTip:'Kein Tipp', fbLbl:'SAMMLUNG', fbOpen:'Faktenbuch', fbT:'FAKTENBUCH', fbSearchPh:'Faktenbuch durchsuchen …', fbLocked:'Noch nicht freigeschaltet', gpFb:'Im Faktenbuch zeigen', fbToGlobe:'Auf dem Globus zeigen', fbEarth:'Erde', fbEarthFact:'Von hier oben ist keine einzige der 233 Grenzen zu sehen. Raumfahrer beschreiben bei diesem Anblick ein tiefes Gemeinschaftsgefühl mit allen Menschen dort unten: den Overview-Effekt.', fbEarthCtx:'Seinen Namen erhielt das Phänomen 1987 vom Raumfahrt-Philosophen Frank White, der dafür Dutzende Astronauten interviewte. Viele berichteten dasselbe: Aus der Umlaufbahn wirkt die Erde wie ein einziger, zerbrechlicher Organismus, und Grenzen verlieren ihre Selbstverständlichkeit. Apollo-14-Astronaut Edgar Mitchell beschrieb ein schlagartiges Gefühl weltumspannenden Bewusstseins, und Kosmonaut Juri Gagarin bat schon 1961 darum, die Schönheit dieses Planeten zu bewahren statt sie zu zerstören.<br><br>Die Psychologie zählt das Erlebnis heute zur Ehrfurchts-Forschung: Wer etwas so Überwältigendes sieht, spürt das eigene Ich zurücktreten und die Verbundenheit mit dem großen Ganzen wachsen.',
+    mpShare:'Teilen', mpCopy:'Link kopieren', mpCopyFail:'Kopieren nicht möglich – Code oben nutzen', mpPlayers:'SPIELER', mpRounds:'LÄNDER PRO PARTIE', mpTimerT:'TIMER PRO RUNDE', mpTimerOff:'Aus', mpNoTip:'Kein Tipp', fbLbl:'SAMMLUNG', fbOpen:'Faktenbuch', fbT:'FAKTENBUCH', fbSearchPh:'Faktenbuch durchsuchen …', fbLocked:'Noch nicht freigeschaltet', dbOpen:'Datenbank', dbT:'DATENBANK', dbSearchPh:'Datenbank durchsuchen …', gpFb:'Im Faktenbuch zeigen', fbToGlobe:'Auf dem Globus zeigen', fbEarth:'Erde', fbEarthFact:'Von hier oben ist keine einzige der 233 Grenzen zu sehen. Raumfahrer beschreiben bei diesem Anblick ein tiefes Gemeinschaftsgefühl mit allen Menschen dort unten: den Overview-Effekt.', fbEarthCtx:'Seinen Namen erhielt das Phänomen 1987 vom Raumfahrt-Philosophen Frank White, der dafür Dutzende Astronauten interviewte. Viele berichteten dasselbe: Aus der Umlaufbahn wirkt die Erde wie ein einziger, zerbrechlicher Organismus, und Grenzen verlieren ihre Selbstverständlichkeit. Apollo-14-Astronaut Edgar Mitchell beschrieb ein schlagartiges Gefühl weltumspannenden Bewusstseins, und Kosmonaut Juri Gagarin bat schon 1961 darum, die Schönheit dieses Planeten zu bewahren statt sie zu zerstören.<br><br>Die Psychologie zählt das Erlebnis heute zur Ehrfurchts-Forschung: Wer etwas so Überwältigendes sieht, spürt das eigene Ich zurücktreten und die Verbundenheit mit dem großen Ganzen wachsen.',
     mpWaitHost:'Warten auf den Start …', mpStart:'Partie starten', mpStand:'DEIN PUNKTESTAND',
     mpNeedName:'Bitte gib zuerst einen Namen ein', mpNeed2:'Mindestens 2 Spieler nötig',
     mpErrNo:'Raum nicht gefunden – Code prüfen', mpErrFull:'Der Raum ist voll (max. 4 Spieler)',
@@ -1148,7 +1169,7 @@ const STRINGS = {
     mpIntro:'Play simultaneously on your own devices: same countries, secret guesses, points for proximity. The host sets region, difficulty and round count in the lobby.',
     mpNameLbl:'YOUR NAME', mpNamePh:'Enter a name …', mpCreate:'Create a room',
     mpJoinLbl:'OR JOIN WITH A CODE', mpJoin:'Join', mpCodeLbl:'ROOM CODE',
-    mpShare:'Share', mpCopy:'Copy link', mpCopyFail:'Copy failed – use the code above', mpPlayers:'PLAYERS', mpRounds:'COUNTRIES PER MATCH', mpTimerT:'TIMER PER ROUND', mpTimerOff:'Off', mpNoTip:'No guess', fbLbl:'COLLECTION', fbOpen:'Fact book', fbT:'FACT BOOK', fbSearchPh:'Search the fact book …', fbLocked:'Not unlocked yet', gpFb:'Show in fact book', fbToGlobe:'Show on the globe', fbEarth:'Earth', fbEarthFact:'From up here, not a single one of the 233 borders can be seen. Looking at Earth like this, space travelers describe a deep sense of community with everyone below: the overview effect.', fbEarthCtx:'The phenomenon was named in 1987 by space philosopher Frank White, who interviewed dozens of astronauts for his research. Many reported the same thing: from orbit, Earth appears as a single fragile organism, and borders lose their self-evidence. Apollo 14 astronaut Edgar Mitchell described a sudden sense of global consciousness, and cosmonaut Yuri Gagarin asked as early as 1961 that the beauty of this planet be preserved, not destroyed.<br><br>Psychology today counts the experience as part of awe research: seeing something this overwhelming lets the self step back and deepens the bond with the greater whole.',
+    mpShare:'Share', mpCopy:'Copy link', mpCopyFail:'Copy failed – use the code above', mpPlayers:'PLAYERS', mpRounds:'COUNTRIES PER MATCH', mpTimerT:'TIMER PER ROUND', mpTimerOff:'Off', mpNoTip:'No guess', fbLbl:'COLLECTION', fbOpen:'Fact book', fbT:'FACT BOOK', fbSearchPh:'Search the fact book …', fbLocked:'Not unlocked yet', dbOpen:'Database', dbT:'DATABASE', dbSearchPh:'Search the database …', gpFb:'Show in fact book', fbToGlobe:'Show on the globe', fbEarth:'Earth', fbEarthFact:'From up here, not a single one of the 233 borders can be seen. Looking at Earth like this, space travelers describe a deep sense of community with everyone below: the overview effect.', fbEarthCtx:'The phenomenon was named in 1987 by space philosopher Frank White, who interviewed dozens of astronauts for his research. Many reported the same thing: from orbit, Earth appears as a single fragile organism, and borders lose their self-evidence. Apollo 14 astronaut Edgar Mitchell described a sudden sense of global consciousness, and cosmonaut Yuri Gagarin asked as early as 1961 that the beauty of this planet be preserved, not destroyed.<br><br>Psychology today counts the experience as part of awe research: seeing something this overwhelming lets the self step back and deepens the bond with the greater whole.',
     mpWaitHost:'Waiting for the start …', mpStart:'Start match', mpStand:'YOUR SCORE',
     mpNeedName:'Please enter a name first', mpNeed2:'At least 2 players needed',
     mpErrNo:'Room not found – check the code', mpErrFull:'The room is full (max. 4 players)',
@@ -1397,7 +1418,7 @@ function renderDiffs(){
   };
   list.appendChild(bx);
 }
-const APP_VERSION = 'v129 · Beta · 27.09.2026';
+const APP_VERSION = 'v130 · Beta · 27.09.2026';
 let qtype = store0('kontur.qtype') || 'shape';
 if(!['shape','flag','cap'].includes(qtype)) qtype='shape';
 { const qx=new URLSearchParams(location.search).get('qx');
@@ -1579,9 +1600,10 @@ $('homeBtn').onclick  = () => { closeOverlay(); if(window.mpLeave) window.mpLeav
 const registerScreen=$('registerScreen'), trainScreen=$('trainScreen'), mpScreen=$('mpScreen'), globeScreen=$('globeScreen');
 let startScroll=0;
 const fbScreen=$('fbScreen');
+const dbScreen=$('dbScreen');
 function show(screen){
   if(screen!==startScreen && startScreen.classList.contains('active')) startScroll=window.scrollY;  // Position merken
-  [startScreen,gameScreen,registerScreen,trainScreen,mpScreen,globeScreen,fbScreen].forEach(s=>s.classList.remove('active'));
+  [startScreen,gameScreen,registerScreen,trainScreen,mpScreen,globeScreen,fbScreen,dbScreen].forEach(s=>s.classList.remove('active'));
   screen.classList.add('active');
   $('regionChip').style.display = (screen===gameScreen||screen===trainScreen)?'':'none';
   $('homeBtn').style.display    = screen===startScreen?'none':'';
@@ -2321,7 +2343,15 @@ function buildRegister(){
     list.appendChild(group);
   });
 }
-$('regBtn').onclick = ()=>{ buildRegister(); buildTableChips(); buildTableRows(); show(registerScreen); };
+$('regBtn').onclick = ()=>{ buildRegister(); show(registerScreen); };
+function dbApplyFilter(){
+  const q=fold($('dbSearch').value.trim());
+  document.querySelectorAll('#regTableBody tr').forEach(tr=>{
+    tr.style.display = !q || tr.dataset.q.includes(q) ? '' : 'none';
+  });
+}
+$('dbSearch').addEventListener('input', dbApplyFilter);
+$('dbBtn').onclick = ()=>{ buildTableChips(); buildTableRows(); show(dbScreen); };
 
 /* ---------- Faktenbuch ---------- */
 const FB_CONTS=['EU','AF','AS','NA','SA','OC'];
@@ -2465,10 +2495,12 @@ function buildTableRows(){
   const tb=$('regTableBody'); tb.innerHTML='';
   for(const c of rows){
     const tr=document.createElement('tr');
+    tr.dataset.q = fold(c.name)+' '+fold(c.en)+' '+fold(c.cap||'')+' '+fold(c.capEn||'')+' '+c.a2.toLowerCase()+' '+(ALIAS[c.a2]||'');
     tr.innerHTML=`<td class="rg">${TBL_CONT[lang][c.cont]}</td><td><b>${cname(c)}</b></td>`+
       `<td>${ccap(c)||'–'}</td><td class="num">${fmtPop(c.pop)}</td>`;
     tb.appendChild(tr);
   }
+  if($('dbSearch')) dbApplyFilter();
 }
 document.querySelectorAll('.reg-table th.sortable').forEach(th=>{
   th.onclick=()=>{
