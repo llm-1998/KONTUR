@@ -372,11 +372,14 @@
   .stat{flex:1;background:var(--bg);border-radius:14px;padding:12px;text-align:center}
   .stat .v{font-size:20px;font-weight:800;font-variant-numeric:tabular-nums}
   .stat .k{font-size:10.5px;font-weight:700;letter-spacing:.08em;color:var(--ink-soft);margin-top:2px}
-  .seg{display:grid;grid-template-columns:1fr 1fr;gap:6px;background:var(--bg);border-radius:15px;
-    padding:6px;margin-bottom:18px}
-  .seg button{border:0;border-radius:11px;background:transparent;font-family:inherit;font-size:14.5px;
-    font-weight:700;color:var(--ink-soft);padding:12px;cursor:pointer}
+  .seg{display:grid;grid-template-columns:1fr 1fr;gap:5px;background:var(--bg);border-radius:13px;
+    padding:5px;margin-bottom:11px}
+  .seg button{border:0;border-radius:9px;background:transparent;font-family:inherit;font-size:13px;
+    font-weight:700;color:var(--ink-soft);padding:10px;cursor:pointer}
   .seg button.on{background:var(--card);color:var(--ink);box-shadow:0 2px 8px var(--shadow)}
+  #settingsOverlay h2{font-size:16.5px;margin:13px 0 2px}
+  #settingsOverlay .sheet>p{font-size:12.5px;margin:2px 0 8px;color:var(--ink-soft)}
+  #settingsOverlay .btn{padding:11px;font-size:13.5px}
   .btn.ghost.arm{border-color:var(--red);color:var(--red)}
   .tcol{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:7px;
     min-height:122px;padding:12px 4px}
@@ -910,7 +913,7 @@
     <div class="nerdbox">
       <div class="t" data-i18n="nerdT">WUSSTEST DU?</div>
       <div data-i18n-html="nerdBody">
-      <p>Die Umrisse stammen aus zwei freien Quellen: dem gemeinfreien Datensatz <b>Natural Earth</b> (1:10 Mio.) und OpenStreetMap-basierten Landpolygonen. © OpenStreetMap-Mitwirkende (ODbL).</p><p>Jedes Land wird <b>orthographisch</b> gezeichnet, also wie aus dem Weltall betrachtet, zentriert über seinem Mittelpunkt. Auch die Hauptstadt-Punkte entstehen aus genau dieser Rechnung.</p><p>Entfernungen liefert die <b>Haversine-Formel</b> zwischen den Länder-Mittelpunkten, die Himmelsrichtung die Anfangspeilung auf der Großkreisroute.</p><p>Das Land des Tages zieht ein gemischter <b>Kartenstapel</b>: alle 233 genau einmal pro Zyklus, weltweit für alle gleich (Stichtag nach UTC).</p>
+      <p>Die Umrisse stammen aus zwei freien Datensätzen: <b>Natural Earth</b> (1:10 Mio., gemeinfrei) und OpenStreetMap-basierten Landpolygonen (© OpenStreetMap-Mitwirkende, ODbL).</p><p>Gezeichnet wird jedes Land in <b>orthographischer Projektion</b>: der Blick aus dem Weltall, senkrecht auf die Mitte des Landes. Aus derselben Rechnung stammen auch die Hauptstadt-Punkte.</p><p>Entfernungen berechnet die <b>Haversine-Formel</b> zwischen den Länder-Mittelpunkten, die Himmelsrichtung ergibt sich aus der Anfangspeilung der Großkreisroute.</p><p>Das Land des Tages kommt aus einem gemischten <b>Kartenstapel</b>: jedes der 233 Länder erscheint genau einmal pro Zyklus, weltweit für alle gleich (Stichtag nach UTC).</p>
     </div>
     </div>
   </section>
@@ -942,31 +945,31 @@
 <div class="overlay" id="settingsOverlay">
   <div class="sheet">
     <div class="badge" style="color:var(--accent)" data-i18n="settingsT">EINSTELLUNGEN</div>
-    <h2 style="font-size:22px" data-i18n="langT">Sprache</h2>
+    <h2 data-i18n="langT">Sprache</h2>
     <p data-i18n="langSub">Ländernamen, Hauptstädte und Oberfläche</p>
     <div class="seg" id="langSeg">
       <button data-lang="de">Deutsch</button>
       <button data-lang="en">English</button>
     </div>
-    <h2 style="font-size:22px" data-i18n="unitT">Einheiten</h2>
+    <h2 data-i18n="unitT">Einheiten</h2>
     <p data-i18n="unitSub">Für Entfernungsangaben im Spiel</p>
     <div class="seg" id="unitSeg">
       <button data-unit="km" data-i18n="unitKm">Kilometer</button>
       <button data-unit="mi" data-i18n="unitMi">Meilen</button>
     </div>
-    <h2 style="font-size:22px" data-i18n="trainAutoT">Training</h2>
+    <h2 data-i18n="trainAutoT">Training</h2>
     <p data-i18n="trainAutoSub">Nach richtiger Antwort automatisch weiter</p>
     <div class="seg" id="trainAutoSeg">
       <button data-auto="1" data-i18n="autoOn">Ein</button>
       <button data-auto="0" data-i18n="autoOff">Aus</button>
     </div>
-    <h2 style="font-size:22px" data-i18n="trainFactT">Fakten im Training</h2>
+    <h2 data-i18n="trainFactT">Fakten im Training</h2>
     <p data-i18n="trainFactSub">Nach richtiger Antwort einen Fakt einblenden</p>
     <div class="seg" id="trainFactSeg">
       <button data-fact="1" data-i18n="autoOn">Ein</button>
       <button data-fact="0" data-i18n="autoOff">Aus</button>
     </div>
-    <h2 style="font-size:22px" data-i18n="resetT">Zurücksetzen</h2>
+    <h2 data-i18n="resetT">Zurücksetzen</h2>
     <p data-i18n="resetSub">Zweimal tippen zum Bestätigen</p>
     <button class="btn ghost" id="resetMasteryBtn" data-i18n="resetMastery">Lernstand (Sicher-Status)</button>
     <button class="btn ghost" id="resetStatsBtn" data-i18n="resetStats">Spiel-Statistiken</button>
@@ -1018,8 +1021,8 @@ const STRINGS = {
     nerdOn:'🤓 Nerd-Modus aktiviert', nerdOff:'Nerd-Modus deaktiviert',
     settingsT:'EINSTELLUNGEN', langT:'Sprache',
     langSub:'Ländernamen, Hauptstädte und Oberfläche', close:'Schließen',
-    nerdT:'DID YOU KNOW?',
-    nerdBody:'<p>Die Umrisse stammen aus zwei freien Quellen: dem gemeinfreien Datensatz <b>Natural Earth</b> (1:10 Mio.) und OpenStreetMap-basierten Landpolygonen. © OpenStreetMap-Mitwirkende (ODbL).</p><p>Jedes Land wird <b>orthographisch</b> gezeichnet, also wie aus dem Weltall betrachtet, zentriert über seinem Mittelpunkt. Auch die Hauptstadt-Punkte entstehen aus genau dieser Rechnung.</p><p>Entfernungen liefert die <b>Haversine-Formel</b> zwischen den Länder-Mittelpunkten, die Himmelsrichtung die Anfangspeilung auf der Großkreisroute.</p><p>Das Land des Tages zieht ein gemischter <b>Kartenstapel</b>: alle 233 genau einmal pro Zyklus, weltweit für alle gleich (Stichtag nach UTC).</p>',
+    nerdT:'WUSSTEST DU?',
+    nerdBody:'<p>Die Umrisse stammen aus zwei freien Datensätzen: <b>Natural Earth</b> (1:10 Mio., gemeinfrei) und OpenStreetMap-basierten Landpolygonen (© OpenStreetMap-Mitwirkende, ODbL).</p><p>Gezeichnet wird jedes Land in <b>orthographischer Projektion</b>: der Blick aus dem Weltall, senkrecht auf die Mitte des Landes. Aus derselben Rechnung stammen auch die Hauptstadt-Punkte.</p><p>Entfernungen berechnet die <b>Haversine-Formel</b> zwischen den Länder-Mittelpunkten, die Himmelsrichtung ergibt sich aus der Anfangspeilung der Großkreisroute.</p><p>Das Land des Tages kommt aus einem gemischten <b>Kartenstapel</b>: jedes der 233 Länder erscheint genau einmal pro Zyklus, weltweit für alle gleich (Stichtag nach UTC).</p>',
     dirs:['N','NO','O','SO','S','SW','W','NW'],
     conts:{EU:'Europa', AS:'Asien', AF:'Afrika', NA:'Nordamerika', SA:'Südamerika', OC:'Ozeanien'},
     locale:'de-DE', mio:' Mio.', centroid:'Zentroid',
@@ -1143,8 +1146,8 @@ const STRINGS = {
     nerdOn:'🤓 Nerd mode activated', nerdOff:'Nerd mode deactivated',
     settingsT:'SETTINGS', langT:'Language',
     langSub:'Country names, capitals and interface', close:'Close',
-    nerdT:'WUSSTEST DU?',
-    nerdBody:'<p>The outlines come from two free sources: the public-domain <b>Natural Earth</b> dataset (1:10m) and OpenStreetMap-based land polygons. © OpenStreetMap contributors (ODbL).</p><p>Every country is drawn <b>orthographically</b>, as seen from space, centered on its own midpoint. The capital markers come from exactly the same math.</p><p>Distances use the <b>haversine formula</b> between country midpoints, directions the initial bearing along the great circle.</p><p>The daily country is drawn from a shuffled <b>deck</b>: all 233 exactly once per cycle, the same worldwide (UTC).</p>',
+    nerdT:'DID YOU KNOW?',
+    nerdBody:'<p>The outlines come from two free datasets: <b>Natural Earth</b> (1:10m, public domain) and OpenStreetMap-based land polygons (© OpenStreetMap contributors, ODbL).</p><p>Every country is drawn in <b>orthographic projection</b>: the view from space, straight down onto its center. The capital markers come from the very same math.</p><p>Distances are computed with the <b>haversine formula</b> between country midpoints; directions follow the initial bearing of the great-circle route.</p><p>The daily country comes from a shuffled <b>deck</b>: each of the 233 appears exactly once per cycle, the same worldwide (cutoff at UTC).</p>',
     dirs:['N','NE','E','SE','S','SW','W','NW'],
     conts:{EU:'Europe', AS:'Asia', AF:'Africa', NA:'North America', SA:'South America', OC:'Oceania'},
     locale:'en-US', mio:'M', centroid:'Centroid',
@@ -1420,7 +1423,7 @@ function renderDiffs(){
   };
   list.appendChild(bx);
 }
-const APP_VERSION = 'v133 · Beta · 27.09.2026';
+const APP_VERSION = 'v134 · Beta · 01.10.2026';
 let qtype = store0('kontur.qtype') || 'shape';
 if(!['shape','flag','cap'].includes(qtype)) qtype='shape';
 { const qx=new URLSearchParams(location.search).get('qx');
