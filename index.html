@@ -136,7 +136,7 @@
     box-shadow:0 10px 30px var(--shadow)}
   .qflag-emoji{font-size:130px;line-height:1}
   .choice.locked:not(.right):not(.wrong){opacity:.5}
-  .train-fact{position:absolute;left:12px;right:12px;bottom:12px;
+  .train-fact{position:absolute;left:12px;right:12px;bottom:12px;z-index:3;
     background:var(--card);border:1.5px solid var(--line);border-radius:14px;
     padding:11px 14px;font-size:13px;line-height:1.55;color:var(--ink);
     box-shadow:0 8px 24px var(--shadow)}
@@ -288,9 +288,9 @@
     display:flex;align-items:center;justify-content:center;margin:0 auto}
   .silhouette svg{max-width:92%;max-height:min(38dvh,350px);width:auto;height:auto}
   .silhouette{overflow:hidden}
-  .capwrap{display:flex;flex-direction:column;align-items:center;gap:9px;max-width:100%;min-height:0;height:100%;justify-content:center}
-  .capwrap svg{flex:0 1 auto;min-height:0}
-  .qcapname{font-size:15px;font-weight:800;letter-spacing:.02em;text-align:center;flex:none}
+  .capwrap{display:flex;align-items:center;justify-content:center;max-width:100%;min-height:0;height:100%;width:100%}
+  .capwrap svg{flex:0 1 auto;min-height:0;z-index:1}
+  .qcapname{position:absolute;left:50%;transform:translateX(-50%);bottom:8px;z-index:2;transition:opacity .18s ease;font-size:14.5px;font-weight:800;letter-spacing:.02em;text-align:center;white-space:nowrap;max-width:94%;overflow:hidden;text-overflow:ellipsis;padding:4px 12px;border-radius:999px;background:color-mix(in srgb, var(--bg) 72%, transparent);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px)}
   .silhouette path{fill:var(--ink);opacity:0;animation:reveal .5s ease forwards}
   .silhouette svg circle{opacity:0;animation:reveal .4s ease .1s forwards}  /* Punkt folgt dem Land */
   .silhouette path.dots{stroke:var(--ink);stroke-width:10;stroke-linejoin:round;stroke-linecap:round}
@@ -1423,7 +1423,7 @@ function renderDiffs(){
   };
   list.appendChild(bx);
 }
-const APP_VERSION = 'v136 · Beta · 01.10.2026';
+const APP_VERSION = 'v137 · Beta · 02.10.2026';
 let qtype = store0('kontur.qtype') || 'shape';
 if(!['shape','flag','cap'].includes(qtype)) qtype='shape';
 { const qx=new URLSearchParams(location.search).get('qx');
@@ -1891,7 +1891,7 @@ function showResult(win, animate){
   const b=$('resBadge');
   b.className='badge '+(win?'win':'lose');
   b.textContent = win?t('solved'):t('missed');
-  $('resCountry').textContent = qt()==='cap' ? ccap(target)+' · '+cname(target) : cname(target);
+  $('resCountry').textContent = qt()==='cap' ? (ccap(target)||cname(target))+' · '+cname(target) : cname(target);
   const rf=$('resFacts');
   rf.className='sheet-facts show';
   const famKey = qt()==='cap' ? 'c' : qt()==='flag' ? 'f' : 'l';
@@ -2225,7 +2225,7 @@ function nextCard(){
   options.forEach(c=>{
     const b=document.createElement('button');
     b.className='choice';
-    b.dataset.a2=c.a2; b.dataset.name=(qtype==='cap' ? ccap(c) : cname(c));
+    b.dataset.a2=c.a2; b.dataset.name=(qtype==='cap' ? (ccap(c)||cname(c)) : cname(c));
     b.textContent = isoMode ? c.a2 : b.dataset.name;
     b.onclick=()=>answer(b, c);
     box.appendChild(b);
@@ -2235,7 +2235,7 @@ function nextCard(){
 function answer(btn, c){
   if(trainLocked || btn.classList.contains('locked')) return;
   const hit = c.a2===trainTarget.a2;
-  if(isoMode) btn.textContent = c.a2 + ' · ' + (qtype==='cap' ? ccap(c) : cname(c));
+  if(isoMode) btn.textContent = c.a2 + ' · ' + (qtype==='cap' ? (ccap(c)||cname(c)) : cname(c));
   if(hit){
     trainLocked = true;
     btn.classList.add('right');
@@ -2252,7 +2252,9 @@ function answer(btn, c){
       if(fact){
         factShown=true;
         $('trainFact').innerHTML = (mark ? '🔍 ' : FB_BULB+' ') + escH(fact[lang==='de'?0:1]);
-        $('trainFact').style.display='';
+        const capPill=document.querySelector('#trainScreen .qcapname');
+  if(capPill) capPill.style.display='none';
+  $('trainFact').style.display='';
         if(!mark) markSeen(qtype==='cap'?'c':qtype==='flag'?'f':'l', trainTarget.a2);
       }
     }
@@ -2396,6 +2398,13 @@ $('dbSearch').addEventListener('input', dbApplyFilter);
   w.addEventListener('touchend', fling);
   w.addEventListener('touchcancel', ()=>{ v=0; });
 })();
+document.addEventListener('click', e=>{   // Konturen-Freiblick: Tipp auf die Karte togglet die Namens-Pille
+  const sil=e.target.closest('.silhouette');
+  if(!sil) return;
+  const qn=sil.querySelector('.qcapname');
+  if(!qn || qn.style.display==='none') return;
+  qn.style.opacity = qn.style.opacity==='0' ? '' : '0';
+});
 $('dbBtn').onclick = ()=>{ buildTableChips(); buildTableRows(); show(dbScreen); };
 
 /* ---------- Faktenbuch ---------- */
@@ -3174,7 +3183,7 @@ function mpPoolNow(){
 }
 function mpCloseSuggest(){ mpSuggest.classList.remove('open'); }
 function mq(){ return ['shape','flag','cap'][(room&&room.cfg&&room.cfg.q)||0]; }
-function mpLabel(c){ return mq()==='cap' ? ccap(c) : cname(c); }
+function mpLabel(c){ return mq()==='cap' ? (ccap(c)||cname(c)) : cname(c); }
 function mpExact(v){ return mpPoolNow().find(c=>fold(mpLabel(c))===fold(v.trim())); }
 mpInput.addEventListener('input', ()=>{
   const q=fold(mpInput.value.trim());
@@ -3262,7 +3271,7 @@ function render(){
       const pt=proj(ll);
       if(pt[0]<-30||pt[0]>430||pt[1]<-30||pt[1]>430) continue;
       caps+='<circle cx="'+pt[0].toFixed(1)+'" cy="'+pt[1].toFixed(1)+'" r="2.4"/>'
-          + '<text x="'+(pt[0]+5).toFixed(1)+'" y="'+(pt[1]+3.5).toFixed(1)+'">'+ccap(c)+'</text>';
+          + '<text x="'+(pt[0]+5).toFixed(1)+'" y="'+(pt[1]+3.5).toFixed(1)+'">'+(ccap(c)||cname(c))+'</text>';
       const pc=proj([c.lon,c.lat]);
       if(pc && d3.geoDistance([c.lon,c.lat],cx)<LIM && pc[0]>-30&&pc[0]<430&&pc[1]>-30&&pc[1]<430){
         caps+='<text class="iso" x="'+pc[0].toFixed(1)+'" y="'+(pc[1]-6).toFixed(1)+'" text-anchor="middle">'+c.a2+'</text>';
