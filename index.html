@@ -550,6 +550,10 @@
   #dbScreen .reg-tablesec{margin-top:4px}
   .reg-tablewrap{scrollbar-width:thin;scrollbar-color:var(--ink-soft) var(--line)}
   .reg-table tbody tr.alt td{background:rgba(125,140,165,.08)}
+  .reg-table td:first-child{position:sticky;left:0;z-index:1;background:var(--card);box-shadow:1.5px 0 0 var(--line)}
+  .reg-table td.iso{font-size:11px;font-weight:800;letter-spacing:.06em;color:var(--ink-soft)}
+  .reg-table tbody tr.alt td:first-child{background:color-mix(in srgb, var(--ink-soft) 9%, var(--card))}
+  .reg-table th:first-child{left:0;z-index:4;box-shadow:1.5px 0 0 var(--line), 0 1.5px 0 var(--line)}
   .reg-table th.num,.reg-table td.num{text-align:right;font-variant-numeric:tabular-nums}
   .reg-tablewrap::-webkit-scrollbar{height:9px;width:9px}
   .reg-tablewrap::-webkit-scrollbar-track{background:var(--line);border-radius:99px}
@@ -879,8 +883,9 @@
       <div class="reg-tablewrap">
         <table class="reg-table">
           <thead><tr>
-            <th data-i18n="tblRegion">Region</th>
+            <th>ISO</th>
             <th class="sortable" data-key="name"><span data-i18n="tblLand">Land</span><span class="arr" id="arr-name"></span></th>
+            <th data-i18n="tblRegion">Region</th>
             <th class="sortable" data-key="cap"><span data-i18n="gpCap">Hauptstadt</span><span class="arr" id="arr-cap"></span></th>
             <th class="sortable num" data-key="pop"><span data-i18n="gpPop">Einwohner</span><span class="arr" id="arr-pop"></span></th>
             <th class="sortable num" data-key="ar"><span data-i18n="dbArea">Fläche (km²)</span><span class="arr" id="arr-ar"></span></th>
@@ -1470,7 +1475,7 @@ function renderDiffs(){
   };
   list.appendChild(bx);
 }
-const APP_VERSION = 'v1.38 · Beta · 2026-10-13';
+const APP_VERSION = 'v1.39 · Beta · 2026-10-13';
 let qtype = store0('kontur.qtype') || 'shape';
 if(!['shape','flag','cap'].includes(qtype)) qtype='shape';
 { const qx=new URLSearchParams(location.search).get('qx');
@@ -2492,8 +2497,8 @@ function dbCsvString(){
   const esc = v => { v=String(v??''); return (v.includes(sep)||v.includes('"')||v.includes('\n')) ? '"'+v.replaceAll('"','""')+'"' : v; };
   const mi = unit==='mi';
   const head = de
-    ? ['Region','Land','ISO','Hauptstadt','Einwohner','Fläche ('+(mi?'mi²':'km²')+')','Einw./'+(mi?'mi²':'km²'),'Höchster Berg','Höhe ('+(mi?'ft':'m')+')','Längster Fluss','Länge ('+(mi?'mi':'km')+')','Regierungsform','Amtssprache(n)','Währung','Währungscode','1 '+(fxBase==='EUR'?'EUR':'USD')+' =']
-    : ['Region','Country','ISO','Capital','Population','Area ('+(mi?'mi²':'km²')+')','Pop./'+(mi?'mi²':'km²'),'Highest peak','Height ('+(mi?'ft':'m')+')','Longest river','Length ('+(mi?'mi':'km')+')','Government','Official language(s)','Currency','Currency code','1 '+(fxBase==='EUR'?'EUR':'USD')+' =']
+    ? ['ISO','Land','Region','Hauptstadt','Einwohner','Fläche ('+(mi?'mi²':'km²')+')','Einw./'+(mi?'mi²':'km²'),'Höchster Berg','Höhe ('+(mi?'ft':'m')+')','Längster Fluss','Länge ('+(mi?'mi':'km')+')','Regierungsform','Amtssprache(n)','Währung','Währungscode','1 '+(fxBase==='EUR'?'EUR':'USD')+' =']
+    : ['ISO','Country','Region','Capital','Population','Area ('+(mi?'mi²':'km²')+')','Pop./'+(mi?'mi²':'km²'),'Highest peak','Height ('+(mi?'ft':'m')+')','Longest river','Length ('+(mi?'mi':'km')+')','Government','Official language(s)','Currency','Currency code','1 '+(fxBase==='EUR'?'EUR':'USD')+' =']
   ;
   const reg=REGIONS[tblRegion];
   const q=fold($('dbSearch').value.trim());
@@ -2528,7 +2533,7 @@ function dbCsvString(){
     const dens=(c.ar&&c.pop!=null)?Math.round((c.pop/uKm2(c.ar))*10)/10:null;
     const r=fxRate(c.cur&&c.cur[2]);
     lines.push([
-      TBL_CONT[lang][c.cont], cname(c), c.a2, ccap(c)||'',
+      c.a2, cname(c), TBL_CONT[lang][c.cont], ccap(c)||'',
       num(c.pop), num(c.ar!=null?Math.round(uKm2(c.ar)*100)/100:null), num(dens),
       c.mt?c.mt[0]:'', num(c.mt?uM(c.mt[1]):null),
       c.rv?c.rv[0]:'', num(c.rv?Math.round(uKm(c.rv[1])):null),
@@ -2787,7 +2792,7 @@ function buildTableRows(){
   for(const c of rows){
     const tr=document.createElement('tr');
     tr.dataset.q = fold(c.name)+' '+fold(c.en)+' '+fold(c.cap||'')+' '+fold(c.capEn||'')+' '+c.a2.toLowerCase()+' '+(ALIAS[c.a2]||'')+' '+fold(c.cur?c.cur[0]+' '+c.cur[1]+' '+c.cur[2]:'')+' '+fold(c.gov?c.gov[0]+' '+c.gov[1]:'')+' '+fold(c.mt?c.mt[0]:'')+' '+fold(c.rv?c.rv[0]:'')+' '+fold(c.lg?c.lg[0]+' '+c.lg[1]:'');
-    tr.innerHTML=`<td class="rg">${TBL_CONT[lang][c.cont]}</td><td><b>${cname(c)}</b></td>`+
+    tr.innerHTML=`<td class="iso">${c.a2}</td><td><b>${cname(c)}</b></td><td class="rg">${TBL_CONT[lang][c.cont]}</td>`+
       `<td>${ccap(c)||'–'}</td><td class="num">${c.pop==null ? '–' : c.pop.toLocaleString(t('locale'))}</td>`+
       `<td class="num">${c.ar!=null ? uKm2(c.ar).toLocaleString(t('locale'),{maximumFractionDigits:c.ar<10?2:0}) : '–'}</td>`+
       `<td class="num">${(c.ar&&c.pop!=null) ? (c.pop/uKm2(c.ar)).toLocaleString(t('locale'),{maximumFractionDigits:(c.pop/c.ar)<10?1:0}) : '–'}</td>`+
