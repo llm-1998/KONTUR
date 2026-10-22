@@ -540,6 +540,47 @@
   .gl-fact svg{flex:none;margin-top:1px;color:var(--accent)}
   .gl-item.open .gl-a{display:block}
   #glossScreen{padding-bottom:calc(38px + env(safe-area-inset-bottom))}
+  #duelScreen{padding-bottom:calc(30px + env(safe-area-inset-bottom))}
+  .duel-hud{position:relative;text-align:center;margin:6px 0 18px;padding-top:4px}
+  .duel-corner{position:absolute;top:0;right:0;text-align:right}
+  .duel-corner .duel-big{justify-content:flex-end}
+  .duel-big{display:flex;align-items:center;justify-content:center;gap:10px;
+    font-size:21px;font-weight:800;line-height:1;font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+  .duel-big.pop, .duel-big .pop{animation:none}
+  #duelBig.pop{display:inline-block;animation:duelpop .35s ease}
+  .duel-flame svg{width:15px;height:15px;color:var(--accent)}
+  .duel-best{color:var(--ink-soft);font-size:11px;margin-top:3px;font-variant-numeric:tabular-nums}
+  .duel-caticon svg{width:46px;height:46px;color:var(--accent)}
+  .duel-caticon{line-height:1}
+  .duel-caticon.pop{animation:duelpop .35s ease}
+  .duel-catlabel{margin:7px 0 4px;font-size:13.5px;font-weight:800;letter-spacing:.2em;text-transform:uppercase;color:var(--ink)}
+  .duel-catlabel.pop{animation:duelpop .35s ease}
+  .duel-hud.rounds .duel-big{font-size:16px}
+  .duel-catbtn{display:inline-flex;align-items:center;gap:7px}
+  .duel-catbtn svg{width:14px;height:14px}
+  .duel-catchip.pop{animation:duelpop .35s ease}
+  @keyframes duelpop{0%{transform:scale(1)}40%{transform:scale(1.22)}100%{transform:scale(1)}}
+  .duel-score{color:var(--ink-soft);font-size:12.5px;margin:2px 0 10px;font-variant-numeric:tabular-nums}
+  .duel-pair{position:relative;display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+  .duel-vsbadge{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:2;
+    width:34px;height:34px;display:flex;align-items:center;justify-content:center;border-radius:50%;
+    background:var(--bg);border:1.5px solid var(--line);font-size:11px;font-weight:800;letter-spacing:.06em;color:var(--ink-soft)}
+  .duel-card{display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:9px;text-align:center;
+    background:var(--card);border:1.5px solid var(--line);
+    border-radius:16px;padding:14px 10px 12px;min-height:170px;
+    transition:border-color .25s ease, box-shadow .25s ease}
+  .duel-card.ask{border-color:color-mix(in srgb, var(--accent) 45%, var(--line))}
+  .duel-card svg{width:84px;height:84px;flex:none}
+  .duel-card svg path{fill:var(--ink)}
+  .duel-card .nm{font-weight:800;font-size:13.5px;line-height:1.3}
+  .duel-card .vl{color:var(--ink-soft);font-size:12.5px;margin-top:4px;font-variant-numeric:tabular-nums}
+  .duel-card.ok{border-color:#2e9e5b;box-shadow:0 0 0 1.5px #2e9e5b}
+  .duel-card.bad{border-color:#d84a4a;box-shadow:0 0 0 1.5px #d84a4a}
+  .duel-btns{display:grid;grid-template-columns:1fr;gap:10px;margin-top:auto;padding-top:14px}
+  .duel-btns .btn{padding:16px 10px;font-size:15.5px}
+  .duel-end{margin-top:18px;text-align:center}
+  .duel-ends{font-size:15px;font-weight:800;margin:8px 0 16px}
+  .duel-end .btn{width:100%;margin-top:10px}
   .fx-note{font-size:10.5px;color:var(--ink-soft);margin-top:7px;text-align:right}
   .fb-toprow{display:flex;align-items:baseline;gap:10px;margin-bottom:10px}
   .fb-title{font-size:12px;font-weight:800;letter-spacing:.14em;color:var(--ink-soft)}
@@ -666,17 +707,24 @@
       <button class="mode" id="trainBtn">
         <div class="t">Training</div><div class="s" id="trainSubEl" data-i18n="trainS">Umrisse lernen</div>
       </button>
-      <button class="mode" id="multiBtn" style="grid-column:1/-1">
+      <button class="mode" id="duelBtn" style="grid-column:1/-1">
+          <div class="t" data-i18n="duelT">Duell</div><div class="s" data-i18n="duelS">Mehr oder weniger? Länder im Vergleich</div>
+        </button>
+        <button class="mode" id="multiBtn" style="grid-column:1/-1">
         <div class="t" data-i18n="multiT">Mehrspieler</div><div class="s" data-i18n="multiS">Gegen Freunde – jeder auf seinem Gerät</div>
       </button>
     </div>
     <div class="label" data-i18n="lblRegion">REGION</div>
     <div class="regions" id="regionList"></div>
-    <div class="label" data-i18n="lblDiff">SCHWIERIGKEIT</div>
+    <div class="label" id="diffLbl" data-i18n="lblDiff">SCHWIERIGKEIT</div>
     <div class="regions" id="diffList"></div>
     <div class="diff-hint" id="diffHint"></div>
-    <div class="label" data-i18n="lblQtype">FRAGETYP</div>
+    <div class="label" id="qtypeLbl" data-i18n="lblQtype">FRAGETYP</div>
     <div class="regions" id="qtypeList"></div>
+      <div class="label" id="duelCatLbl" data-i18n="lblDuelCat" style="display:none">KATEGORIE</div>
+      <div class="regions" id="duelCatList" style="display:none"></div>
+      <div class="label" id="duelModeLbl" data-i18n="lblDuelMode" style="display:none">SPIELART</div>
+      <div class="regions" id="duelModeList" style="display:none"></div>
     <div class="label" data-i18n="fbLbl">SAMMLUNG</div>
     <button class="reg-open" id="fbBtn">
       <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
@@ -906,6 +954,31 @@
     <div class="fx-note" id="fxNote"></div>
     </div>
 </section>
+<section class="screen" id="duelScreen">
+  <div class="duel-hud" id="duelHud">
+    <div class="duel-corner">
+      <div class="duel-big"><span class="duel-flame" id="duelFlame"></span><span id="duelBig">0</span></div>
+      <div class="duel-best" id="duelBestLine"></div>
+    </div>
+    <div class="duel-caticon" id="duelCatIcon"></div>
+    <div class="duel-catlabel" id="duelCatChip"></div>
+  </div>
+  <div class="duel-pair">
+    <div class="duel-card" id="duelA"></div>
+    <div class="duel-vsbadge">VS</div>
+    <div class="duel-card ask" id="duelB"></div>
+  </div>
+  <div class="duel-btns" id="duelBtns">
+    <button class="btn" id="duelMoreB"><span data-i18n="duelMore">▲ Mehr</span></button>
+    <button class="btn" id="duelLessB"><span data-i18n="duelLess">▼ Weniger</span></button>
+  </div>
+  <div class="duel-end" id="duelEnd" style="display:none">
+    <div class="badge" style="color:var(--accent)" id="duelEndT"></div>
+    <div class="duel-ends" id="duelEndS"></div>
+    <button class="btn accent" id="duelAgain" data-i18n="duelAgain">Nochmal</button>
+    <button class="btn ghost" id="duelHome" data-i18n="backStart">Zurück zum Start</button>
+  </div>
+</section>
 <section class="screen" id="glossScreen">
   <div class="fb-sticky">
     <div class="fb-toprow">
@@ -1101,7 +1174,11 @@ const STRINGS = {
     mpIntro:'Spielt gleichzeitig auf euren eigenen Geräten: gleiche Länder, heimliche Tipps, Punkte nach Nähe. Region, Schwierigkeit und Rundenzahl legt der Host in der Lobby fest.',
     mpNameLbl:'DEIN NAME', mpNamePh:'Name eingeben …', mpCreate:'Runde erstellen',
     mpJoinLbl:'ODER MIT CODE BEITRETEN', mpJoin:'Beitreten', mpCodeLbl:'RAUM-CODE',
-    mpShare:'Teilen', mpCopy:'Link kopieren', mpCopyFail:'Kopieren nicht möglich – Code oben nutzen', mpPlayers:'SPIELER', mpRounds:'LÄNDER PRO PARTIE', mpTimerT:'TIMER PRO RUNDE', mpTimerOff:'Aus', mpNoTip:'Kein Tipp', fbLbl:'SAMMLUNG', fbOpen:'Faktenbuch', fbT:'FAKTENBUCH', fbSearchPh:'Faktenbuch durchsuchen …', fbLocked:'Noch nicht freigeschaltet', dbOpen:'Datenbank', dbT:'DATENBANK', dbSearchPh:'Datenbank durchsuchen …', dbArea:'Fläche (km²)', dbDens:'Einw./km²', dbGov:'Regierungsform', dbMt:'Höchster Berg', dbMtH:'Höhe (m)', dbRv:'Längster Fluss', dbRvL:'Länge (km)', dbLang:'Amtssprache(n)', dbCur:'Währung', dbCode:'Währungscode', fxNote:'Wechselkurse: Tageswerte vom {d}, geladen bei Internetverbindung · Fluss: Gesamtlänge des prägenden Hauptstroms', fxNoteOff:'Wechselkurse: noch keine geladen (Internet nötig)', betaNote:'Beta-Version: Fehler können auftreten.', glossOpen:'Wusstest du?', glossT:'WUSSTEST DU?', gpFb:'Im Faktenbuch zeigen', fbToGlobe:'Auf dem Globus zeigen', fbEarth:'Erde', fbEarthFact:'Von hier oben ist keine einzige der 233 Grenzen zu sehen. Raumfahrer beschreiben bei diesem Anblick ein tiefes Gemeinschaftsgefühl mit allen Menschen dort unten: den Overview-Effekt.', fbEarthCtx:'Seinen Namen erhielt das Phänomen 1987 vom Raumfahrt-Philosophen Frank White, der dafür Dutzende Astronauten interviewte. Viele berichteten dasselbe: Aus der Umlaufbahn wirkt die Erde wie ein einziger, zerbrechlicher Organismus, und Grenzen verlieren ihre Selbstverständlichkeit. Apollo-14-Astronaut Edgar Mitchell beschrieb ein schlagartiges Gefühl weltumspannenden Bewusstseins, und Kosmonaut Juri Gagarin bat schon 1961 darum, die Schönheit dieses Planeten zu bewahren statt sie zu zerstören.<br><br>Die Psychologie zählt das Erlebnis heute zur Ehrfurchts-Forschung: Wer etwas so Überwältigendes sieht, spürt das eigene Ich zurücktreten und die Verbundenheit mit dem großen Ganzen wachsen.',
+    mpShare:'Teilen', mpCopy:'Link kopieren', mpCopyFail:'Kopieren nicht möglich – Code oben nutzen', mpPlayers:'SPIELER', mpRounds:'LÄNDER PRO PARTIE', mpTimerT:'TIMER PRO RUNDE', mpTimerOff:'Aus', mpNoTip:'Kein Tipp', fbLbl:'SAMMLUNG', fbOpen:'Faktenbuch', fbT:'FAKTENBUCH', fbSearchPh:'Faktenbuch durchsuchen …', fbLocked:'Noch nicht freigeschaltet', dbOpen:'Datenbank', dbT:'DATENBANK', dbSearchPh:'Datenbank durchsuchen …', dbArea:'Fläche (km²)', dbDens:'Einw./km²', dbGov:'Regierungsform', dbMt:'Höchster Berg', dbMtH:'Höhe (m)', dbRv:'Längster Fluss', dbRvL:'Länge (km)', dbLang:'Amtssprache(n)', dbCur:'Währung', dbCode:'Währungscode', fxNote:'Wechselkurse: Tageswerte vom {d}, geladen bei Internetverbindung · Fluss: Gesamtlänge des prägenden Hauptstroms', fxNoteOff:'Wechselkurse: noch keine geladen (Internet nötig)', betaNote:'Beta-Version: Fehler können auftreten.', glossOpen:'Wusstest du?', glossT:'WUSSTEST DU?',
+    duelT:'Duell', duelS:'Mehr oder weniger? Länder im Vergleich', lblDuelCat:'KATEGORIE', lblDuelMode:'SPIELART',
+    catPop:'Einwohner', catAr:'Fläche', catDens:'Dichte', catMt:'Berg', catRv:'Fluss', catMix:'Gemischt',
+    duelSerie:'Serie ∞', duelR10:'10 Runden', duelR20:'20 Runden',
+    duelMore:'▲ Mehr', duelLess:'▼ Weniger', duelAgain:'Nochmal', gpFb:'Im Faktenbuch zeigen', fbToGlobe:'Auf dem Globus zeigen', fbEarth:'Erde', fbEarthFact:'Von hier oben ist keine einzige der 233 Grenzen zu sehen. Raumfahrer beschreiben bei diesem Anblick ein tiefes Gemeinschaftsgefühl mit allen Menschen dort unten: den Overview-Effekt.', fbEarthCtx:'Seinen Namen erhielt das Phänomen 1987 vom Raumfahrt-Philosophen Frank White, der dafür Dutzende Astronauten interviewte. Viele berichteten dasselbe: Aus der Umlaufbahn wirkt die Erde wie ein einziger, zerbrechlicher Organismus, und Grenzen verlieren ihre Selbstverständlichkeit. Apollo-14-Astronaut Edgar Mitchell beschrieb ein schlagartiges Gefühl weltumspannenden Bewusstseins, und Kosmonaut Juri Gagarin bat schon 1961 darum, die Schönheit dieses Planeten zu bewahren statt sie zu zerstören.<br><br>Die Psychologie zählt das Erlebnis heute zur Ehrfurchts-Forschung: Wer etwas so Überwältigendes sieht, spürt das eigene Ich zurücktreten und die Verbundenheit mit dem großen Ganzen wachsen.',
     mpWaitHost:'Warten auf den Start …', mpStart:'Partie starten', mpStand:'DEIN PUNKTESTAND',
     mpNeedName:'Bitte gib zuerst einen Namen ein', mpNeed2:'Mindestens 2 Spieler nötig',
     mpErrNo:'Raum nicht gefunden – Code prüfen', mpErrFull:'Der Raum ist voll (max. 4 Spieler)',
@@ -1226,7 +1303,11 @@ const STRINGS = {
     mpIntro:'Play simultaneously on your own devices: same countries, secret guesses, points for proximity. The host sets region, difficulty and round count in the lobby.',
     mpNameLbl:'YOUR NAME', mpNamePh:'Enter a name …', mpCreate:'Create a room',
     mpJoinLbl:'OR JOIN WITH A CODE', mpJoin:'Join', mpCodeLbl:'ROOM CODE',
-    mpShare:'Share', mpCopy:'Copy link', mpCopyFail:'Copy failed – use the code above', mpPlayers:'PLAYERS', mpRounds:'COUNTRIES PER MATCH', mpTimerT:'TIMER PER ROUND', mpTimerOff:'Off', mpNoTip:'No guess', fbLbl:'COLLECTION', fbOpen:'Fact book', fbT:'FACT BOOK', fbSearchPh:'Search the fact book …', fbLocked:'Not unlocked yet', dbOpen:'Database', dbT:'DATABASE', dbSearchPh:'Search the database …', dbArea:'Area (km²)', dbDens:'Pop./km²', dbGov:'Government', dbMt:'Highest peak', dbMtH:'Height (m)', dbRv:'Longest river', dbRvL:'Length (km)', dbLang:'Official language(s)', dbCur:'Currency', dbCode:'Currency code', fxNote:'Exchange rates: daily values from {d}, fetched when online · River: total length of the main stream', fxNoteOff:'Exchange rates: none loaded yet (requires internet)', betaNote:'Beta version: errors may occur.', glossOpen:'Did you know?', glossT:'DID YOU KNOW?', gpFb:'Show in fact book', fbToGlobe:'Show on the globe', fbEarth:'Earth', fbEarthFact:'From up here, not a single one of the 233 borders can be seen. Looking at Earth like this, space travelers describe a deep sense of community with everyone below: the overview effect.', fbEarthCtx:'The phenomenon was named in 1987 by space philosopher Frank White, who interviewed dozens of astronauts for his research. Many reported the same thing: from orbit, Earth appears as a single fragile organism, and borders lose their self-evidence. Apollo 14 astronaut Edgar Mitchell described a sudden sense of global consciousness, and cosmonaut Yuri Gagarin asked as early as 1961 that the beauty of this planet be preserved, not destroyed.<br><br>Psychology today counts the experience as part of awe research: seeing something this overwhelming lets the self step back and deepens the bond with the greater whole.',
+    mpShare:'Share', mpCopy:'Copy link', mpCopyFail:'Copy failed – use the code above', mpPlayers:'PLAYERS', mpRounds:'COUNTRIES PER MATCH', mpTimerT:'TIMER PER ROUND', mpTimerOff:'Off', mpNoTip:'No guess', fbLbl:'COLLECTION', fbOpen:'Fact book', fbT:'FACT BOOK', fbSearchPh:'Search the fact book …', fbLocked:'Not unlocked yet', dbOpen:'Database', dbT:'DATABASE', dbSearchPh:'Search the database …', dbArea:'Area (km²)', dbDens:'Pop./km²', dbGov:'Government', dbMt:'Highest peak', dbMtH:'Height (m)', dbRv:'Longest river', dbRvL:'Length (km)', dbLang:'Official language(s)', dbCur:'Currency', dbCode:'Currency code', fxNote:'Exchange rates: daily values from {d}, fetched when online · River: total length of the main stream', fxNoteOff:'Exchange rates: none loaded yet (requires internet)', betaNote:'Beta version: errors may occur.', glossOpen:'Did you know?', glossT:'DID YOU KNOW?',
+    duelT:'Duel', duelS:'More or less? Countries head-to-head', lblDuelCat:'CATEGORY', lblDuelMode:'MODE',
+    catPop:'Population', catAr:'Area', catDens:'Density', catMt:'Peak', catRv:'River', catMix:'Mixed',
+    duelSerie:'Streak ∞', duelR10:'10 rounds', duelR20:'20 rounds',
+    duelMore:'▲ More', duelLess:'▼ Less', duelAgain:'Play again', gpFb:'Show in fact book', fbToGlobe:'Show on the globe', fbEarth:'Earth', fbEarthFact:'From up here, not a single one of the 233 borders can be seen. Looking at Earth like this, space travelers describe a deep sense of community with everyone below: the overview effect.', fbEarthCtx:'The phenomenon was named in 1987 by space philosopher Frank White, who interviewed dozens of astronauts for his research. Many reported the same thing: from orbit, Earth appears as a single fragile organism, and borders lose their self-evidence. Apollo 14 astronaut Edgar Mitchell described a sudden sense of global consciousness, and cosmonaut Yuri Gagarin asked as early as 1961 that the beauty of this planet be preserved, not destroyed.<br><br>Psychology today counts the experience as part of awe research: seeing something this overwhelming lets the self step back and deepens the bond with the greater whole.',
     mpWaitHost:'Waiting for the start …', mpStart:'Start match', mpStand:'YOUR SCORE',
     mpNeedName:'Please enter a name first', mpNeed2:'At least 2 players needed',
     mpErrNo:'Room not found – check the code', mpErrFull:'The room is full (max. 4 players)',
@@ -1475,7 +1556,7 @@ function renderDiffs(){
   };
   list.appendChild(bx);
 }
-const APP_VERSION = 'v1.39 · Beta · 2026-10-13';
+const APP_VERSION = 'v1.40 · Beta · 2026-10-22';
 let qtype = store0('kontur.qtype') || 'shape';
 if(!['shape','flag','cap'].includes(qtype)) qtype='shape';
 { const qx=new URLSearchParams(location.search).get('qx');
@@ -1639,17 +1720,170 @@ function renderRegions(){
 }
 renderRegions();
 let startMode = 'solo';
+/* ---------- Duell: Mehr oder weniger ---------- */
+let duelCat = store0('kontur.duelcat') || 'pop';
+let duelMode = store0('kontur.duelmode') || 'serie';
+let duelDeck=[], duelIdx=0, duelAnchor=null, duelChall=null, duelRoundCat='pop';
+let duelStreak=0, duelHits=0, duelAsked=0, duelTotal=0, duelLock=false, duelEnded=false;
+function duelVal(c,cat){
+  if(cat==='pop') return c.pop!=null ? c.pop : null;
+  if(cat==='ar') return c.ar!=null ? c.ar : null;
+  if(cat==='dens') return (c.pop!=null && c.ar) ? c.pop/c.ar : null;
+  if(cat==='mt') return c.mt ? c.mt[1] : null;
+  if(cat==='rv') return c.rv ? c.rv[1] : null;
+  return null;
+}
+function duelValText(c,cat){
+  const L=t('locale'), mi=unit==='mi';
+  if(cat==='pop') return c.pop.toLocaleString(L);
+  if(cat==='ar') return Math.round(uKm2(c.ar)).toLocaleString(L)+' '+(mi?'mi²':'km²');
+  if(cat==='dens'){ const d=c.pop/uKm2(c.ar); return (d<10?Math.round(d*10)/10:Math.round(d)).toLocaleString(L)+(mi?' /mi²':' /km²'); }
+  if(cat==='mt') return escH(c.mt[0])+' · '+uM(c.mt[1]).toLocaleString(L)+(mi?' ft':' m');
+  if(cat==='rv') return escH(c.rv[0])+' · '+Math.round(uKm(c.rv[1])).toLocaleString(L)+(mi?' mi':' km');
+  return '';
+}
+function duelShuffleDeck(){
+  let p=DATA.filter(c=>!region.conts || region.conts.includes(c.cont));
+  if(duelCat!=='mix') p=p.filter(c=>duelVal(c,duelCat)!=null);
+  if(p.length<2) p=DATA.filter(c=>!region.conts || region.conts.includes(c.cont));  // Notnetz
+  duelDeck=p.slice();
+  for(let i=duelDeck.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); const x=duelDeck[i]; duelDeck[i]=duelDeck[j]; duelDeck[j]=x; }
+  duelIdx=0;
+}
+function duelDrawNext(){
+  let guard=duelDeck.length+3;
+  while(guard--){
+    if(duelIdx>=duelDeck.length){
+      duelShuffleDeck();  // Stapel leer: frisch mischen, Serie läuft nahtlos weiter
+      if(duelDeck.length>1 && duelDeck[0]===duelAnchor){ const x=duelDeck[0]; duelDeck[0]=duelDeck[1]; duelDeck[1]=x; }
+    }
+    const c=duelDeck[duelIdx++];
+    if(c===duelAnchor) continue;
+    return c;
+  }
+  return null;
+}
+function duelPickCat(){
+  if(duelCat!=='mix') return duelCat;
+  const cats=['pop','ar','dens','mt','rv'].filter(k=>duelVal(duelAnchor,k)!=null && duelVal(duelChall,k)!=null);
+  return cats.length ? cats[Math.floor(Math.random()*cats.length)] : 'ar';
+}
+function duelPaint(reveal){
+  const de = lang==='de';
+  const best=store0('kontur.duelbest.'+duelCat)||0;
+  const bigEl=$('duelBig');
+  const newBig = duelMode==='serie' ? String(duelStreak) : Math.min(duelAsked+(reveal?0:1), duelTotal)+'/'+duelTotal;
+  if(reveal && bigEl.textContent!==newBig){ bigEl.classList.remove('pop'); void bigEl.offsetWidth; bigEl.classList.add('pop'); }
+  bigEl.textContent=newBig;
+  $('duelFlame').innerHTML = duelMode==='serie' ? ICONS.flame : '';
+  $('duelBestLine').textContent = duelMode==='serie'
+    ? (de?'Bestwert: ':'Best: ')+best
+    : (de?'Richtig: ':'Correct: ')+duelHits;
+  const chip=$('duelCatChip'), cicon=$('duelCatIcon');
+  const chipLabel=t({pop:'catPop',ar:'catAr',dens:'catDens',mt:'catMt',rv:'catRv'}[duelRoundCat]);
+  if(chip.dataset.k!==duelRoundCat){
+    [chip,cicon].forEach(el=>{ el.classList.remove('pop'); void el.offsetWidth; el.classList.add('pop'); });
+    chip.dataset.k=duelRoundCat;
+  }
+  cicon.innerHTML = duelIc(duelRoundCat);
+  chip.textContent = chipLabel;
+  $('duelHud').classList.toggle('rounds', duelMode!=='serie');
+  $('duelA').innerHTML = svgFor(duelAnchor)+'<div><div class="nm">'+escH(cname(duelAnchor))+'</div><div class="vl">'+duelValText(duelAnchor,duelRoundCat)+'</div></div>';
+  $('duelB').innerHTML = svgFor(duelChall)+'<div><div class="nm">'+escH(cname(duelChall))+'</div><div class="vl">'+(reveal?duelValText(duelChall,duelRoundCat):'?')+'</div></div>';
+  $('duelA').classList.remove('ok','bad');
+  if(!reveal) $('duelB').classList.remove('ok','bad');
+}
+function startDuel(){
+  duelShuffleDeck();
+  duelAnchor=duelDeck[duelIdx++];
+  duelChall=duelDrawNext();
+  duelRoundCat=duelPickCat();
+  duelStreak=0; duelHits=0; duelAsked=0; duelLock=false; duelEnded=false;
+  duelTotal = duelMode==='serie' ? 0 : (duelMode==='r20'?20:10);
+  $('duelEnd').style.display='none';
+  $('duelBtns').style.display='';
+  duelPaint(false);
+}
+function duelShowEnd(){
+  const de = lang==='de';
+  const best=store0('kontur.duelbest.'+duelCat)||0;
+  $('duelEndT').textContent = duelMode==='serie' ? (de?'SERIE BEENDET':'STREAK OVER') : (de?'RUNDE BEENDET':'ROUND FINISHED');
+  $('duelEndS').textContent = duelMode==='serie'
+    ? (de?'Serie: ':'Streak: ')+duelStreak+' · '+(de?'Bestwert: ':'Best: ')+best
+    : (de?'Richtig: ':'Correct: ')+duelHits+' / '+duelTotal;
+  $('duelBtns').style.display='none';
+  $('duelEnd').style.display='';
+}
+function duelAnswer(more){
+  if(duelLock || !duelChall) return;
+  duelLock=true;
+  const va=duelVal(duelAnchor,duelRoundCat), vb=duelVal(duelChall,duelRoundCat);
+  const correct = vb===va ? true : (more ? vb>va : vb<va);   // Gleichstand zählt immer als richtig
+  duelAsked++;
+  if(correct){
+    if(duelMode==='serie'){
+      duelStreak++;
+      const k='kontur.duelbest.'+duelCat;
+      if(duelStreak > (store0(k)||0)) store.set(k, duelStreak);
+    } else duelHits++;
+  }
+  duelEnded = (duelMode==='serie' && !correct) || (duelMode!=='serie' && duelAsked>=duelTotal);
+  duelPaint(true);
+  $('duelB').classList.add(correct?'ok':'bad');
+  setTimeout(()=>{
+    if(duelEnded){ duelShowEnd(); }
+    else{
+      duelAnchor=duelChall;
+      duelChall=duelDrawNext();
+      duelRoundCat=duelPickCat();
+      duelLock=false;
+      duelPaint(false);
+    }
+  }, 1500);
+}
+function duelIc(k){ try{ return {pop:ICONS.pop, ar:ICONS.area, dens:ICONS.dens, mt:ICONS.mt, rv:ICONS.rv, mix:ICONS.mix}[k]||''; }catch(e){ return ''; } }
+const DUELCATS=[['pop','catPop'],['ar','catAr'],['dens','catDens'],['mt','catMt'],['rv','catRv'],['mix','catMix']];
+function buildDuelChips(){
+  const cl=$('duelCatList'); if(!cl) return;
+  cl.innerHTML='';
+  for(const pair of DUELCATS){
+    const b=document.createElement('button');
+    b.className='region duel-catbtn'+(duelCat===pair[0]?' selected':'');
+    b.innerHTML=duelIc(pair[0])+'<span>'+t(pair[1])+'</span>';
+    b.onclick=()=>{ duelCat=pair[0]; store.set('kontur.duelcat',pair[0]); buildDuelChips(); };
+    cl.appendChild(b);
+  }
+  const ml=$('duelModeList'); ml.innerHTML='';
+  for(const pair of [['serie','duelSerie'],['r10','duelR10'],['r20','duelR20']]){
+    const b=document.createElement('button');
+    b.className='region'+(duelMode===pair[0]?' selected':'');
+    b.textContent=t(pair[1]);
+    b.onclick=()=>{ duelMode=pair[0]; store.set('kontur.duelmode',pair[0]); buildDuelChips(); };
+    ml.appendChild(b);
+  }
+}
+buildDuelChips();
+$('duelMoreB').onclick=()=>duelAnswer(true);
+$('duelLessB').onclick=()=>duelAnswer(false);
+$('duelAgain').onclick=()=>startDuel();
+$('duelHome').onclick=()=>show(startScreen);
+
 function selectMode(m){
   startMode = m;
   $('soloBtn').classList.toggle('selected', m==='solo');
   $('trainBtn').classList.toggle('selected', m==='train');
   $('multiBtn').classList.toggle('selected', m==='multi');
+  $('duelBtn').classList.toggle('selected', m==='duel');
+  const d = m==='duel';
+  ['diffLbl','diffList','diffHint','qtypeLbl','qtypeList'].forEach(id=>{ const el=$(id); if(el) el.style.display = d?'none':''; });
+  ['duelCatLbl','duelCatList','duelModeLbl','duelModeList'].forEach(id=>{ const el=$(id); if(el) el.style.display = d?'':'none'; });
 }
 $('soloBtn').onclick  = ()=>selectMode('solo');
 $('trainBtn').onclick = ()=>selectMode('train');
 $('startBtn').onclick = () => {
   if(startMode==='train'){ startTraining(); show(trainScreen); }
   else if(startMode==='multi'){ if(window.mpEnter) window.mpEnter(); }
+  else if(startMode==='duel'){ startDuel(); show(duelScreen); }
   else { startSolo(); show(gameScreen); if(matchMedia('(hover: hover)').matches) input.focus(); }
 };
 $('dailyBtn').onclick = () => { startDaily(); show(gameScreen); };
@@ -1660,9 +1894,10 @@ let startScroll=0;
 const fbScreen=$('fbScreen');
 const dbScreen=$('dbScreen');
 const glossScreen=$('glossScreen');
+const duelScreen=$('duelScreen');
 function show(screen){
   if(screen!==startScreen && startScreen.classList.contains('active')) startScroll=window.scrollY;  // Position merken
-  [startScreen,gameScreen,registerScreen,trainScreen,mpScreen,globeScreen,fbScreen,dbScreen,glossScreen].forEach(s=>s.classList.remove('active'));
+  [startScreen,gameScreen,registerScreen,trainScreen,mpScreen,globeScreen,fbScreen,dbScreen,glossScreen,duelScreen].forEach(s=>s.classList.remove('active'));
   screen.classList.add('active');
   $('regionChip').style.display = (screen===gameScreen||screen===trainScreen)?'':'none';
   $('homeBtn').style.display    = screen===startScreen?'none':'';
@@ -1798,7 +2033,12 @@ const ICONS={
   flame: IC('<path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.07-2.14-.22-4.05 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.15.43-2.29 1-3a2.5 2.5 0 0 0 2.5 2.5z"/>'),
   cap:   IC('<path d="M3 22h18M6 18v-7M10 18v-7M14 18v-7M18 18v-7M12 2l9 5H3l9-5z"/>'),
   pop:   IC('<path d="M17 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="10" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>'),
-  flag:  IC('<path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><path d="M4 22v-7"/>')
+  flag:  IC('<path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><path d="M4 22v-7"/>'),
+  area:  IC('<path d="M2 6v15l7-3 6 3 7-3V3l-7 3-6-3-7 3z"/><path d="M9 3v15M15 6v15"/>'),
+  mt:    IC('<path d="M8 3l4 8 5-5 5 15H2L8 3z"/>'),
+  rv:    IC('<path d="M2 6c.6.5 1.2 1 2.5 1C7 7 7 5 9.5 5c2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/><path d="M2 12c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/><path d="M2 18c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/>'),
+  dens:  IC('<circle cx="5" cy="5" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="19" cy="5" r="1"/><circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="19" r="1"/><circle cx="12" cy="19" r="1"/><circle cx="19" cy="19" r="1"/>'),
+  mix:   IC('<path d="M16 3h5v5M4 20L21 3M21 16v5h-5M15 15l6 6M4 4l5 5"/>')
 };
 function fmtPop(p){
   if(p == null) return '–';
@@ -2899,6 +3139,8 @@ function shareText(){
 const _applyLangHook=()=>{
   if(window.verStampSync) window.verStampSync();
   if(document.querySelector('#regTableBody tr')) dbUnitHeads();
+  if(typeof buildDuelChips==='function') buildDuelChips();
+  if(typeof duelScreen!=='undefined' && duelScreen.classList.contains('active') && duelChall && !duelEnded) duelPaint(duelLock);
   const gl=$('glossList');
   if(gl && gl.innerHTML){
     const open=[...gl.querySelectorAll('.gl-item.open')].map(el=>el.id);
@@ -3091,6 +3333,7 @@ function fmtPts(n){ return n.toLocaleString(lang==='de'?'de-DE':'en-US'); }
 /* ---- Einstieg ---- */
 window.mpEnter = ()=>{ show(mpScreen); mpView('mpSetup'); $('mpErr').textContent=''; $('mpNameInput').value = store0('kontur.mp.name') || ''; };
 $('multiBtn').onclick = ()=>selectMode('multi');
+$('duelBtn').onclick  = ()=>selectMode('duel');
 
 function myName(){
   const n=$('mpNameInput').value.trim().slice(0,14);
@@ -3527,6 +3770,14 @@ function render(){
     const cx=[-rot[0],-rot[1]], LIM=Math.PI/2-0.05;
     let caps='';
     for(const c of DATA){
+      // Länder-Kürzel: eigener Sichtcheck am Mittelpunkt – unabhängig von der Hauptstadt
+      if(d3.geoDistance([c.lon,c.lat],cx) < LIM){
+        const pc=proj([c.lon,c.lat]);
+        if(pc && pc[0]>-30&&pc[0]<430&&pc[1]>-30&&pc[1]<430){
+          caps+='<text class="iso" x="'+pc[0].toFixed(1)+'" y="'+(pc[1]-6).toFixed(1)+'" text-anchor="middle">'+c.a2+'</text>';
+        }
+      }
+      // Hauptstadt-Punkt + Name: eigene Prüfkette
       const cap=CCAP[c.a2];
       if(!cap || cap[0]==null) continue;
       const ll=[cap[1],cap[0]];
@@ -3535,10 +3786,6 @@ function render(){
       if(pt[0]<-30||pt[0]>430||pt[1]<-30||pt[1]>430) continue;
       caps+='<circle cx="'+pt[0].toFixed(1)+'" cy="'+pt[1].toFixed(1)+'" r="2.4"/>'
           + '<text x="'+(pt[0]+5).toFixed(1)+'" y="'+(pt[1]+3.5).toFixed(1)+'">'+(ccap(c)||cname(c))+'</text>';
-      const pc=proj([c.lon,c.lat]);
-      if(pc && d3.geoDistance([c.lon,c.lat],cx)<LIM && pc[0]>-30&&pc[0]<430&&pc[1]>-30&&pc[1]<430){
-        caps+='<text class="iso" x="'+pc[0].toFixed(1)+'" y="'+(pc[1]-6).toFixed(1)+'" text-anchor="middle">'+c.a2+'</text>';
-      }
     }
     gc.innerHTML=caps;
   } else if(gc.innerHTML) gc.innerHTML='';
