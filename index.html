@@ -541,7 +541,7 @@
   .gl-item.open .gl-a{display:block}
   #glossScreen{padding-bottom:calc(38px + env(safe-area-inset-bottom))}
   #duelScreen{padding-bottom:calc(30px + env(safe-area-inset-bottom))}
-  .duel-hud{position:relative;text-align:center;margin:6px 0 18px;padding-top:4px}
+  .duel-hud{position:relative;text-align:center;margin:6px 0 18px;padding-top:52px}
   .duel-corner{position:absolute;top:0;right:0;text-align:right}
   .duel-corner .duel-big{justify-content:flex-end}
   .duel-big{display:flex;align-items:center;justify-content:center;gap:10px;
@@ -1556,7 +1556,7 @@ function renderDiffs(){
   };
   list.appendChild(bx);
 }
-const APP_VERSION = 'v1.40 · Beta · 2026-10-22';
+const APP_VERSION = 'v1.41 · Beta · 2026-10-22';
 let qtype = store0('kontur.qtype') || 'shape';
 if(!['shape','flag','cap'].includes(qtype)) qtype='shape';
 { const qx=new URLSearchParams(location.search).get('qx');
