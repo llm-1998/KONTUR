@@ -433,7 +433,7 @@
   .flag-lb[hidden]{display:none}
   .flag-zoom{touch-action:none;display:flex;align-items:center;justify-content:center;
     max-width:100%;cursor:grab}
-  .flag-lb img{max-width:min(92vw,560px);max-height:62vh;border-radius:10px;
+  .flag-lb img{width:min(92vw,560px);height:auto;max-height:62vh;object-fit:contain;border-radius:10px;
     filter:drop-shadow(0 14px 40px rgba(0,0,0,.6));
     transform-origin:center center;will-change:transform;user-select:none;-webkit-user-drag:none}
   .flag-lb-x{position:absolute;top:calc(14px + var(--sat));right:16px;z-index:2;
@@ -1556,7 +1556,7 @@ function renderDiffs(){
   };
   list.appendChild(bx);
 }
-const APP_VERSION = 'v1.42 · Beta · 2026-10-31';
+const APP_VERSION = 'v1.43 · Beta · 2026-10-31';
 let qtype = store0('kontur.qtype') || 'shape';
 if(!['shape','flag','cap'].includes(qtype)) qtype='shape';
 { const qx=new URLSearchParams(location.search).get('qx');
