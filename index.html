@@ -660,7 +660,7 @@
 <div id="edgeStrip"></div>
 <div class="flag-lb" id="flagLb" hidden>
   <button class="flag-lb-x" id="flagLbX" aria-label="Schließen">✕</button>
-  <div class="flag-zoom" id="flagZoom"><img id="flagLbImg" alt="Flagge" draggable="false"></div>
+  <div class="flag-zoom" id="flagZoom"><img id="flagLbImg" alt="Flagge" draggable="false"><span class="qflag-emoji" id="flagLbEmoji" hidden></span></div>
   <div class="flag-lb-name" id="flagLbName"></div>
   <div class="flag-lb-hint" data-i18n="flagLbHint">Zwei Finger zum Zoomen · Tippen zum Schließen</div>
 </div>
@@ -1556,7 +1556,7 @@ function renderDiffs(){
   };
   list.appendChild(bx);
 }
-const APP_VERSION = 'v1.41 · Beta · 2026-10-22';
+const APP_VERSION = 'v1.42 · Beta · 2026-10-31';
 let qtype = store0('kontur.qtype') || 'shape';
 if(!['shape','flag','cap'].includes(qtype)) qtype='shape';
 { const qx=new URLSearchParams(location.search).get('qx');
@@ -1985,9 +1985,18 @@ function flagFallback(el, a2, big){
   }
 }
 function openFlagLb(a2, name){
-  const img=$('flagLbImg');
-  img.src='https://flagcdn.com/'+a2.toLowerCase()+'.svg';   // Vektor: verlustfrei in jeder Größe
-  img.onerror=()=>flagFallback(img, a2, 1);
+  const img=$('flagLbImg'), em=$('flagLbEmoji');
+  img.style.display=''; em.hidden=true;                       // frischer Start bei jedem Öffnen
+  const cc=a2.toLowerCase();
+  img.onerror=()=>{                                           // Stufe 2: großes PNG (anderes URL-Muster – umgeht z.B. no.svg-Filter)
+    img.onerror=()=>{                                         // Stufe 3: Emoji, ohne das img zu zerstören
+      img.style.display='none';
+      if(flagEmojiOK()){ em.textContent=flagEmoji(a2); em.hidden=false; }
+      else { em.textContent=t('flagMissing'); em.hidden=false; }
+    };
+    img.src='https://flagcdn.com/w1280/'+cc+'.png';
+  };
+  img.src='https://flagcdn.com/'+cc+'.svg';                   // Stufe 1: Vektor, verlustfrei in jeder Größe
   $('flagLbName').textContent=name||'';
   $('flagLbName').style.display = name ? '' : 'none';
   if(window.flagLbReset) flagLbReset();
