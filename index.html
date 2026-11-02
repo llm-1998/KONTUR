@@ -53,6 +53,7 @@
     *,*::before,*::after{animation-duration:.01ms !important;transition-duration:.01ms !important}
   }
   html,body{height:100%;overscroll-behavior-x:none}
+  html{overflow-y:scroll}
   body{
     font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
     background:var(--bg);color:var(--ink);
@@ -540,7 +541,7 @@
   .gl-fact svg{flex:none;margin-top:1px;color:var(--accent)}
   .gl-item.open .gl-a{display:block}
   #glossScreen{padding-bottom:calc(38px + env(safe-area-inset-bottom))}
-  #duelScreen{padding-bottom:calc(30px + env(safe-area-inset-bottom))}
+  #duelScreen{padding-bottom:calc(2px + env(safe-area-inset-bottom))}
   .duel-hud{position:relative;text-align:center;margin:6px 0 18px;padding-top:52px}
   .duel-corner{position:absolute;top:0;right:0;text-align:right}
   .duel-visseg{position:absolute;top:0;left:0}
