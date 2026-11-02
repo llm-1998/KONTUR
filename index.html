@@ -229,7 +229,7 @@
   .mp-player .mp-dot{width:9px;height:9px;border-radius:50%;background:var(--green);flex-shrink:0}
   .mp-player .mp-hosttag{margin-left:auto;font-size:10px;letter-spacing:.1em;color:var(--accent);font-weight:800}
   .mp-wait{text-align:center;color:var(--ink-soft);font-size:14.5px;padding:22px 0 6px}
-  .mp-topline{position:relative;display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;min-height:26px}
+  .mp-topline{position:relative;display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;min-height:34px}
   .mp-info{font-size:11px;font-weight:700;letter-spacing:.08em;color:var(--ink-soft)}
   .mp-suggest{position:absolute;top:calc(100% + 8px);left:0;right:0;background:var(--card);
     border:1.5px solid var(--line);border-radius:14px;overflow:hidden;display:none;z-index:12;
@@ -589,7 +589,15 @@
   .duel-end .btn{width:100%;margin-top:10px}
   .duel-histwrap{flex:1 1 auto;min-height:0;max-height:46dvh;overflow:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;margin:0 0 6px;text-align:left}
   .duel-hist{width:100%;border-collapse:collapse;font-size:12px}
-  .duel-hist td{padding:7px 6px;border-bottom:1px solid var(--line);vertical-align:top}
+  .duel-hist td{padding:7px 6px;border-bottom:1px solid var(--line);vertical-align:top;position:relative}
+  .duel-hist td .duel-dots{position:absolute;top:3px;right:3px;display:flex;flex-wrap:wrap;
+    justify-content:flex-end;gap:2.5px;width:17px;margin:0}
+  .duel-hist td .duel-dots i{width:7px;height:7px;border-radius:50%;display:block;
+    box-shadow:0 0 0 1px var(--card)}
+  .duel-legend{display:flex;flex-wrap:wrap;gap:5px 14px;justify-content:center;margin:2px 0 8px;
+    font-size:11.5px;font-weight:700;color:var(--ink-soft)}
+  .duel-legend span{display:inline-flex;align-items:center;gap:5px}
+  .duel-legend i{width:8px;height:8px;border-radius:50%;display:inline-block}
   .duel-hist td.n{color:var(--ink-soft);font-variant-numeric:tabular-nums;width:20px}
   .duel-hist td.ci{width:24px;color:var(--ink-soft)}
   .duel-hist td b{display:block;font-size:12px}
@@ -3837,6 +3845,7 @@ function renderPlay(){
   }
 }
 
+const MPCOLORS=['#e8b53e','#45c08a','#e5484d','#9a6bff','#29b6d8','#f2762a','#e04f88','#93a71f'];
 function mpDuelRC(){ return room && room.cats ? (Array.isArray(room.cats)?room.cats:Object.values(room.cats)) : []; }
 function mpDuelPool(ri,k){
   const reg=REGIONS[ri]||REGIONS[0];
@@ -4011,13 +4020,24 @@ function renderFinal(){
   const rlbl=$('mpRecapLbl'), rwrap=$('mpFinalRecap');
   if(duelG){
     const cats=mpDuelRC();
-    rwrap.innerHTML='<table class="duel-hist">'+cats.map((k,i)=>{
+    const pids=[...new Set([].concat(Object.keys(room.players||{}),
+      ...Object.values(room.guesses||{}).map(g=>Object.keys(g))))].sort();
+    const pcol=id=>MPCOLORS[pids.indexOf(id)%MPCOLORS.length];
+    const dots=(i,side)=>{
+      const gs=(room.guesses&&room.guesses[i])||{};
+      const h=pids.filter(id=>gs[id] && !gs[id].to && gs[id].v===side)
+        .map(id=>'<i style="background:'+pcol(id)+'"></i>').join('');
+      return h ? '<span class="duel-dots">'+h+'</span>' : '';
+    };
+    const legend='<div class="duel-legend">'+pids.map(id=>
+      '<span><i style="background:'+pcol(id)+'"></i>'+esc(nameOf(id))+'</span>').join('')+'</div>';
+    rwrap.innerHTML=legend+'<table class="duel-hist">'+cats.map((k,i)=>{
       const A=byA2[room.countries[2*i]], B=byA2[room.countries[2*i+1]];
       if(!A||!B) return '';
       const va=duelVal(A,k), vb=duelVal(B,k);
       return '<tr><td class="n">'+(i+1)+'</td><td class="ci">'+duelIc(k)+'</td>'
-        +'<td class="'+(va>=vb?'win':'')+'"><b>'+escH(cname(A))+'</b><span>'+duelValText(A,k)+'</span></td>'
-        +'<td class="'+(vb>=va?'win':'')+'"><b>'+escH(cname(B))+'</b><span>'+duelValText(B,k)+'</span></td></tr>';
+        +'<td class="'+(va>=vb?'win':'')+'">'+dots(i,0)+'<b>'+escH(cname(A))+'</b><span>'+duelValText(A,k)+'</span></td>'
+        +'<td class="'+(vb>=va?'win':'')+'">'+dots(i,1)+'<b>'+escH(cname(B))+'</b><span>'+duelValText(B,k)+'</span></td></tr>';
     }).join('')+'</table>';
     rlbl.style.display=''; rwrap.style.display='';
   } else { rlbl.style.display='none'; rwrap.style.display='none'; }
