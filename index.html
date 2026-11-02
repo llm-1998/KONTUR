@@ -583,10 +583,12 @@
   .duel-btns{display:grid;grid-template-columns:1fr;gap:10px;margin-top:auto;padding-top:14px}
   .duel-btns .btn{padding:16px 10px;font-size:15.5px}
   .duel-end{margin-top:18px;text-align:center;display:flex;flex-direction:column;flex:1}
-  .duel-end #duelAgain{margin-top:auto}
+  .duel-endbtns{position:sticky;bottom:0;margin-top:auto;z-index:3;
+    padding:16px 0 calc(6px + env(safe-area-inset-bottom));
+    background:linear-gradient(to top, var(--bg) 72%, transparent)}
   .duel-ends{font-size:15px;font-weight:800;margin:8px 0 16px}
   .duel-end .btn{width:100%;margin-top:10px}
-  .duel-histwrap{flex:1;min-height:0;overflow:auto;margin:0 0 10px;text-align:left}
+  .duel-histwrap{margin:0 0 10px;text-align:left}
   .duel-hist{width:100%;border-collapse:collapse;font-size:12px}
   .duel-hist td{padding:7px 6px;border-bottom:1px solid var(--line);vertical-align:top}
   .duel-hist td.n{color:var(--ink-soft);font-variant-numeric:tabular-nums;width:20px}
@@ -990,8 +992,10 @@
     <div class="badge" style="color:var(--accent)" id="duelEndT"></div>
     <div class="duel-ends" id="duelEndS"></div>
     <div class="duel-histwrap" id="duelHistWrap"></div>
-    <button class="btn accent" id="duelAgain" data-i18n="duelAgain">Nochmal</button>
-    <button class="btn ghost" id="duelHome" data-i18n="backStart">Zurück zum Start</button>
+    <div class="duel-endbtns">
+      <button class="btn accent" id="duelAgain" data-i18n="duelAgain">Nochmal</button>
+      <button class="btn ghost" id="duelHome" data-i18n="backStart">Zurück zum Start</button>
+    </div>
   </div>
 </section>
 <section class="screen" id="glossScreen">
@@ -1571,7 +1575,7 @@ function renderDiffs(){
   };
   list.appendChild(bx);
 }
-const APP_VERSION = 'v1.45 · Beta · 2026-11-02';
+const APP_VERSION = 'v1.46 · Beta · 2026-11-02';
 let qtype = store0('kontur.qtype') || 'shape';
 if(!['shape','flag','cap'].includes(qtype)) qtype='shape';
 { const qx=new URLSearchParams(location.search).get('qx');
