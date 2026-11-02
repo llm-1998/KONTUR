@@ -543,6 +543,9 @@
   #duelScreen{padding-bottom:calc(30px + env(safe-area-inset-bottom))}
   .duel-hud{position:relative;text-align:center;margin:6px 0 18px;padding-top:52px}
   .duel-corner{position:absolute;top:0;right:0;text-align:right}
+  .duel-visseg{position:absolute;top:0;left:0}
+  .duel-visseg button svg{width:15px;height:15px;display:block}
+  .duel-card .duel-flag{height:64px;border-radius:8px;border:1px solid var(--line);box-shadow:0 6px 18px var(--shadow)}
   .duel-corner .duel-big{justify-content:flex-end}
   .duel-big{display:flex;align-items:center;justify-content:center;gap:10px;
     font-size:21px;font-weight:800;line-height:1;font-variant-numeric:tabular-nums;letter-spacing:-.01em}
@@ -565,11 +568,12 @@
   .duel-vsbadge{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:2;
     width:34px;height:34px;display:flex;align-items:center;justify-content:center;border-radius:50%;
     background:var(--bg);border:1.5px solid var(--line);font-size:11px;font-weight:800;letter-spacing:.06em;color:var(--ink-soft)}
-  .duel-card{display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:9px;text-align:center;
+  .duel-card{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;text-align:center;
     background:var(--card);border:1.5px solid var(--line);
     border-radius:16px;padding:14px 10px 12px;min-height:170px;
     transition:border-color .25s ease, box-shadow .25s ease}
   .duel-card.ask{border-color:color-mix(in srgb, var(--accent) 45%, var(--line))}
+  .duel-fig{height:92px;display:flex;align-items:center;justify-content:center;flex:none}
   .duel-card svg{width:84px;height:84px;flex:none}
   .duel-card svg path{fill:var(--ink)}
   .duel-card .nm{font-weight:800;font-size:13.5px;line-height:1.3}
@@ -578,7 +582,8 @@
   .duel-card.bad{border-color:#d84a4a;box-shadow:0 0 0 1.5px #d84a4a}
   .duel-btns{display:grid;grid-template-columns:1fr;gap:10px;margin-top:auto;padding-top:14px}
   .duel-btns .btn{padding:16px 10px;font-size:15.5px}
-  .duel-end{margin-top:18px;text-align:center}
+  .duel-end{margin-top:18px;text-align:center;display:flex;flex-direction:column;flex:1}
+  .duel-end #duelAgain{margin-top:auto}
   .duel-ends{font-size:15px;font-weight:800;margin:8px 0 16px}
   .duel-end .btn{width:100%;margin-top:10px}
   .fx-note{font-size:10.5px;color:var(--ink-soft);margin-top:7px;text-align:right}
@@ -956,6 +961,7 @@
 </section>
 <section class="screen" id="duelScreen">
   <div class="duel-hud" id="duelHud">
+    <div class="fx-seg duel-visseg" id="duelVisSeg"><button id="duelVisO" aria-label="Umriss"></button><button id="duelVisF" aria-label="Flagge"></button></div>
     <div class="duel-corner">
       <div class="duel-big"><span class="duel-flame" id="duelFlame"></span><span id="duelBig">0</span></div>
       <div class="duel-best" id="duelBestLine"></div>
@@ -1556,7 +1562,7 @@ function renderDiffs(){
   };
   list.appendChild(bx);
 }
-const APP_VERSION = 'v1.43 · Beta · 2026-10-31';
+const APP_VERSION = 'v1.44 · Beta · 2026-11-02';
 let qtype = store0('kontur.qtype') || 'shape';
 if(!['shape','flag','cap'].includes(qtype)) qtype='shape';
 { const qx=new URLSearchParams(location.search).get('qx');
@@ -1722,6 +1728,19 @@ renderRegions();
 let startMode = 'solo';
 /* ---------- Duell: Mehr oder weniger ---------- */
 let duelCat = store0('kontur.duelcat') || 'pop';
+let duelVis = store0('kontur.duelvis') || 'outline';
+function duelVisSync(){
+  const o=$('duelVisO'), f=$('duelVisF');
+  if(!o) return;
+  o.innerHTML=ICONS.area; f.innerHTML=ICONS.flag;
+  o.classList.toggle('on', duelVis!=='flag');
+  f.classList.toggle('on', duelVis==='flag');
+}
+function duelFace(c){
+  if(duelVis!=='flag') return svgFor(c);
+  const cc=c.a2.toLowerCase();
+  return '<img class="duel-flag" alt="" src="https://flagcdn.com/h80/'+cc+'.png" srcset="https://flagcdn.com/h160/'+cc+'.png 2x" onerror="flagFallback(this,\''+c.a2+'\')">';
+}
 let duelMode = store0('kontur.duelmode') || 'serie';
 let duelDeck=[], duelIdx=0, duelAnchor=null, duelChall=null, duelRoundCat='pop';
 let duelStreak=0, duelHits=0, duelAsked=0, duelTotal=0, duelLock=false, duelEnded=false;
@@ -1788,8 +1807,8 @@ function duelPaint(reveal){
   cicon.innerHTML = duelIc(duelRoundCat);
   chip.textContent = chipLabel;
   $('duelHud').classList.toggle('rounds', duelMode!=='serie');
-  $('duelA').innerHTML = svgFor(duelAnchor)+'<div><div class="nm">'+escH(cname(duelAnchor))+'</div><div class="vl">'+duelValText(duelAnchor,duelRoundCat)+'</div></div>';
-  $('duelB').innerHTML = svgFor(duelChall)+'<div><div class="nm">'+escH(cname(duelChall))+'</div><div class="vl">'+(reveal?duelValText(duelChall,duelRoundCat):'?')+'</div></div>';
+  $('duelA').innerHTML = '<div class="duel-fig">'+duelFace(duelAnchor)+'</div><div><div class="nm">'+escH(cname(duelAnchor))+'</div><div class="vl">'+duelValText(duelAnchor,duelRoundCat)+'</div></div>';
+  $('duelB').innerHTML = '<div class="duel-fig">'+duelFace(duelChall)+'</div><div><div class="nm">'+escH(cname(duelChall))+'</div><div class="vl">'+(reveal?duelValText(duelChall,duelRoundCat):'?')+'</div></div>';
   $('duelA').classList.remove('ok','bad');
   if(!reveal) $('duelB').classList.remove('ok','bad');
 }
@@ -1802,6 +1821,7 @@ function startDuel(){
   duelTotal = duelMode==='serie' ? 0 : (duelMode==='r20'?20:10);
   $('duelEnd').style.display='none';
   $('duelBtns').style.display='';
+  duelVisSync();
   duelPaint(false);
 }
 function duelShowEnd(){
@@ -1863,6 +1883,8 @@ function buildDuelChips(){
   }
 }
 buildDuelChips();
+$('duelVisO').onclick=()=>{ duelVis='outline'; store.set('kontur.duelvis','outline'); duelVisSync(); if(duelChall) duelPaint(duelLock); };
+$('duelVisF').onclick=()=>{ duelVis='flag'; store.set('kontur.duelvis','flag'); duelVisSync(); if(duelChall) duelPaint(duelLock); };
 $('duelMoreB').onclick=()=>duelAnswer(true);
 $('duelLessB').onclick=()=>duelAnswer(false);
 $('duelAgain').onclick=()=>startDuel();
