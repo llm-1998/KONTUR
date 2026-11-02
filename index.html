@@ -618,7 +618,7 @@
   .duel-catline svg{width:16px;height:16px}
   .duel-cathead{position:relative;display:flex;align-items:center;justify-content:center;
     min-height:36px;margin:0 0 10px}
-  .duel-cathead .duel-catline{margin:0}
+  .duel-cathead-mid{text-align:center}
   #mpDuelVisSeg{position:absolute;left:auto;right:0;top:50%;transform:translateY(-50%)}
   #mpPlay.duel #mpRevealRows{margin-top:48px}
   .mp-autonext{text-align:center;font-weight:800;font-size:14px;color:var(--ink-soft);
@@ -927,7 +927,10 @@
       <div class="silhouette" id="mpSil"></div>
       <div id="mpDuelArena" style="display:none;position:relative">
         <div class="duel-cathead">
-          <div class="duel-catline" id="mpDuelCatLine"></div>
+          <div class="duel-cathead-mid">
+            <div class="duel-caticon" id="mpDuelCatIcon"></div>
+            <div class="duel-catlabel" id="mpDuelCatLabel"></div>
+          </div>
           <div class="fx-seg duel-visseg" id="mpDuelVisSeg"><button id="mpDuelVisO" aria-label="Umriss"></button><button id="mpDuelVisF" aria-label="Flagge"></button></div>
         </div>
         <div class="duel-pair">
@@ -970,9 +973,9 @@
     <div class="mp-view" id="mpFinal">
       <h2 class="mp-target" data-i18n="mpFinalT">Siegerehrung 🏆</h2>
       <div id="mpFinalRows" style="margin-top:14px"></div>
-      <div class="label" id="mpRecapLbl" style="margin-top:20px;display:none" data-i18n="mpDuelRecap">RUNDEN-CHRONIK</div>
+      <p class="mp-quip" id="mpQuip" style="margin:14px 6px 0"></p>
+      <div class="label" id="mpRecapLbl" style="margin-top:24px;display:none" data-i18n="mpDuelRecap">RUNDEN-CHRONIK</div>
       <div class="duel-histwrap" id="mpFinalRecap" style="display:none;flex:0 1 auto;max-height:38dvh"></div>
-      <p class="mp-quip" id="mpQuip"></p>
       <div class="mp-finalbar">
         <button class="btn" id="mpShareResBtn" data-i18n="share">Ergebnis teilen</button>
         <button class="btn ghost" id="mpExitBtn" data-i18n="mpAgain">Zurück zum Start</button>
@@ -1646,7 +1649,7 @@ function renderDiffs(){
   };
   list.appendChild(bx);
 }
-const APP_VERSION = 'v1.54 · Beta · 2026-11-02';
+const APP_VERSION = 'v1.55 · Beta · 2026-11-02';
 let qtype = store0('kontur.qtype') || 'shape';
 if(!['shape','flag','cap'].includes(qtype)) qtype='shape';
 { const qx=new URLSearchParams(location.search).get('qx');
@@ -3955,7 +3958,13 @@ function renderPlayDuel(){
   const mine=gs[pid];
   const phase=room.phase||'guess';
   const reveal = phase==='reveal';
-  $('mpDuelCatLine').innerHTML = duelIc(k)+'<span>'+t({pop:'catPop',ar:'catAr',dens:'catDens',mt:'catMt',rv:'catRv'}[k])+'</span>';
+  const ci=$('mpDuelCatIcon'), cl=$('mpDuelCatLabel');
+  if(ci.dataset.k!==k){
+    [ci,cl].forEach(el=>{ el.classList.remove('pop'); void el.offsetWidth; el.classList.add('pop'); });
+    ci.dataset.k=k;
+  }
+  ci.innerHTML = duelIc(k);
+  cl.textContent = t({pop:'catPop',ar:'catAr',dens:'catDens',mt:'catMt',rv:'catRv'}[k]);
   const va=duelVal(A,k), vb=duelVal(B,k);
   $('mpDuelA').innerHTML='<div class="duel-fig">'+duelFace(A)+'</div><div><div class="nm">'+escH(cname(A))+'</div><div class="vl">'+duelValText(A,k)+'</div></div>';
   $('mpDuelB').innerHTML='<div class="duel-fig">'+duelFace(B)+'</div><div><div class="nm">'+escH(cname(B))+'</div><div class="vl">'+(reveal?duelValText(B,k):'?')+'</div></div>';
