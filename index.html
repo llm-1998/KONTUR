@@ -219,7 +219,7 @@
     letter-spacing:7px;font-weight:800}
   #mpScreen{overflow-x:clip}
   .mp-err{color:var(--red);font-size:13.5px;font-weight:600;margin-top:12px;min-height:18px}
-  .mp-timer{font-size:12.5px;font-weight:800;border:1.5px solid var(--line);border-radius:99px;
+  .mp-timer{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:12.5px;font-weight:800;border:1.5px solid var(--line);border-radius:99px;
     padding:5px 11px;background:var(--card);font-variant-numeric:tabular-nums}
   .mp-timer.hot{background:var(--accent);border-color:var(--accent);color:#fff}
   .mp-code{font-size:36px;font-weight:800;letter-spacing:10px;text-align:center;background:var(--card);
@@ -229,7 +229,7 @@
   .mp-player .mp-dot{width:9px;height:9px;border-radius:50%;background:var(--green);flex-shrink:0}
   .mp-player .mp-hosttag{margin-left:auto;font-size:10px;letter-spacing:.1em;color:var(--accent);font-weight:800}
   .mp-wait{text-align:center;color:var(--ink-soft);font-size:14.5px;padding:22px 0 6px}
-  .mp-topline{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+  .mp-topline{position:relative;display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;min-height:26px}
   .mp-info{font-size:11px;font-weight:700;letter-spacing:.08em;color:var(--ink-soft)}
   .mp-suggest{position:absolute;top:calc(100% + 8px);left:0;right:0;background:var(--card);
     border:1.5px solid var(--line);border-radius:14px;overflow:hidden;display:none;z-index:12;
@@ -598,7 +598,11 @@
   .duel-catline{display:flex;align-items:center;justify-content:center;gap:7px;margin:2px 0 10px;
     font-size:12.5px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--ink-soft)}
   .duel-catline svg{width:16px;height:16px}
-  #mpDuelVisSeg{left:auto;right:0;top:-2px}
+  .duel-cathead{position:relative;display:flex;align-items:center;justify-content:center;
+    min-height:36px;margin:0 0 10px}
+  .duel-cathead .duel-catline{margin:0}
+  #mpDuelVisSeg{position:absolute;left:auto;right:0;top:50%;transform:translateY(-50%)}
+  #mpPlay.duel #mpRevealRows{margin-top:48px}
   .mp-autonext{text-align:center;font-weight:800;font-size:14px;color:var(--ink-soft);
     padding:4px 0;font-variant-numeric:tabular-nums}
   #mpPlay{padding-bottom:calc(170px + var(--sab))}
@@ -899,8 +903,10 @@
       <div class="mp-topline"><span class="modechip" id="mpRoundChip"></span><span class="mp-timer" id="mpTimer" style="display:none"></span><span class="mp-info" id="mpInfoChip"></span></div>
       <div class="silhouette" id="mpSil"></div>
       <div id="mpDuelArena" style="display:none;position:relative">
-        <div class="fx-seg duel-visseg" id="mpDuelVisSeg"><button id="mpDuelVisO" aria-label="Umriss"></button><button id="mpDuelVisF" aria-label="Flagge"></button></div>
-        <div class="duel-catline" id="mpDuelCatLine"></div>
+        <div class="duel-cathead">
+          <div class="duel-catline" id="mpDuelCatLine"></div>
+          <div class="fx-seg duel-visseg" id="mpDuelVisSeg"><button id="mpDuelVisO" aria-label="Umriss"></button><button id="mpDuelVisF" aria-label="Flagge"></button></div>
+        </div>
         <div class="duel-pair">
           <div class="duel-card" id="mpDuelA"></div>
           <div class="duel-vsbadge">VS</div>
@@ -3760,7 +3766,7 @@ function mpTimerTick(){
 setInterval(mpTimerTick, 250);
 function renderPlay(){
   if(room.cfg && (room.cfg.g||0)===1){ renderPlayDuel(); return; }
-  $('mpDuelArena').style.display='none'; $('mpSil').style.display=''; $('mpDuelBtns').style.display='none';
+  $('mpDuelArena').style.display='none'; $('mpSil').style.display=''; $('mpDuelBtns').style.display='none'; $('mpPlay').classList.remove('duel');
   $('mpTargetName').style.display=''; $('mpStandLbl').style.display='';
   $('mpStandLbl').textContent=t('mpStand'); $('mpStandRows').style.display='';
   const r=room.round, target=byA2[room.countries[r]];
@@ -3882,6 +3888,7 @@ function renderPlayDuel(){
   $('mpInfoChip').textContent=(reg[lang]).toUpperCase();
   $('mpSil').style.display='none';
   $('mpDuelArena').style.display='';
+  $('mpPlay').classList.add('duel');
   const gs=(room.guesses&&room.guesses[r])||{};
   const mine=gs[pid];
   const phase=room.phase||'guess';
