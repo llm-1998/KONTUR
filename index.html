@@ -595,6 +595,9 @@
   .duel-hist td b{display:block;font-size:12px}
   .duel-hist td span{display:block;color:var(--ink-soft);font-size:11px;margin-top:2px;font-variant-numeric:tabular-nums}
   .duel-hist td.win{background:rgba(36,86,230,.16)}
+  .duel-catline{display:flex;align-items:center;justify-content:center;gap:7px;margin:2px 0 10px;
+    font-size:12.5px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--ink-soft)}
+  .duel-catline svg{width:16px;height:16px}
   .fx-note{font-size:10.5px;color:var(--ink-soft);margin-top:7px;text-align:right}
   .fb-toprow{display:flex;align-items:baseline;gap:10px;margin-bottom:10px}
   .fb-title{font-size:12px;font-weight:800;letter-spacing:.14em;color:var(--ink-soft)}
@@ -851,18 +854,31 @@
       </div>
       <div class="label" style="margin-top:22px" data-i18n="mpPlayers">SPIELER</div>
       <div id="mpPlayerList"></div>
+      <div class="label" style="margin-top:22px" data-i18n="mpGameLbl">SPIELMODUS</div>
+      <div class="regions" id="mpGameList"></div>
       <div class="label" style="margin-top:22px" data-i18n="lblRegion">REGION</div>
       <div class="regions" id="mpRegionList"></div>
-      <div class="label" style="margin-top:18px" data-i18n="lblDiff">SCHWIERIGKEIT</div>
-      <div class="regions" id="mpDiffList"></div>
-      <div class="label" style="margin-top:18px" data-i18n="lblQtype">FRAGETYP</div>
-      <div class="regions" id="mpQtypeList"></div>
-      <div class="label" style="margin-top:18px" data-i18n="mpRounds">LÄNDER PRO PARTIE</div>
-      <div class="regions" id="mpRoundsList"></div>
-      <div class="regions" id="mpFullRoundRow"></div>
-      <div class="diff-hint" id="mpPoolHint"></div>
-      <div class="label" style="margin-top:18px" data-i18n="mpTimerT">TIMER PRO RUNDE</div>
-      <div class="regions" id="mpTimerList"></div>
+      <div class="label mp-cls" style="margin-top:18px" data-i18n="lblDiff">SCHWIERIGKEIT</div>
+      <div class="regions mp-cls" id="mpDiffList"></div>
+      <div class="label mp-cls" style="margin-top:18px" data-i18n="lblQtype">FRAGETYP</div>
+      <div class="regions mp-cls" id="mpQtypeList"></div>
+      <div class="label mp-duel" style="margin-top:18px;display:none" data-i18n="mpDuelCat">KATEGORIE</div>
+      <div class="regions mp-duel" id="mpDuelCatList" style="display:none"></div>
+      <div class="diff-hint mp-duel" id="mpDuelPoolHint" style="display:none"></div>
+      <div class="label mp-duel" style="margin-top:18px;display:none" data-i18n="mpDuelN">RUNDEN</div>
+      <div class="regions mp-duel" id="mpDuelNList" style="display:none"></div>
+      <div class="label mp-duel" style="margin-top:18px;display:none" data-i18n="mpDuelDs">ZWISCHENSTAND</div>
+      <div class="regions mp-duel" id="mpDuelDsList" style="display:none"></div>
+      <div class="diff-hint mp-duel" id="mpDuelDsHint" style="display:none" data-i18n="mpDuelDsHint"></div>
+      <div class="label mp-duel" style="margin-top:18px;display:none" data-i18n="mpDuelSd">SUDDEN DEATH</div>
+      <div class="regions mp-duel" id="mpDuelSdList" style="display:none"></div>
+      <div class="diff-hint mp-duel" id="mpDuelSdHint" style="display:none" data-i18n="mpDuelSdHint"></div>
+      <div class="label mp-cls" style="margin-top:18px" data-i18n="mpRounds">LÄNDER PRO PARTIE</div>
+      <div class="regions mp-cls" id="mpRoundsList"></div>
+      <div class="regions mp-cls" id="mpFullRoundRow"></div>
+      <div class="diff-hint mp-cls" id="mpPoolHint"></div>
+      <div class="label mp-cls" style="margin-top:18px" data-i18n="mpTimerT">TIMER PRO RUNDE</div>
+      <div class="regions mp-cls" id="mpTimerList"></div>
       <p class="mp-quip" id="mp233Quip" style="display:none"></p>
       <p class="mp-wait" id="mpLobbyWait" data-i18n="mpWaitHost">Warten auf den Start …</p>
       <div class="mp-finalbar" id="mpLobbyBar" style="display:none">
@@ -873,6 +889,18 @@
     <div class="mp-view" id="mpPlay">
       <div class="mp-topline"><span class="modechip" id="mpRoundChip"></span><span class="mp-timer" id="mpTimer" style="display:none"></span><span class="mp-info" id="mpInfoChip"></span></div>
       <div class="silhouette" id="mpSil"></div>
+      <div id="mpDuelArena" style="display:none">
+        <div class="duel-catline" id="mpDuelCatLine"></div>
+        <div class="duel-pair">
+          <div class="duel-card" id="mpDuelA"></div>
+          <div class="duel-vsbadge">VS</div>
+          <div class="duel-card ask" id="mpDuelB"></div>
+        </div>
+        <div class="duel-btns" id="mpDuelBtns" style="margin-top:12px;display:none">
+          <button class="btn" id="mpDuelMoreB"><span data-i18n="duelMore">▲ Mehr</span></button>
+          <button class="btn" id="mpDuelLessB"><span data-i18n="duelLess">▼ Weniger</span></button>
+        </div>
+      </div>
       <div id="mpGuessBox">
         <div class="inputrow" style="position:relative;margin-top:14px">
           <input id="mpInput" type="search" enterkeyhint="go" placeholder="Deine Antwort …" data-i18n-ph="inputPh" autocomplete="off" autocorrect="off" spellcheck="false">
@@ -890,7 +918,7 @@
         <h2 class="mp-target" id="mpTargetName"></h2>
         <div class="mp-factline" id="mpFactLine" style="display:none"></div>
         <div id="mpRevealRows"></div>
-        <div class="label" style="margin-top:20px" data-i18n="mpStand">ZWISCHENSTAND</div>
+        <div class="label" id="mpStandLbl" style="margin-top:20px" data-i18n="mpStand">ZWISCHENSTAND</div>
         <div id="mpStandRows"></div>
         <button class="btn" id="mpNextBtn" style="width:100%;margin-top:16px"></button>
         <p class="mp-wait" id="mpRevealWait" data-i18n="mpWaitReveal" style="display:none">Warten auf den Host …</p>
@@ -900,6 +928,8 @@
     <div class="mp-view" id="mpFinal">
       <h2 class="mp-target" data-i18n="mpFinalT">Siegerehrung 🏆</h2>
       <div id="mpFinalRows" style="margin-top:14px"></div>
+      <div class="label" id="mpRecapLbl" style="margin-top:20px;display:none" data-i18n="mpDuelRecap">RUNDEN-CHRONIK</div>
+      <div class="duel-histwrap" id="mpFinalRecap" style="display:none;flex:0 1 auto;max-height:38dvh"></div>
       <p class="mp-quip" id="mpQuip"></p>
       <div class="mp-finalbar">
         <button class="btn" id="mpShareResBtn" data-i18n="share">Ergebnis teilen</button>
@@ -1197,7 +1227,7 @@ const STRINGS = {
     catPop:'Einwohner', catAr:'Fläche', catDens:'Dichte', catMt:'Berg', catRv:'Fluss', catMix:'Gemischt',
     duelSerie:'Serie ∞', duelR10:'10 Runden', duelR20:'20 Runden',
     duelMore:'▲ Mehr', duelLess:'▼ Weniger', duelAgain:'Nochmal', gpFb:'Im Faktenbuch zeigen', fbToGlobe:'Auf dem Globus zeigen', fbEarth:'Erde', fbEarthFact:'Von hier oben ist keine einzige der 233 Grenzen zu sehen. Raumfahrer beschreiben bei diesem Anblick ein tiefes Gemeinschaftsgefühl mit allen Menschen dort unten: den Overview-Effekt.', fbEarthCtx:'Seinen Namen erhielt das Phänomen 1987 vom Raumfahrt-Philosophen Frank White, der dafür Dutzende Astronauten interviewte. Viele berichteten dasselbe: Aus der Umlaufbahn wirkt die Erde wie ein einziger, zerbrechlicher Organismus, und Grenzen verlieren ihre Selbstverständlichkeit. Apollo-14-Astronaut Edgar Mitchell beschrieb ein schlagartiges Gefühl weltumspannenden Bewusstseins, und Kosmonaut Juri Gagarin bat schon 1961 darum, die Schönheit dieses Planeten zu bewahren statt sie zu zerstören.<br><br>Die Psychologie zählt das Erlebnis heute zur Ehrfurchts-Forschung: Wer etwas so Überwältigendes sieht, spürt das eigene Ich zurücktreten und die Verbundenheit mit dem großen Ganzen wachsen.',
-    mpWaitHost:'Warten auf den Start …', mpStart:'Partie starten', mpStand:'DEIN PUNKTESTAND',
+    mpWaitHost:'Warten auf den Start …', mpStart:'Partie starten', mpStand:'DEIN PUNKTESTAND', mpGameLbl:'SPIELMODUS', mpGameClassic:'Klassisch', mpGameDuel:'Duell', mpDuelCat:'KATEGORIE', mpDuelN:'RUNDEN', mpDuelDs:'ZWISCHENSTAND', mpDuelSd:'SUDDEN DEATH', mpDuelOn:'An', mpDuelOff:'Aus', mpDuelDsHint:'An: Der Punktestand ist nach jeder Runde sichtbar. Aus: Spannung bis zur Siegerehrung.', mpDuelSdHint:'Bei Gleichstand an der Spitze entscheiden Extra-Runden.', mpDuelPool:'Länder mit Daten in dieser Kategorie', mpDuelNoPool:'Zu wenige Länder mit Daten – andere Kategorie wählen', mpStandAll:'ZWISCHENSTAND', mpSdChip:'SUDDEN DEATH', mpRoundD:(a,b)=>`RUNDE ${a} / ${b}`, mpDuelRecap:'RUNDEN-CHRONIK',
     mpNeedName:'Bitte gib zuerst einen Namen ein', mpNeed2:'Mindestens 2 Spieler nötig',
     mpErrNo:'Raum nicht gefunden – Code prüfen', mpErrFull:'Der Raum ist voll (max. 4 Spieler)',
     mpErrStarted:'Diese Partie läuft bereits', mpConn:'Verbinde …',
@@ -1326,7 +1356,7 @@ const STRINGS = {
     catPop:'Population', catAr:'Area', catDens:'Density', catMt:'Peak', catRv:'River', catMix:'Mixed',
     duelSerie:'Streak ∞', duelR10:'10 rounds', duelR20:'20 rounds',
     duelMore:'▲ More', duelLess:'▼ Less', duelAgain:'Play again', gpFb:'Show in fact book', fbToGlobe:'Show on the globe', fbEarth:'Earth', fbEarthFact:'From up here, not a single one of the 233 borders can be seen. Looking at Earth like this, space travelers describe a deep sense of community with everyone below: the overview effect.', fbEarthCtx:'The phenomenon was named in 1987 by space philosopher Frank White, who interviewed dozens of astronauts for his research. Many reported the same thing: from orbit, Earth appears as a single fragile organism, and borders lose their self-evidence. Apollo 14 astronaut Edgar Mitchell described a sudden sense of global consciousness, and cosmonaut Yuri Gagarin asked as early as 1961 that the beauty of this planet be preserved, not destroyed.<br><br>Psychology today counts the experience as part of awe research: seeing something this overwhelming lets the self step back and deepens the bond with the greater whole.',
-    mpWaitHost:'Waiting for the start …', mpStart:'Start match', mpStand:'YOUR SCORE',
+    mpWaitHost:'Waiting for the start …', mpStart:'Start match', mpStand:'YOUR SCORE', mpGameLbl:'GAME MODE', mpGameClassic:'Classic', mpGameDuel:'Duel', mpDuelCat:'CATEGORY', mpDuelN:'ROUNDS', mpDuelDs:'LIVE STANDINGS', mpDuelSd:'SUDDEN DEATH', mpDuelOn:'On', mpDuelOff:'Off', mpDuelDsHint:'On: standings are shown after every round. Off: suspense until the podium.', mpDuelSdHint:'If the lead is tied, extra rounds decide.', mpDuelPool:'countries with data in this category', mpDuelNoPool:'Not enough countries with data – pick another category', mpStandAll:'STANDINGS', mpSdChip:'SUDDEN DEATH', mpRoundD:(a,b)=>`ROUND ${a} / ${b}`, mpDuelRecap:'ROUND RECAP',
     mpNeedName:'Please enter a name first', mpNeed2:'At least 2 players needed',
     mpErrNo:'Room not found – check the code', mpErrFull:'The room is full (max. 4 players)',
     mpErrStarted:'This match is already running', mpConn:'Connecting …',
@@ -1574,7 +1604,7 @@ function renderDiffs(){
   };
   list.appendChild(bx);
 }
-const APP_VERSION = 'v1.47 · Beta · 2026-11-02';
+const APP_VERSION = 'v1.48 · Beta · 2026-11-02';
 let qtype = store0('kontur.qtype') || 'shape';
 if(!['shape','flag','cap'].includes(qtype)) qtype='shape';
 { const qx=new URLSearchParams(location.search).get('qx');
@@ -3408,7 +3438,7 @@ $('mpCreateBtn').onclick = async ()=>{
     await ref.set({
       created: firebase.database.ServerValue.TIMESTAMP,
       host: pid, state:'lobby',
-      cfg:{ r: Math.max(0,REGIONS.indexOf(region)), d: (diff==='x'?4:diff), n: 5, t: 0, q: (qtype==='flag'?1:qtype==='cap'?2:0) },
+      cfg:{ r: Math.max(0,REGIONS.indexOf(region)), d: (diff==='x'?4:diff), n: 5, t: 0, q: (qtype==='flag'?1:qtype==='cap'?2:0), g:0, dc: Math.max(0,DUELCATS.findIndex(pr=>pr[0]===duelCat)), dn:10, ds:1, sd:0 },
       players:{ [pid]: { name } }
     });
     ref.onDisconnect().remove();
@@ -3552,10 +3582,70 @@ function renderLobby(){
       tl.appendChild(b);
     });
   }
+  const duelG=(room.cfg.g||0)===1;
+  const gl=$('mpGameList'); gl.innerHTML=''; gl.classList.toggle('ro',!isHost);
+  [[0,'mpGameClassic'],[1,'mpGameDuel']].forEach(([gv,key])=>{
+    const b=document.createElement('button');
+    b.className='region'+(((room.cfg.g||0)===gv)?' selected':'');
+    b.textContent=t(key);
+    if(isHost) b.onclick=()=>roomRef.child('cfg/g').set(gv);
+    gl.appendChild(b);
+  });
+  document.querySelectorAll('#mpLobby .mp-cls').forEach(el=>{ el.style.display=duelG?'none':''; });
+  document.querySelectorAll('#mpLobby .mp-duel').forEach(el=>{ el.style.display=duelG?'':'none'; });
+  if(duelG){
+    const availCats=DUELCATS.map(pr=>pr[0]).filter(x=>x!=='mix' && mpDuelPool(room.cfg.r,x).length>=2);
+    const dcl=$('mpDuelCatList'); dcl.innerHTML=''; dcl.classList.toggle('ro',!isHost);
+    DUELCATS.forEach((pair,i)=>{
+      const dis = pair[0]==='mix' ? !availCats.length : mpDuelPool(room.cfg.r,pair[0]).length<2;
+      const b=document.createElement('button');
+      b.className='region duel-catbtn'+(((room.cfg.dc||0)===i)?' selected':'')+(dis?' dis':'');
+      b.innerHTML=duelIc(pair[0])+'<span>'+t(pair[1])+'</span>';
+      if(isHost && !dis) b.onclick=()=>roomRef.child('cfg/dc').set(i);
+      dcl.appendChild(b);
+    });
+    const selPair=DUELCATS[room.cfg.dc||0]||DUELCATS[0];
+    if(isHost){
+      const okSel = selPair[0]==='mix' ? availCats.length>0 : mpDuelPool(room.cfg.r,selPair[0]).length>=2;
+      if(!okSel){
+        const idx=DUELCATS.findIndex(pr=>pr[0]!=='mix' && mpDuelPool(room.cfg.r,pr[0]).length>=2);
+        if(idx>=0) roomRef.child('cfg/dc').set(idx);
+      }
+    }
+    const hint=$('mpDuelPoolHint');
+    if(selPair[0]==='mix'){ hint.style.display='none'; }
+    else{
+      hint.innerHTML='<b>'+mpDuelPool(room.cfg.r,selPair[0]).length+' '+t('countries')+'</b> · '+t('mpDuelPool');
+      hint.style.display='';
+    }
+    const nl=$('mpDuelNList'); nl.innerHTML=''; nl.classList.toggle('ro',!isHost);
+    [5,10,20].forEach(nv=>{
+      const b=document.createElement('button');
+      b.className='region'+(((room.cfg.dn||10)===nv)?' selected':'');
+      b.textContent=nv;
+      if(isHost) b.onclick=()=>roomRef.child('cfg/dn').set(nv);
+      nl.appendChild(b);
+    });
+    const mkOnOff=(elId,field,def)=>{
+      const el=$(elId); el.innerHTML=''; el.classList.toggle('ro',!isHost);
+      const cur = room.cfg[field]==null ? def : room.cfg[field];
+      [[1,'mpDuelOn'],[0,'mpDuelOff']].forEach(([v,key])=>{
+        const b=document.createElement('button');
+        b.className='region'+((cur===v)?' selected':'');
+        b.textContent=t(key);
+        if(isHost) b.onclick=()=>roomRef.child('cfg/'+field).set(v);
+        el.appendChild(b);
+      });
+    };
+    mkOnOff('mpDuelDsList','ds',1);
+    mkOnOff('mpDuelSdList','sd',0);
+    $('mpDuelDsHint').textContent=t('mpDuelDsHint');
+    $('mpDuelSdHint').textContent=t('mpDuelSdHint');
+  }
   const reg=REGIONS[room.cfg.r]||REGIONS[0];
-  $('mpInfoChip').textContent=(reg[lang]+' · '+t('diffs')[room.cfg.d-1]).toUpperCase();
+  $('mpInfoChip').textContent=(reg[lang]+' · '+(duelG ? t((DUELCATS[room.cfg.dc||0]||DUELCATS[0])[1]) : t('diffs')[room.cfg.d-1])).toUpperCase();
   const q=$('mp233Quip');
-  if(room.cfg.n===233){
+  if(room.cfg.n===233 && (room.cfg.g||0)!==1){
     let h=0; for(const ch of (roomCode||'')) h=(h*31+ch.charCodeAt(0))>>>0;
     q.textContent=t('mpQuip233')[h % t('mpQuip233').length];
     q.style.display='';
@@ -3577,6 +3667,14 @@ $('mpCopyBtn').onclick = async ()=>{
 
 $('mpStartBtn').onclick = ()=>{
   if(players().length<2){ mpToast(t('mpNeed2')); return; }
+  if((room.cfg.g||0)===1){
+    const seq=mpDuelBuildSeq(room.cfg, room.cfg.dn||10);
+    if(!seq){ mpToast(t('mpDuelNoPool')); return; }
+    roomRef.onDisconnect().cancel();
+    roomRef.update({ state:'playing', round:0, phase:'guess', countries:seq.c, cats:seq.k,
+      roundAt: firebase.database.ServerValue.TIMESTAMP });
+    return;
+  }
   const reg=REGIONS[room.cfg.r]||REGIONS[0];
   const mpPool=DATA.filter(c=>(!reg.conts||reg.conts.includes(c.cont)) && c.dl<=room.cfg.d);
   const n=Math.min(room.cfg.n, mpPool.length);
@@ -3594,7 +3692,7 @@ let mpToDone='';
 function mpTimerTick(){
   const el=$('mpTimer');
   const act = room && room.state==='playing' && (room.phase||'guess')==='guess'
-           && room.cfg && (room.cfg.t||0)>0 && room.roundAt;
+           && room.cfg && (room.cfg.g||0)!==1 && (room.cfg.t||0)>0 && room.roundAt;
   if(!act){ if(el.style.display!=='none'){ el.style.display='none'; el.classList.remove('hot'); } return; }
   const r=room.round;
   const rem=Math.max(0, (room.roundAt + room.cfg.t*1000) - (Date.now()+svOff));
@@ -3618,6 +3716,10 @@ function mpTimerTick(){
 }
 setInterval(mpTimerTick, 250);
 function renderPlay(){
+  if(room.cfg && (room.cfg.g||0)===1){ renderPlayDuel(); return; }
+  $('mpDuelArena').style.display='none'; $('mpSil').style.display='';
+  $('mpTargetName').style.display=''; $('mpStandLbl').style.display='';
+  $('mpStandLbl').textContent=t('mpStand'); $('mpStandRows').style.display='';
   const r=room.round, target=byA2[room.countries[r]];
   $('mpRoundChip').textContent=t('mpRound')(r+1, room.countries.length);
   if(shownRound!==r){
@@ -3683,6 +3785,125 @@ function renderPlay(){
   }
 }
 
+function mpDuelRC(){ return room && room.cats ? (Array.isArray(room.cats)?room.cats:Object.values(room.cats)) : []; }
+function mpDuelPool(ri,k){
+  const reg=REGIONS[ri]||REGIONS[0];
+  let p=DATA.filter(c=>!reg.conts||reg.conts.includes(c.cont));
+  if(k!=='mix') p=p.filter(c=>duelVal(c,k)!=null);
+  return p;
+}
+function mpDuelBuildSeq(cfg,n){
+  const want=(DUELCATS[cfg.dc||0]||DUELCATS[0])[0];
+  const avail=DUELCATS.map(pr=>pr[0]).filter(x=>x!=='mix' && mpDuelPool(cfg.r,x).length>=2);
+  if(want==='mix' ? !avail.length : mpDuelPool(cfg.r,want).length<2) return null;
+  const decks={}, c=[], k=[];
+  for(let i=0;i<n;i++){
+    const key = want==='mix' ? avail[Math.floor(Math.random()*avail.length)] : want;
+    if(!decks[key] || decks[key].length<2) decks[key]=shuffle(mpDuelPool(cfg.r,key).map(x=>x.a2));
+    c.push(decks[key].pop(), decks[key].pop()); k.push(key);
+  }
+  return {c,k};
+}
+function mpDuelAnswer(more){
+  if(!room || room.state!=='playing' || (room.phase||'guess')!=='guess') return;
+  if(!room.cfg || (room.cfg.g||0)!==1) return;
+  const cats=mpDuelRC(), r=room.round, k=cats[r];
+  const A=byA2[room.countries[2*r]], B=byA2[room.countries[2*r+1]];
+  if(!A||!B||!k) return;
+  if(room.guesses && room.guesses[r] && room.guesses[r][pid]) return;
+  const va=duelVal(A,k), vb=duelVal(B,k);
+  const ok = more ? (vb>=va) : (vb<=va);
+  roomRef.child('guesses/'+r+'/'+pid).set({ v: more?1:0, pts: ok?1:0, name: store0('kontur.mp.name')||'' });
+}
+$('mpDuelMoreB').onclick=()=>mpDuelAnswer(true);
+$('mpDuelLessB').onclick=()=>mpDuelAnswer(false);
+function renderPlayDuel(){
+  const cats=mpDuelRC(), r=room.round, k=cats[r];
+  const A=byA2[room.countries[2*r]], B=byA2[room.countries[2*r+1]];
+  if(!A||!B||!k) return;
+  const baseN=room.cfg.dn||cats.length;
+  $('mpRoundChip').textContent = r>=baseN ? t('mpSdChip') : t('mpRoundD')(r+1,cats.length);
+  const reg=REGIONS[room.cfg.r]||REGIONS[0];
+  $('mpInfoChip').textContent=(reg[lang]).toUpperCase();
+  $('mpSil').style.display='none';
+  $('mpDuelArena').style.display='';
+  const gs=(room.guesses&&room.guesses[r])||{};
+  const mine=gs[pid];
+  const phase=room.phase||'guess';
+  const reveal = phase==='reveal';
+  $('mpDuelCatLine').innerHTML = duelIc(k)+'<span>'+t({pop:'catPop',ar:'catAr',dens:'catDens',mt:'catMt',rv:'catRv'}[k])+'</span>';
+  const va=duelVal(A,k), vb=duelVal(B,k);
+  $('mpDuelA').innerHTML='<div class="duel-fig">'+duelFace(A)+'</div><div><div class="nm">'+escH(cname(A))+'</div><div class="vl">'+duelValText(A,k)+'</div></div>';
+  $('mpDuelB').innerHTML='<div class="duel-fig">'+duelFace(B)+'</div><div><div class="nm">'+escH(cname(B))+'</div><div class="vl">'+(reveal?duelValText(B,k):'?')+'</div></div>';
+  $('mpDuelA').classList.toggle('ok', reveal && va>=vb);
+  $('mpDuelB').classList.toggle('ok', reveal && vb>=va);
+  $('mpGuessBox').style.display='none';
+  $('mpDuelBtns').style.display = (phase==='guess' && !mine) ? '' : 'none';
+  $('mpWaitBox').style.display  = (phase==='guess')          ? '' : 'none';
+  $('mpRevealBox').style.display = reveal ? '' : 'none';
+  if(phase==='guess'){
+    const done=Object.keys(gs).length, total=players().length;
+    $('mpWaitText').textContent=(mine ? t('mpYours')+'\n' : '')+t('mpGuessed')(done,total);
+    const wl=$('mpWaitList'); wl.innerHTML='';
+    players().forEach(([id,pl])=>{
+      const div=document.createElement('div'); div.className='mp-player';
+      div.innerHTML=`<span class="mp-dot" style="background:${gs[id]?'var(--green)':'var(--line)'}"></span><span>${esc(pl.name)}</span>`;
+      wl.appendChild(div);
+    });
+    if(isHost && total>0 && done>=total && autoAdv!==r+':rev'){
+      autoAdv=r+':rev';
+      setTimeout(()=>roomRef.update({phase:'reveal'}), 400);
+    }
+  }
+  if(reveal){
+    $('mpTargetName').style.display='none';
+    $('mpFactLine').style.display='none';
+    const rows=$('mpRevealRows'); rows.innerHTML='';
+    Object.entries(gs).sort((a,b)=>b[1].pts-a[1].pts).forEach(([id,g])=>{
+      const div=document.createElement('div'); div.className='mp-row'+(id===pid?' me':'');
+      div.innerHTML='<span class="n">'+esc(nameOf(id))+'</span>'
+        +'<span class="g">'+(g.v? t('duelMore'):t('duelLess'))+'</span>'
+        +'<span class="p'+(g.pts?' hit':'')+'">+'+g.pts+'</span>';
+      rows.appendChild(div);
+    });
+    const ds = room.cfg.ds==null ? 1 : room.cfg.ds;
+    const lbl=$('mpStandLbl'), st=$('mpStandRows');
+    if(ds){
+      lbl.style.display=''; st.style.display='';
+      lbl.textContent=t('mpStandAll');
+      st.innerHTML='';
+      Object.entries(totals()).sort((a,b)=>b[1]-a[1]).forEach(([id,pts])=>{
+        const d2=document.createElement('div'); d2.className='mp-stand'+(id===pid?' me':'');
+        d2.innerHTML='<span>'+esc(nameOf(id))+'</span><span class="pts">'+pts+'</span>';
+        st.appendChild(d2);
+      });
+    } else { lbl.style.display='none'; st.style.display='none'; st.innerHTML=''; }
+    const last = r+1>=cats.length;
+    $('mpNextBtn').style.display=isHost?'':'none';
+    $('mpRevealWait').style.display=isHost?'none':'';
+    $('mpNextBtn').textContent=last?t('mpFinish'):t('mpNext');
+    $('mpNextBtn').onclick=()=> last ? mpDuelFinish() : roomRef.update({round:r+1, phase:'guess', roundAt: firebase.database.ServerValue.TIMESTAMP});
+  }
+}
+function mpDuelFinish(){
+  if((room.cfg.sd||0)===1){
+    const vals=Object.values(totals()).sort((a,b)=>b-a);
+    if(vals.length>1 && vals[0]===vals[1]){
+      const cats=mpDuelRC();
+      const want=(DUELCATS[room.cfg.dc||0]||DUELCATS[0])[0];
+      const avail=DUELCATS.map(pr=>pr[0]).filter(x=>x!=='mix' && mpDuelPool(room.cfg.r,x).length>=2);
+      const key = want==='mix' ? avail[Math.floor(Math.random()*avail.length)] : want;
+      const pool=shuffle(mpDuelPool(room.cfg.r,key).map(x=>x.a2));
+      let a=pool[0], b=pool[1];
+      const lastA=room.countries[room.countries.length-2], lastB=room.countries[room.countries.length-1];
+      if(pool.length>3 && ((a===lastA&&b===lastB)||(a===lastB&&b===lastA))){ a=pool[2]; b=pool[3]; }
+      roomRef.update({ countries: room.countries.concat([a,b]), cats: cats.concat([key]),
+        round: cats.length, phase:'guess', roundAt: firebase.database.ServerValue.TIMESTAMP });
+      return;
+    }
+  }
+  roomRef.update({state:'done'});
+}
 function renderFinal(){
   const rows=$('mpFinalRows'); rows.innerHTML='';
   const medals=['🥇','🥈','🥉','4.'];
@@ -3700,11 +3921,12 @@ function renderFinal(){
   // Spruch je Leistung
   const order=Object.entries(tt).sort((a,b)=>b[1]-a[1]).map(([id])=>id);
   const myRank=order.indexOf(pid)+1;
-  const n=(room.countries||[]).length;
+  const duelG=room.cfg&&(room.cfg.g||0)===1;
+  const n=duelG ? mpDuelRC().length : (room.countries||[]).length;
   let hits=0;
   for(let r=0;r<n;r++){
     const g=room.guesses&&room.guesses[r]&&room.guesses[r][pid];
-    if(g && g.a2===room.countries[r]) hits++;
+    if(g && (duelG ? g.pts>0 : g.a2===room.countries[r])) hits++;
   }
   const pick=arr=>{
     let h=0; const seed=(roomCode||'')+pid;
@@ -3720,6 +3942,19 @@ function renderFinal(){
   else if(myRank===2) quip=pick(t('mpQuipSilver'));
   else quip=pick(t('mpQuipBronze'));
   $('mpQuip').textContent=t('mpQuipHits')(hits,n)+' · '+quip;
+  const rlbl=$('mpRecapLbl'), rwrap=$('mpFinalRecap');
+  if(duelG){
+    const cats=mpDuelRC();
+    rwrap.innerHTML='<table class="duel-hist">'+cats.map((k,i)=>{
+      const A=byA2[room.countries[2*i]], B=byA2[room.countries[2*i+1]];
+      if(!A||!B) return '';
+      const va=duelVal(A,k), vb=duelVal(B,k);
+      return '<tr><td class="n">'+(i+1)+'</td><td class="ci">'+duelIc(k)+'</td>'
+        +'<td class="'+(va>=vb?'win':'')+'"><b>'+escH(cname(A))+'</b><span>'+duelValText(A,k)+'</span></td>'
+        +'<td class="'+(vb>=va?'win':'')+'"><b>'+escH(cname(B))+'</b><span>'+duelValText(B,k)+'</span></td></tr>';
+    }).join('')+'</table>';
+    rlbl.style.display=''; rwrap.style.display='';
+  } else { rlbl.style.display='none'; rwrap.style.display='none'; }
 }
 $('mpExitBtn').onclick=()=>{ window.mpLeave(); refreshDailyState(); show(startScreen); };
 $('mpShareResBtn').onclick=async ()=>{
@@ -3729,7 +3964,7 @@ $('mpShareResBtn').onclick=async ()=>{
   const tt=totals();
   const lines=Object.entries(tt).sort((a,b)=>b[1]-a[1])
     .map(([id,pts],i)=>`${medals[i]||''} ${(room.players[id]||{name:'?'}).name}: ${fmtPts(pts)}`);
-  const text=`KONTUR – ${t('mpShareHead')} · ${reg[lang]} · ${t('diffs')[room.cfg.d-1]}\n\n${lines.join('\n')}\n\n${shareUrl()}`;
+  const text=`KONTUR – ${t('mpShareHead')} · ${reg[lang]} · ${(room.cfg.g||0)===1 ? t((DUELCATS[room.cfg.dc||0]||DUELCATS[0])[1]) : t('diffs')[room.cfg.d-1]}\n\n${lines.join('\n')}\n\n${shareUrl()}`;
   if(navigator.share){ try{ await navigator.share({text}); return; }catch(e){} }
   try{ await navigator.clipboard.writeText(text); mpToast(t('copied')); }catch(e){}
 };
