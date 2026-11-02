@@ -598,6 +598,13 @@
     font-size:11.5px;font-weight:700;color:var(--ink-soft)}
   .duel-legend span{display:inline-flex;align-items:center;gap:5px}
   .duel-legend i{width:8px;height:8px;border-radius:50%;display:inline-block}
+  .mp-colin{margin-left:auto;width:30px;height:30px;flex:none;border:none;padding:0;
+    background:none;border-radius:50%;overflow:hidden;cursor:pointer;-webkit-appearance:none;appearance:none}
+  .mp-colin::-webkit-color-swatch-wrapper{padding:0}
+  .mp-colin::-webkit-color-swatch{border:1.5px solid var(--line);border-radius:50%}
+  .mp-colin::-moz-color-swatch{border:1.5px solid var(--line);border-radius:50%}
+  .mp-player .mp-hosttag{margin-left:auto}
+  .mp-player .mp-hosttag + .mp-colin{margin-left:10px}
   .duel-hist td.n{color:var(--ink-soft);font-variant-numeric:tabular-nums;width:20px}
   .duel-hist td.ci{width:24px;color:var(--ink-soft)}
   .duel-hist td b{display:block;font-size:12px}
@@ -870,6 +877,7 @@
       </div>
       <div class="label" style="margin-top:22px" data-i18n="mpPlayers">SPIELER</div>
       <div id="mpPlayerList"></div>
+      <div class="diff-hint mp-duel" id="mpColHint" style="display:none" data-i18n="mpColHint"></div>
       <div class="label" style="margin-top:22px" data-i18n="mpGameLbl">SPIELMODUS</div>
       <div class="regions" id="mpGameList"></div>
       <div class="label" style="margin-top:22px" data-i18n="lblRegion">REGION</div>
@@ -1254,7 +1262,7 @@ const STRINGS = {
     catPop:'Einwohner', catAr:'Fläche', catDens:'Dichte', catMt:'Berg', catRv:'Fluss', catMix:'Gemischt',
     duelSerie:'Serie ∞', duelR10:'10 Runden', duelR20:'20 Runden',
     duelMore:'▲ Mehr', duelLess:'▼ Weniger', duelAgain:'Nochmal', gpFb:'Im Faktenbuch zeigen', fbToGlobe:'Auf dem Globus zeigen', fbEarth:'Erde', fbEarthFact:'Von hier oben ist keine einzige der 233 Grenzen zu sehen. Raumfahrer beschreiben bei diesem Anblick ein tiefes Gemeinschaftsgefühl mit allen Menschen dort unten: den Overview-Effekt.', fbEarthCtx:'Seinen Namen erhielt das Phänomen 1987 vom Raumfahrt-Philosophen Frank White, der dafür Dutzende Astronauten interviewte. Viele berichteten dasselbe: Aus der Umlaufbahn wirkt die Erde wie ein einziger, zerbrechlicher Organismus, und Grenzen verlieren ihre Selbstverständlichkeit. Apollo-14-Astronaut Edgar Mitchell beschrieb ein schlagartiges Gefühl weltumspannenden Bewusstseins, und Kosmonaut Juri Gagarin bat schon 1961 darum, die Schönheit dieses Planeten zu bewahren statt sie zu zerstören.<br><br>Die Psychologie zählt das Erlebnis heute zur Ehrfurchts-Forschung: Wer etwas so Überwältigendes sieht, spürt das eigene Ich zurücktreten und die Verbundenheit mit dem großen Ganzen wachsen.',
-    mpWaitHost:'Warten auf den Start …', mpStart:'Partie starten', mpStand:'DEIN PUNKTESTAND', mpGameLbl:'SPIELMODUS', mpGameClassic:'Klassisch', mpGameDuel:'Duell', mpDuelCat:'KATEGORIE', mpDuelN:'RUNDEN', mpDuelDs:'ZWISCHENSTAND', mpDuelSd:'SUDDEN DEATH', mpDuelOn:'An', mpDuelOff:'Aus', mpDuelDsHint:'An: Der Punktestand ist nach jeder Runde sichtbar. Aus: Spannung bis zur Siegerehrung.', mpDuelSdHint:'Bei Gleichstand an der Spitze entscheiden Extra-Runden.', mpDuelPool:'Länder mit Daten in dieser Kategorie', mpDuelNoPool:'Zu wenige Länder mit Daten – andere Kategorie wählen', mpStandAll:'ZWISCHENSTAND', mpSdChip:'SUDDEN DEATH', mpRoundD:(a,b)=>`RUNDE ${a} / ${b}`, mpDuelRecap:'RUNDEN-CHRONIK', mpDuelAn:'AUTO-WEITER', mpDuelAnHint:'Nach dem Aufdecken startet die nächste Runde automatisch nach 3 Sekunden.', mpAutoIn:(s)=>`Weiter in ${s} …`,
+    mpWaitHost:'Warten auf den Start …', mpStart:'Partie starten', mpStand:'DEIN PUNKTESTAND', mpGameLbl:'SPIELMODUS', mpGameClassic:'Klassisch', mpGameDuel:'Duell', mpDuelCat:'KATEGORIE', mpDuelN:'RUNDEN', mpDuelDs:'ZWISCHENSTAND', mpDuelSd:'SUDDEN DEATH', mpDuelOn:'An', mpDuelOff:'Aus', mpDuelDsHint:'An: Der Punktestand ist nach jeder Runde sichtbar. Aus: Spannung bis zur Siegerehrung.', mpDuelSdHint:'Bei Gleichstand an der Spitze entscheiden Extra-Runden.', mpDuelPool:'Länder mit Daten in dieser Kategorie', mpDuelNoPool:'Zu wenige Länder mit Daten – andere Kategorie wählen', mpStandAll:'ZWISCHENSTAND', mpSdChip:'SUDDEN DEATH', mpRoundD:(a,b)=>`RUNDE ${a} / ${b}`, mpDuelRecap:'RUNDEN-CHRONIK', mpDuelAn:'AUTO-WEITER', mpDuelAnHint:'Nach dem Aufdecken startet die nächste Runde automatisch nach 3 Sekunden.', mpAutoIn:(s)=>`Weiter in ${s} …`, mpColHint:'Tippe auf den Farbtupfer in deiner Zeile: Deine Farbe markiert deine Tipps in der Runden-Chronik.',
     mpNeedName:'Bitte gib zuerst einen Namen ein', mpNeed2:'Mindestens 2 Spieler nötig',
     mpErrNo:'Raum nicht gefunden – Code prüfen', mpErrFull:'Der Raum ist voll (max. 4 Spieler)',
     mpErrStarted:'Diese Partie läuft bereits', mpConn:'Verbinde …',
@@ -1383,7 +1391,7 @@ const STRINGS = {
     catPop:'Population', catAr:'Area', catDens:'Density', catMt:'Peak', catRv:'River', catMix:'Mixed',
     duelSerie:'Streak ∞', duelR10:'10 rounds', duelR20:'20 rounds',
     duelMore:'▲ More', duelLess:'▼ Less', duelAgain:'Play again', gpFb:'Show in fact book', fbToGlobe:'Show on the globe', fbEarth:'Earth', fbEarthFact:'From up here, not a single one of the 233 borders can be seen. Looking at Earth like this, space travelers describe a deep sense of community with everyone below: the overview effect.', fbEarthCtx:'The phenomenon was named in 1987 by space philosopher Frank White, who interviewed dozens of astronauts for his research. Many reported the same thing: from orbit, Earth appears as a single fragile organism, and borders lose their self-evidence. Apollo 14 astronaut Edgar Mitchell described a sudden sense of global consciousness, and cosmonaut Yuri Gagarin asked as early as 1961 that the beauty of this planet be preserved, not destroyed.<br><br>Psychology today counts the experience as part of awe research: seeing something this overwhelming lets the self step back and deepens the bond with the greater whole.',
-    mpWaitHost:'Waiting for the start …', mpStart:'Start match', mpStand:'YOUR SCORE', mpGameLbl:'GAME MODE', mpGameClassic:'Classic', mpGameDuel:'Duel', mpDuelCat:'CATEGORY', mpDuelN:'ROUNDS', mpDuelDs:'LIVE STANDINGS', mpDuelSd:'SUDDEN DEATH', mpDuelOn:'On', mpDuelOff:'Off', mpDuelDsHint:'On: standings are shown after every round. Off: suspense until the podium.', mpDuelSdHint:'If the lead is tied, extra rounds decide.', mpDuelPool:'countries with data in this category', mpDuelNoPool:'Not enough countries with data – pick another category', mpStandAll:'STANDINGS', mpSdChip:'SUDDEN DEATH', mpRoundD:(a,b)=>`ROUND ${a} / ${b}`, mpDuelRecap:'ROUND RECAP', mpDuelAn:'AUTO-ADVANCE', mpDuelAnHint:'After the reveal, the next round starts automatically after 3 seconds.', mpAutoIn:(s)=>`Next in ${s} …`,
+    mpWaitHost:'Waiting for the start …', mpStart:'Start match', mpStand:'YOUR SCORE', mpGameLbl:'GAME MODE', mpGameClassic:'Classic', mpGameDuel:'Duel', mpDuelCat:'CATEGORY', mpDuelN:'ROUNDS', mpDuelDs:'LIVE STANDINGS', mpDuelSd:'SUDDEN DEATH', mpDuelOn:'On', mpDuelOff:'Off', mpDuelDsHint:'On: standings are shown after every round. Off: suspense until the podium.', mpDuelSdHint:'If the lead is tied, extra rounds decide.', mpDuelPool:'countries with data in this category', mpDuelNoPool:'Not enough countries with data – pick another category', mpStandAll:'STANDINGS', mpSdChip:'SUDDEN DEATH', mpRoundD:(a,b)=>`ROUND ${a} / ${b}`, mpDuelRecap:'ROUND RECAP', mpDuelAn:'AUTO-ADVANCE', mpDuelAnHint:'After the reveal, the next round starts automatically after 3 seconds.', mpAutoIn:(s)=>`Next in ${s} …`, mpColHint:'Tap the colour dot in your row: your colour marks your picks in the round recap.',
     mpNeedName:'Please enter a name first', mpNeed2:'At least 2 players needed',
     mpErrNo:'Room not found – check the code', mpErrFull:'The room is full (max. 4 players)',
     mpErrStarted:'This match is already running', mpConn:'Connecting …',
@@ -3452,6 +3460,12 @@ function myName(){
   store.set('kontur.mp.name', n);
   return n;
 }
+function mpSelfPlayer(name){
+  const pl={ name };
+  const c0=store0('kontur.mp.col');
+  if(/^#[0-9a-f]{6}$/i.test(c0||'')) pl.col=c0;
+  return pl;
+}
 const CODE_CHARS='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 const genCode=()=>Array.from({length:4},()=>CODE_CHARS[Math.floor(Math.random()*CODE_CHARS.length)]).join('');
 
@@ -3466,7 +3480,7 @@ $('mpCreateBtn').onclick = async ()=>{
       created: firebase.database.ServerValue.TIMESTAMP,
       host: pid, state:'lobby',
       cfg:{ r: Math.max(0,REGIONS.indexOf(region)), d: (diff==='x'?4:diff), n: 5, t: 0, q: (qtype==='flag'?1:qtype==='cap'?2:0), g:0, dc: Math.max(0,DUELCATS.findIndex(pr=>pr[0]===duelCat)), dn:10, ds:1, sd:0, dt:0, an:0 },
-      players:{ [pid]: { name } }
+      players:{ [pid]: mpSelfPlayer(name) }
     });
     ref.onDisconnect().remove();
     attach(code);
@@ -3488,7 +3502,7 @@ $('mpJoinBtn').onclick = async ()=>{
     else if(v.state!=='lobby') $('mpErr').textContent=t('mpErrStarted');
     else if(Object.keys(v.players||{}).length>=4 && !v.players[pid]) $('mpErr').textContent=t('mpErrFull');
     else{
-      await ref.child('players/'+pid).set({ name });
+      await ref.child('players/'+pid).set(mpSelfPlayer(name));
       ref.child('players/'+pid).onDisconnect().remove();
       attach(code);
     }
@@ -3543,8 +3557,17 @@ function renderLobby(){
   const list=$('mpPlayerList'); list.innerHTML='';
   players().forEach(([id,pl])=>{
     const div=document.createElement('div'); div.className='mp-player';
-    div.innerHTML=`<span class="mp-dot"></span><span>${esc(pl.name)}</span>`+
-      (id===room.host?`<span class="mp-hosttag">${t('mpHostTag')}</span>`:'');
+    const col=mpPlayerCol(id);
+    div.innerHTML=`<span class="mp-dot" style="background:${col}"></span><span>${esc(pl.name)}</span>`+
+      (id===room.host?`<span class="mp-hosttag">${t('mpHostTag')}</span>`:'')+
+      (id===pid?`<input type="color" class="mp-colin" value="${col}" aria-label="Farbe wählen">`:'');
+    const inp=div.querySelector && div.querySelector('input.mp-colin');
+    if(inp) inp.onchange=e=>{
+      const v=(e.target.value||'').toLowerCase();
+      if(!/^#[0-9a-f]{6}$/.test(v)) return;
+      store.set('kontur.mp.col', v);
+      roomRef.child('players/'+pid+'/col').set(v);
+    };
     list.appendChild(div);
   });
   $('mpLobbyBar').style.display = isHost?'':'none';
@@ -3846,6 +3869,13 @@ function renderPlay(){
 }
 
 const MPCOLORS=['#e8b53e','#45c08a','#e5484d','#9a6bff','#29b6d8','#f2762a','#e04f88','#93a71f'];
+function mpPlayerCol(id,pids){
+  const pl=room && room.players && room.players[id];
+  if(pl && /^#[0-9a-f]{6}$/i.test(pl.col||'')) return pl.col;
+  const list=pids || Object.keys((room&&room.players)||{}).sort();
+  const i=list.indexOf(id);
+  return MPCOLORS[(i<0?0:i)%MPCOLORS.length];
+}
 function mpDuelRC(){ return room && room.cats ? (Array.isArray(room.cats)?room.cats:Object.values(room.cats)) : []; }
 function mpDuelPool(ri,k){
   const reg=REGIONS[ri]||REGIONS[0];
@@ -4022,7 +4052,7 @@ function renderFinal(){
     const cats=mpDuelRC();
     const pids=[...new Set([].concat(Object.keys(room.players||{}),
       ...Object.values(room.guesses||{}).map(g=>Object.keys(g))))].sort();
-    const pcol=id=>MPCOLORS[pids.indexOf(id)%MPCOLORS.length];
+    const pcol=id=>mpPlayerCol(id,pids);
     const dots=(i,side)=>{
       const gs=(room.guesses&&room.guesses[i])||{};
       const h=pids.filter(id=>gs[id] && !gs[id].to && gs[id].v===side)
