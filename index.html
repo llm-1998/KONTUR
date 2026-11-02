@@ -586,6 +586,14 @@
   .duel-end #duelAgain{margin-top:auto}
   .duel-ends{font-size:15px;font-weight:800;margin:8px 0 16px}
   .duel-end .btn{width:100%;margin-top:10px}
+  .duel-histwrap{flex:1;min-height:0;overflow:auto;margin:0 0 10px;text-align:left}
+  .duel-hist{width:100%;border-collapse:collapse;font-size:12px}
+  .duel-hist td{padding:7px 6px;border-bottom:1px solid var(--line);vertical-align:top}
+  .duel-hist td.n{color:var(--ink-soft);font-variant-numeric:tabular-nums;width:20px}
+  .duel-hist td.ci{width:24px;color:var(--ink-soft)}
+  .duel-hist td b{display:block;font-size:12px}
+  .duel-hist td span{display:block;color:var(--ink-soft);font-size:11px;margin-top:2px;font-variant-numeric:tabular-nums}
+  .duel-hist td.win{background:rgba(36,86,230,.16)}
   .fx-note{font-size:10.5px;color:var(--ink-soft);margin-top:7px;text-align:right}
   .fb-toprow{display:flex;align-items:baseline;gap:10px;margin-bottom:10px}
   .fb-title{font-size:12px;font-weight:800;letter-spacing:.14em;color:var(--ink-soft)}
@@ -981,6 +989,7 @@
   <div class="duel-end" id="duelEnd" style="display:none">
     <div class="badge" style="color:var(--accent)" id="duelEndT"></div>
     <div class="duel-ends" id="duelEndS"></div>
+    <div class="duel-histwrap" id="duelHistWrap"></div>
     <button class="btn accent" id="duelAgain" data-i18n="duelAgain">Nochmal</button>
     <button class="btn ghost" id="duelHome" data-i18n="backStart">Zurück zum Start</button>
   </div>
@@ -1562,7 +1571,7 @@ function renderDiffs(){
   };
   list.appendChild(bx);
 }
-const APP_VERSION = 'v1.44 · Beta · 2026-11-02';
+const APP_VERSION = 'v1.45 · Beta · 2026-11-02';
 let qtype = store0('kontur.qtype') || 'shape';
 if(!['shape','flag','cap'].includes(qtype)) qtype='shape';
 { const qx=new URLSearchParams(location.search).get('qx');
@@ -1743,7 +1752,7 @@ function duelFace(c){
 }
 let duelMode = store0('kontur.duelmode') || 'serie';
 let duelDeck=[], duelIdx=0, duelAnchor=null, duelChall=null, duelRoundCat='pop';
-let duelStreak=0, duelHits=0, duelAsked=0, duelTotal=0, duelLock=false, duelEnded=false;
+let duelStreak=0, duelHits=0, duelAsked=0, duelTotal=0, duelLock=false, duelEnded=false, duelHist=[];
 function duelVal(c,cat){
   if(cat==='pop') return c.pop!=null ? c.pop : null;
   if(cat==='ar') return c.ar!=null ? c.ar : null;
@@ -1817,7 +1826,7 @@ function startDuel(){
   duelAnchor=duelDeck[duelIdx++];
   duelChall=duelDrawNext();
   duelRoundCat=duelPickCat();
-  duelStreak=0; duelHits=0; duelAsked=0; duelLock=false; duelEnded=false;
+  duelStreak=0; duelHits=0; duelAsked=0; duelLock=false; duelEnded=false; duelHist=[];
   duelTotal = duelMode==='serie' ? 0 : (duelMode==='r20'?20:10);
   $('duelEnd').style.display='none';
   $('duelBtns').style.display='';
@@ -1831,6 +1840,14 @@ function duelShowEnd(){
   $('duelEndS').textContent = duelMode==='serie'
     ? (de?'Serie: ':'Streak: ')+duelStreak+' · '+(de?'Bestwert: ':'Best: ')+best
     : (de?'Richtig: ':'Correct: ')+duelHits+' / '+duelTotal;
+  $('duelHistWrap').innerHTML = duelHist.length
+    ? '<table class="duel-hist">'+duelHist.map((h,i)=>{
+        const va=duelVal(h.a,h.c), vb=duelVal(h.b,h.c);
+        return '<tr><td class="n">'+(i+1)+'</td><td class="ci">'+duelIc(h.c)+'</td>'
+          +'<td class="'+(va>=vb?'win':'')+'"><b>'+escH(cname(h.a))+'</b><span>'+duelValText(h.a,h.c)+'</span></td>'
+          +'<td class="'+(vb>=va?'win':'')+'"><b>'+escH(cname(h.b))+'</b><span>'+duelValText(h.b,h.c)+'</span></td></tr>';
+      }).join('')+'</table>'
+    : '';
   $('duelBtns').style.display='none';
   $('duelEnd').style.display='';
 }
@@ -1839,6 +1856,7 @@ function duelAnswer(more){
   duelLock=true;
   const va=duelVal(duelAnchor,duelRoundCat), vb=duelVal(duelChall,duelRoundCat);
   const correct = vb===va ? true : (more ? vb>va : vb<va);   // Gleichstand zählt immer als richtig
+  duelHist.push({c:duelRoundCat, a:duelAnchor, b:duelChall});
   duelAsked++;
   if(correct){
     if(duelMode==='serie'){
