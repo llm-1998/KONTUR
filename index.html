@@ -820,6 +820,10 @@
       <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>
       <span data-i18n="ghLink">Open Source auf GitHub</span>
     </a>
+    <a class="ghlink" href="https://kontur-app.com/" target="_blank" rel="noopener">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 3.9 5.7 3.9 9s-1.4 6.4-3.9 9c-2.5-2.6-3.9-5.7-3.9-9s1.4-6.4 3.9-9z"/></svg>
+      <span data-i18n="appLink">App im Browser öffnen</span>
+    </a>
     <div class="cta"><button class="btn" id="startBtn">
       <span data-i18n="play">Spielen</span>
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
@@ -1187,8 +1191,8 @@
 <div class="overlay" id="moveNote">
   <div class="sheet">
     <h2 style="font-size:20px;margin:0 0 12px">KONTUR ist umgezogen&nbsp;🌍</h2>
-    <p class="movenote-p">Die App hat jetzt ein eigenes Zuhause: <b>kontur-app.com</b>. Durch den Umzug starten Lernstand und Statistiken einmalig neu. Falls du KONTUR auf dem Startbildschirm hattest, füge es bitte von dieser Seite einmal neu hinzu.</p>
-    <p class="movenote-p en">KONTUR has a new home: <b>kontur-app.com</b>. Because of the move, learning progress and stats start fresh once. If you had KONTUR on your home screen, please add it again from this page.</p>
+    <p class="movenote-p">Die App hat jetzt ein eigenes Zuhause: <a href="https://kontur-app.com/" style="color:var(--accent);font-weight:800;text-decoration:none">kontur-app.com</a>. Durch den Umzug starten Lernstand und Statistiken einmalig neu. Falls du KONTUR auf dem Startbildschirm hattest, füge es bitte von dieser Seite einmal neu hinzu.</p>
+    <p class="movenote-p en">KONTUR has a new home: <a href="https://kontur-app.com/" style="color:var(--accent);font-weight:800;text-decoration:none">kontur-app.com</a>. Because of the move, learning progress and stats start fresh once. If you had KONTUR on your home screen, please add it again from this page.</p>
     <button class="btn" id="moveNoteBtn" style="margin-top:16px">Alles klar · Got it</button>
   </div>
 </div>
@@ -1293,7 +1297,7 @@ const STRINGS = {
     resetT:'Zurücksetzen', resetSub:'Zweimal tippen zum Bestätigen',
     resetMastery:'Lernstand (Sicher-Status)', resetStats:'Spiel-Statistiken',
     resetConfirm:'Wirklich zurücksetzen?', resetDone:'Zurückgesetzt ✓',
-    ghLink:'Open Source auf GitHub', dsLink:'Datenschutz', imLink:'Impressum',
+    ghLink:'Open Source auf GitHub', appLink:'App im Browser öffnen', dsLink:'Datenschutz', imLink:'Impressum',
     shareFree:'Freies Spiel', shareTrain:'Training',
     solvedOf:(a,b)=>`${a}/${b} gelöst`, firstTryOf:(a,b)=>`${a}/${b} im 1. Versuch`,
     multiS:'Gegen Freunde – jeder auf seinem Gerät',
@@ -1422,7 +1426,7 @@ const STRINGS = {
     resetT:'Reset', resetSub:'Tap twice to confirm',
     resetMastery:'Training progress (mastered)', resetStats:'Game statistics',
     resetConfirm:'Really reset?', resetDone:'Reset done ✓',
-    ghLink:'Open source on GitHub', dsLink:'Privacy policy', imLink:'Legal notice',
+    ghLink:'Open source on GitHub', appLink:'Open app in browser', dsLink:'Privacy policy', imLink:'Legal notice',
     shareFree:'Free play', shareTrain:'Training',
     solvedOf:(a,b)=>`${a}/${b} solved`, firstTryOf:(a,b)=>`${a}/${b} on the 1st try`,
     multiS:'Against friends – everyone on their own device',
@@ -1683,7 +1687,7 @@ function renderDiffs(){
   };
   list.appendChild(bx);
 }
-const APP_VERSION = 'v1.62 · Beta · 2026-11-05';
+const APP_VERSION = 'v1.63 · Beta · 2026-11-05';
 let qtype = store0('kontur.qtype') || 'shape';
 if(!['shape','flag','cap'].includes(qtype)) qtype='shape';
 { const qx=new URLSearchParams(location.search).get('qx');
