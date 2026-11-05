@@ -610,6 +610,15 @@
   .mp-colconfirm{display:flex;align-items:center;gap:10px;margin-top:8px}
   .mp-colconfirm .mp-dot{width:20px;height:20px;flex:none;border:1.5px solid var(--line)}
   .mp-colconfirm .btn{flex:1;padding:11px;font-size:14px}
+  .mp-reqbar{display:flex;align-items:center;gap:8px;border:1.5px solid var(--accent);
+    border-radius:12px;padding:8px 10px;font-size:13px;font-weight:600}
+  .mp-reqbar span{flex:1;text-align:left}
+  .mp-finalbar .mp-reqbar .btn{width:auto;padding:8px 13px;font-size:13px}
+  .btn:disabled{opacity:.45;pointer-events:none}
+  .duel-hist td.hits{width:72px;text-align:right;vertical-align:middle}
+  .duel-hist td.hits i{width:8px;height:8px;border-radius:50%;display:inline-block;
+    margin-left:4px;box-shadow:0 0 0 1px var(--card)}
+  .duel-hist td.hits .none{color:var(--ink-soft)}
   .mp-player .mp-hosttag{margin-left:auto}
   .mp-player .mp-hosttag + .mp-colin{margin-left:10px}
   .duel-hist td.n{color:var(--ink-soft);font-variant-numeric:tabular-nums;width:20px}
@@ -983,9 +992,15 @@
       <div class="label" id="mpRecapLbl" style="margin-top:24px;display:none" data-i18n="mpDuelRecap">RUNDEN-CHRONIK</div>
       <div class="duel-histwrap" id="mpFinalRecap" style="display:none;flex:0 1 auto;max-height:38dvh"></div>
       <div class="mp-finalbar">
+        <div class="mp-reqbar" id="mpReqBar" style="display:none">
+          <span id="mpReqText"></span>
+          <button class="btn" id="mpReqYes" data-i18n="mpReqYes">Starten</button>
+          <button class="btn ghost" id="mpReqNo" data-i18n="mpReqNo">Ablehnen</button>
+        </div>
         <button class="btn ghost" id="mpShareResBtn" data-i18n="share">Ergebnis teilen</button>
         <button class="btn ghost" id="mpExitBtn" data-i18n="mpAgain">Zurück zum Start</button>
         <button class="btn accent" id="mpLobbyAgainBtn" style="display:none" data-i18n="mpNewRound">Neue Runde</button>
+        <button class="btn accent" id="mpReqBtn" style="display:none" data-i18n="mpReqAsk">Neue Runde anfragen</button>
       </div>
     </div>
   </section>
@@ -1279,7 +1294,7 @@ const STRINGS = {
     catPop:'Einwohner', catAr:'Fläche', catDens:'Dichte', catMt:'Berg', catRv:'Fluss', catMix:'Gemischt',
     duelSerie:'Serie ∞', duelR10:'10 Runden', duelR20:'20 Runden',
     duelMore:'▲ Mehr', duelLess:'▼ Weniger', duelAgain:'Nochmal', gpFb:'Im Faktenbuch zeigen', fbToGlobe:'Auf dem Globus zeigen', fbEarth:'Erde', fbEarthFact:'Von hier oben ist keine einzige der 233 Grenzen zu sehen. Raumfahrer beschreiben bei diesem Anblick ein tiefes Gemeinschaftsgefühl mit allen Menschen dort unten: den Overview-Effekt.', fbEarthCtx:'Seinen Namen erhielt das Phänomen 1987 vom Raumfahrt-Philosophen Frank White, der dafür Dutzende Astronauten interviewte. Viele berichteten dasselbe: Aus der Umlaufbahn wirkt die Erde wie ein einziger, zerbrechlicher Organismus, und Grenzen verlieren ihre Selbstverständlichkeit. Apollo-14-Astronaut Edgar Mitchell beschrieb ein schlagartiges Gefühl weltumspannenden Bewusstseins, und Kosmonaut Juri Gagarin bat schon 1961 darum, die Schönheit dieses Planeten zu bewahren statt sie zu zerstören.<br><br>Die Psychologie zählt das Erlebnis heute zur Ehrfurchts-Forschung: Wer etwas so Überwältigendes sieht, spürt das eigene Ich zurücktreten und die Verbundenheit mit dem großen Ganzen wachsen.',
-    mpWaitHost:'Warten auf den Start …', mpStart:'Partie starten', mpStand:'DEIN PUNKTESTAND', mpGameLbl:'SPIELMODUS', mpGameClassic:'Klassisch', mpGameDuel:'Duell', mpDuelCat:'KATEGORIE', mpDuelN:'RUNDEN', mpDuelDs:'ZWISCHENSTAND', mpDuelSd:'SUDDEN DEATH', mpDuelOn:'An', mpDuelOff:'Aus', mpDuelDsHint:'Zeigt den Punktestand nach jeder Runde.', mpDuelSdHint:'Bei Gleichstand entscheiden Extra-Runden.', mpDuelPool:'Länder mit Daten in dieser Kategorie', mpDuelNoPool:'Zu wenige Länder mit Daten – andere Kategorie wählen', mpStandAll:'ZWISCHENSTAND', mpSdChip:'SUDDEN DEATH', mpNewRound:'Neue Runde', mpRoundD:(a,b)=>`RUNDE ${a} / ${b}`, mpDuelRecap:'RUNDEN-CHRONIK', mpDuelAn:'AUTO-WEITER', mpDuelAnHint:'Nach dem Aufdecken startet die nächste Runde automatisch nach 3 Sekunden.', mpAutoIn:(s)=>`Weiter in ${s} …`, mpColHint:'Wähle deine Spieler-Farbe.', mpColApply:'Diese Farbe übernehmen',
+    mpWaitHost:'Warten auf den Start …', mpStart:'Partie starten', mpStand:'DEIN PUNKTESTAND', mpGameLbl:'SPIELMODUS', mpGameClassic:'Klassisch', mpGameDuel:'Duell', mpDuelCat:'KATEGORIE', mpDuelN:'RUNDEN', mpDuelDs:'ZWISCHENSTAND', mpDuelSd:'SUDDEN DEATH', mpDuelOn:'An', mpDuelOff:'Aus', mpDuelDsHint:'Zeigt den Punktestand nach jeder Runde.', mpDuelSdHint:'Bei Gleichstand entscheiden Extra-Runden.', mpDuelPool:'Länder mit Daten in dieser Kategorie', mpDuelNoPool:'Zu wenige Länder mit Daten – andere Kategorie wählen', mpStandAll:'ZWISCHENSTAND', mpSdChip:'SUDDEN DEATH', mpNewRound:'Neue Runde', mpReqAsk:'Neue Runde anfragen', mpReqSent:'Anfrage gesendet ✓', mpReqFrom:(n)=>`${n} möchte eine neue Runde`, mpReqYes:'Starten', mpReqNo:'Ablehnen', mpRoundD:(a,b)=>`RUNDE ${a} / ${b}`, mpDuelRecap:'RUNDEN-CHRONIK', mpDuelAn:'AUTO-WEITER', mpDuelAnHint:'Nach dem Aufdecken startet die nächste Runde automatisch nach 3 Sekunden.', mpAutoIn:(s)=>`Weiter in ${s} …`, mpColHint:'Wähle deine Spieler-Farbe.', mpColApply:'Diese Farbe übernehmen',
     mpNeedName:'Bitte gib zuerst einen Namen ein', mpNeed2:'Mindestens 2 Spieler nötig',
     mpErrNo:'Raum nicht gefunden – Code prüfen', mpErrFull:'Der Raum ist voll (max. 4 Spieler)',
     mpErrStarted:'Diese Partie läuft bereits', mpConn:'Verbinde …',
@@ -1408,7 +1423,7 @@ const STRINGS = {
     catPop:'Population', catAr:'Area', catDens:'Density', catMt:'Peak', catRv:'River', catMix:'Mixed',
     duelSerie:'Streak ∞', duelR10:'10 rounds', duelR20:'20 rounds',
     duelMore:'▲ More', duelLess:'▼ Less', duelAgain:'Play again', gpFb:'Show in fact book', fbToGlobe:'Show on the globe', fbEarth:'Earth', fbEarthFact:'From up here, not a single one of the 233 borders can be seen. Looking at Earth like this, space travelers describe a deep sense of community with everyone below: the overview effect.', fbEarthCtx:'The phenomenon was named in 1987 by space philosopher Frank White, who interviewed dozens of astronauts for his research. Many reported the same thing: from orbit, Earth appears as a single fragile organism, and borders lose their self-evidence. Apollo 14 astronaut Edgar Mitchell described a sudden sense of global consciousness, and cosmonaut Yuri Gagarin asked as early as 1961 that the beauty of this planet be preserved, not destroyed.<br><br>Psychology today counts the experience as part of awe research: seeing something this overwhelming lets the self step back and deepens the bond with the greater whole.',
-    mpWaitHost:'Waiting for the start …', mpStart:'Start match', mpStand:'YOUR SCORE', mpGameLbl:'GAME MODE', mpGameClassic:'Classic', mpGameDuel:'Duel', mpDuelCat:'CATEGORY', mpDuelN:'ROUNDS', mpDuelDs:'LIVE STANDINGS', mpDuelSd:'SUDDEN DEATH', mpDuelOn:'On', mpDuelOff:'Off', mpDuelDsHint:'Shows the standings after every round.', mpDuelSdHint:'A tie is decided by extra rounds.', mpDuelPool:'countries with data in this category', mpDuelNoPool:'Not enough countries with data – pick another category', mpStandAll:'STANDINGS', mpSdChip:'SUDDEN DEATH', mpNewRound:'New round', mpRoundD:(a,b)=>`ROUND ${a} / ${b}`, mpDuelRecap:'ROUND RECAP', mpDuelAn:'AUTO-ADVANCE', mpDuelAnHint:'After the reveal, the next round starts automatically after 3 seconds.', mpAutoIn:(s)=>`Next in ${s} …`, mpColHint:'Choose your player colour.', mpColApply:'Use this colour',
+    mpWaitHost:'Waiting for the start …', mpStart:'Start match', mpStand:'YOUR SCORE', mpGameLbl:'GAME MODE', mpGameClassic:'Classic', mpGameDuel:'Duel', mpDuelCat:'CATEGORY', mpDuelN:'ROUNDS', mpDuelDs:'LIVE STANDINGS', mpDuelSd:'SUDDEN DEATH', mpDuelOn:'On', mpDuelOff:'Off', mpDuelDsHint:'Shows the standings after every round.', mpDuelSdHint:'A tie is decided by extra rounds.', mpDuelPool:'countries with data in this category', mpDuelNoPool:'Not enough countries with data – pick another category', mpStandAll:'STANDINGS', mpSdChip:'SUDDEN DEATH', mpNewRound:'New round', mpReqAsk:'Request new round', mpReqSent:'Request sent ✓', mpReqFrom:(n)=>`${n} wants a new round`, mpReqYes:'Start', mpReqNo:'Decline', mpRoundD:(a,b)=>`ROUND ${a} / ${b}`, mpDuelRecap:'ROUND RECAP', mpDuelAn:'AUTO-ADVANCE', mpDuelAnHint:'After the reveal, the next round starts automatically after 3 seconds.', mpAutoIn:(s)=>`Next in ${s} …`, mpColHint:'Choose your player colour.', mpColApply:'Use this colour',
     mpNeedName:'Please enter a name first', mpNeed2:'At least 2 players needed',
     mpErrNo:'Room not found – check the code', mpErrFull:'The room is full (max. 4 players)',
     mpErrStarted:'This match is already running', mpConn:'Connecting …',
@@ -1656,7 +1671,7 @@ function renderDiffs(){
   };
   list.appendChild(bx);
 }
-const APP_VERSION = 'v1.59 · Beta · 2026-11-05';
+const APP_VERSION = 'v1.60 · Beta · 2026-11-05';
 let qtype = store0('kontur.qtype') || 'shape';
 if(!['shape','flag','cap'].includes(qtype)) qtype='shape';
 { const qx=new URLSearchParams(location.search).get('qx');
@@ -3241,7 +3256,7 @@ document.querySelector('.wordmark').addEventListener('click', ()=>{
 /* ---------- Teilen ---------- */
 let shareContext = 'daily';
 let lastTrainShare = null;
-const APP_URL = 'https://llm-1998.github.io/KONTUR/';
+const APP_URL = 'https://kontur-app.com/';
 const shareUrl = ()=> APP_URL + (lang==='en' ? 'en.html' : '');
 const miniBar = (v, max, sym='🟩') => v ? sym.repeat(Math.max(1, Math.ceil(v/max*5))) : '';
 
@@ -4059,6 +4074,13 @@ function mpDuelFinish(){
 }
 function renderFinal(){
   $('mpLobbyAgainBtn').style.display = isHost ? '' : 'none';
+  const req = room.req || null;
+  $('mpReqBar').style.display = (isHost && req) ? 'flex' : 'none';
+  if(isHost && req) $('mpReqText').textContent = t('mpReqFrom')(req);
+  const rqb=$('mpReqBtn');
+  rqb.style.display = isHost ? 'none' : '';
+  rqb.disabled = !!req;
+  rqb.textContent = req ? t('mpReqSent') : t('mpReqAsk');
   const rows=$('mpFinalRows'); rows.innerHTML='';
   const medals=['🥇','🥈','🥉','4.'];
   const tt=totals();
@@ -4097,19 +4119,19 @@ function renderFinal(){
   else quip=pick(t('mpQuipBronze'));
   $('mpQuip').textContent=t('mpQuipHits')(hits,n)+' · '+quip;
   const rlbl=$('mpRecapLbl'), rwrap=$('mpFinalRecap');
+  const pids=[...new Set([].concat(Object.keys(room.players||{}),
+    ...Object.values(room.guesses||{}).map(g=>Object.keys(g))))].sort();
+  const pcol=id=>mpPlayerCol(id,pids);
+  const legend='<div class="duel-legend">'+pids.map(id=>
+    '<span><i style="background:'+pcol(id)+'"></i>'+esc(nameOf(id))+'</span>').join('')+'</div>';
   if(duelG){
     const cats=mpDuelRC();
-    const pids=[...new Set([].concat(Object.keys(room.players||{}),
-      ...Object.values(room.guesses||{}).map(g=>Object.keys(g))))].sort();
-    const pcol=id=>mpPlayerCol(id,pids);
     const dots=(i,side)=>{
       const gs=(room.guesses&&room.guesses[i])||{};
       const h=pids.filter(id=>gs[id] && !gs[id].to && gs[id].v===side)
         .map(id=>'<i style="background:'+pcol(id)+'"></i>').join('');
       return h ? '<span class="duel-dots">'+h+'</span>' : '';
     };
-    const legend='<div class="duel-legend">'+pids.map(id=>
-      '<span><i style="background:'+pcol(id)+'"></i>'+esc(nameOf(id))+'</span>').join('')+'</div>';
     rwrap.innerHTML=legend+'<table class="duel-hist">'+cats.map((k,i)=>{
       const A=byA2[room.countries[2*i]], B=byA2[room.countries[2*i+1]];
       if(!A||!B) return '';
@@ -4119,13 +4141,30 @@ function renderFinal(){
         +'<td class="'+(vb>=va?'win':'')+'">'+dots(i,1)+'<b>'+escH(cname(B))+'</b><span>'+duelValText(B,k)+'</span></td></tr>';
     }).join('')+'</table>';
     rlbl.style.display=''; rwrap.style.display='';
+  } else if((room.countries||[]).length){
+    rwrap.innerHTML=legend+'<table class="duel-hist">'+room.countries.map((a2,i)=>{
+      const c=byA2[a2]; if(!c) return '';
+      const gs=(room.guesses&&room.guesses[i])||{};
+      const h=pids.filter(id=>gs[id] && gs[id].a2===a2)
+        .map(id=>'<i style="background:'+pcol(id)+'"></i>').join('');
+      return '<tr><td class="n">'+(i+1)+'</td>'
+        +'<td><b>'+escH(cname(c))+'</b><span>'+escH(ccap(c)||'')+'</span></td>'
+        +'<td class="hits">'+(h||'<span class="none">–</span>')+'</td></tr>';
+    }).join('')+'</table>';
+    rlbl.style.display=''; rwrap.style.display='';
   } else { rlbl.style.display='none'; rwrap.style.display='none'; }
 }
 $('mpExitBtn').onclick=()=>{ window.mpLeave(); refreshDailyState(); show(startScreen); };
 $('mpLobbyAgainBtn').onclick=()=>{
   if(!roomRef || !isHost || !room || room.state!=='done') return;
-  roomRef.update({ state:'lobby', round:null, phase:null, countries:null, cats:null, guesses:null, roundAt:null });
+  roomRef.update({ state:'lobby', round:null, phase:null, countries:null, cats:null, guesses:null, roundAt:null, req:null });
 };
+$('mpReqBtn').onclick=()=>{
+  if(!roomRef || isHost || !room || room.state!=='done' || room.req) return;
+  roomRef.child('req').set((store0('kontur.mp.name')||'?').slice(0,30));
+};
+$('mpReqYes').onclick=()=>{ $('mpLobbyAgainBtn').onclick(); };
+$('mpReqNo').onclick=()=>{ if(roomRef && isHost) roomRef.child('req').set(null); };
 $('mpShareResBtn').onclick=async ()=>{
   if(!room) return;
   const reg=REGIONS[room.cfg.r]||REGIONS[0];
