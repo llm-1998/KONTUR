@@ -354,6 +354,8 @@
     overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;
     padding-bottom:calc(30px + var(--sab))}
   @keyframes up{from{transform:translateY(40px);opacity:0}to{transform:none;opacity:1}}
+  .movenote-p{margin:0 0 10px;font-size:14.5px;line-height:1.55;color:var(--ink)}
+  .movenote-p.en{color:var(--ink-soft);font-size:13.5px;border-top:1px solid var(--line);padding-top:10px}
   #overlay .sheet{transition:transform .35s cubic-bezier(.2,.8,.2,1);touch-action:none}
   .grabber{display:flex;justify-content:center;padding:0 0 14px;margin-top:-8px;cursor:pointer}
   .grabber::before{content:'';width:44px;height:5px;border-radius:99px;background:var(--line)}
@@ -1181,6 +1183,16 @@
   </div>
 </div>
 
+<!-- UMZUGS-HINWEIS (temporär, Nov. 2026) -->
+<div class="overlay" id="moveNote">
+  <div class="sheet">
+    <h2 style="font-size:20px;margin:0 0 12px">KONTUR ist umgezogen&nbsp;🌍</h2>
+    <p class="movenote-p">Die App hat jetzt ein eigenes Zuhause: <b>kontur-app.com</b>. Durch den Umzug starten Lernstand und Statistiken einmalig neu. Falls du KONTUR auf dem Startbildschirm hattest, füge es bitte von dieser Seite einmal neu hinzu.</p>
+    <p class="movenote-p en">KONTUR has a new home: <b>kontur-app.com</b>. Because of the move, learning progress and stats start fresh once. If you had KONTUR on your home screen, please add it again from this page.</p>
+    <button class="btn" id="moveNoteBtn" style="margin-top:16px">Alles klar · Got it</button>
+  </div>
+</div>
+
 <!-- SETTINGS -->
 <div class="overlay" id="settingsOverlay">
   <div class="sheet">
@@ -1671,7 +1683,7 @@ function renderDiffs(){
   };
   list.appendChild(bx);
 }
-const APP_VERSION = 'v1.60 · Beta · 2026-11-05';
+const APP_VERSION = 'v1.62 · Beta · 2026-11-05';
 let qtype = store0('kontur.qtype') || 'shape';
 if(!['shape','flag','cap'].includes(qtype)) qtype='shape';
 { const qx=new URLSearchParams(location.search).get('qx');
@@ -3414,6 +3426,9 @@ document.querySelectorAll('#langSeg button').forEach(b=>{
   b.onclick = ()=> applyLang(b.dataset.lang);
 });
 applyLang(lang);
+/* Umzugs-Hinweis (temporär): einmalig zeigen */
+if(!store0('kontur.movenote')) $('moveNote').classList.add('open');
+$('moveNoteBtn').onclick=()=>{ store.set('kontur.movenote',1); $('moveNote').classList.remove('open'); };
 
 $('shareBtn').onclick = async ()=>{
   const text = shareText();
