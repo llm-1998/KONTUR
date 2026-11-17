@@ -700,6 +700,9 @@
   .ghlink:active{opacity:.7}
   .legalrow{display:flex;justify-content:center;gap:26px}
   .legalrow .ghlink{margin:10px 0 4px}
+  #resCountry{cursor:pointer;-webkit-tap-highlight-color:transparent}
+  #resCountry:active{opacity:.65}
+  #resCountry .res-globe-ic{opacity:.55;vertical-align:-1px;margin-left:3px;color:var(--accent)}
 
   .toast{position:fixed;top:calc(18px + var(--sat));left:50%;
     transform:translateX(-50%) translateY(calc(-64px - 100% - var(--sat)));
@@ -1687,7 +1690,7 @@ function renderDiffs(){
   };
   list.appendChild(bx);
 }
-const APP_VERSION = 'v1.63 · Beta · 2026-11-05';
+const APP_VERSION = 'v1.64 · Beta · 2026-11-17';
 let qtype = store0('kontur.qtype') || 'shape';
 if(!['shape','flag','cap'].includes(qtype)) qtype='shape';
 { const qx=new URLSearchParams(location.search).get('qx');
@@ -2356,7 +2359,8 @@ function showResult(win, animate){
   const b=$('resBadge');
   b.className='badge '+(win?'win':'lose');
   b.textContent = win?t('solved'):t('missed');
-  $('resCountry').textContent = qt()==='cap' ? (ccap(target)||cname(target))+' · '+cname(target) : cname(target);
+  const resLbl = qt()==='cap' ? (ccap(target)||cname(target))+' · '+cname(target) : cname(target);
+  $('resCountry').innerHTML = escH(resLbl)+' <svg class="res-globe-ic" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 2.5 15.4 0 18M12 3c-2.5 2.6-2.5 15.4 0 18"/></svg>';
   const rf=$('resFacts');
   rf.className='sheet-facts show';
   const famKey = qt()==='cap' ? 'c' : qt()==='flag' ? 'f' : 'l';
@@ -2435,7 +2439,10 @@ $('menuBtn').onclick = ()=>{ closeOverlay(); refreshDailyState(); show(startScre
   let sw=null;
   const wrap = startScreen.parentElement;
   const cur = ()=> registerScreen.classList.contains('active') ? registerScreen
-            : globeScreen.classList.contains('active') ? globeScreen : null;
+            : globeScreen.classList.contains('active') ? globeScreen
+            : fbScreen.classList.contains('active') ? fbScreen
+            : dbScreen.classList.contains('active') ? dbScreen
+            : glossScreen.classList.contains('active') ? glossScreen : null;
   function clean(c, sb, cta, nx){
     [c, startScreen].forEach(el=>{ if(!el) return;
       el.style.transform=''; el.style.transition=''; el.style.opacity='';
@@ -2458,9 +2465,9 @@ $('menuBtn').onclick = ()=>{ closeOverlay(); refreshDailyState(); show(startScre
     const c=cur();
     if(!c) return;
     // Schutzklauseln: Galerie, Einstellungen, Kopfzeile, Banner und Textfelder wischen nie
-    if(e.target.closest && e.target.closest('#flagLb,#settingsOverlay,header,.offline-bar,input,textarea,.reg-tablewrap')) return;
+    if(e.target.closest && e.target.closest('#flagLb,#settingsOverlay,header,.offline-bar,input,textarea,.reg-tablewrap,.fb-detail')) return;
     const inEdge = e.clientX<=EDGE;
-    const wide = (c===registerScreen)                                  // Register: volle Fläche
+    const wide = (c===registerScreen || c===fbScreen || c===dbScreen || c===glossScreen)    // Listen-Seiten: volle Fläche
               || (c===globeScreen && !(e.target.closest && e.target.closest('.globe-wrap'))); // Globus: unterhalb der Kugel
     if(!inEdge && !wide) return;
     if(inEdge) e.stopPropagation();                    // nur am Rand: Globus-Drehen fernhalten
@@ -2548,6 +2555,11 @@ function syncScrollLock(){
   document.body.style.overflow = lock ? 'hidden' : '';
 }
 function closeOverlay(){ $('overlay').classList.remove('open','peek'); syncScrollLock(); }
+$('resCountry').onclick=()=>{
+  const c=target;
+  closeOverlay();
+  if(c && c.a2 && window.globeShow) window.globeShow(c.a2);
+};
 
 /* ---------- Sheet-Wischgeste (Touch fuer iOS, Maus fuer Desktop) ---------- */
 const sheetEl = document.querySelector('#overlay .sheet');
