@@ -507,7 +507,26 @@
   .reg-facts{display:flex;gap:12px;align-items:center;margin-bottom:8px}
   .reg-facts .flagimg{height:22px;border-radius:3px;box-shadow:0 0 0 1px var(--line)}
   .reg-facts .flag{font-size:22px;line-height:1}
-  .reg-facts .fact{font-size:13px;color:var(--ink-soft)}
+  .reg-facts .fact{font-size:12.5px;color:var(--ink-soft)}
+  .reg-fcol{flex:1;min-width:0}
+  .reg-fcol .fact{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .reg-fcol .fact + .fact{margin-top:3px}
+  .reg-fcol .fact.fx{display:flex;align-items:center;gap:4px}
+  .reg-fcol .fact.fx .ic{flex:none;display:inline-flex}
+  .reg-fcol .fact.fx .nm{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .reg-fcol .fact.fx .sep,.reg-fcol .fact.fx b{flex:none;white-space:nowrap}
+  .reg-fcol .fact.fx .nm{text-decoration:underline dotted;text-underline-offset:3px;cursor:pointer}
+  .reg-table tr.db-flash td,.reg-table td.db-flash{background:rgba(36,86,230,.22)!important}
+  #dbBack{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(16px + var(--sab));z-index:30;
+    display:none;align-items:center;gap:7px;border:0;border-radius:99px;background:var(--ink);color:var(--bg);
+    font-family:inherit;font-size:13.5px;font-weight:700;padding:11px 17px;cursor:pointer;
+    box-shadow:0 10px 28px var(--shadow)}
+  #dbBack:active{transform:translateX(-50%) scale(.97)}
+  .reg-table td.lnkc{cursor:pointer;text-decoration:underline dotted;text-underline-offset:3px}
+  .reg-table td{transition:background .5s ease}
+  .reg-fcol .fact.fx[data-col]{cursor:pointer}
+  .reg-fcol .lnk{text-decoration:underline dotted;text-underline-offset:3px}
+  .reg-fcol .fact.fx b.lnk{flex:0 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis}
   .reg-facts .fact b{color:var(--ink);font-weight:700}
   .reg-facts .fact + .fact{margin-top:3px}
   .reg-tablesec{margin-top:26px}
@@ -721,6 +740,7 @@
   <button class="offline-x" id="offlineX" aria-label="Schließen">✕</button>
 </div>
 <div id="edgeStrip"></div>
+<button id="dbBack" style="display:none"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 6l-6 6 6 6"/></svg><span data-i18n="dbBackReg">Zurück zum Register</span></button>
 <div class="flag-lb" id="flagLb" hidden>
   <button class="flag-lb-x" id="flagLbX" aria-label="Schließen">✕</button>
   <div class="flag-zoom" id="flagZoom"><img id="flagLbImg" alt="Flagge" draggable="false"><span class="qflag-emoji" id="flagLbEmoji" hidden></span></div>
@@ -1190,6 +1210,17 @@
   </div>
 </div>
 
+<!-- SPRUNG ZUR DATENTABELLE -->
+<div class="overlay" id="dbJumpAsk">
+  <div class="sheet">
+    <h2 id="dbJumpTitle" style="font-size:19px;margin:0 0 16px" data-i18n="dbJumpT">Zur Datentabelle wechseln?</h2>
+    <div style="display:flex;gap:10px">
+      <button class="btn ghost" id="dbJumpNo" style="flex:1" data-i18n="dbJumpNo">Nein</button>
+      <button class="btn" id="dbJumpYes" style="flex:1" data-i18n="dbJumpYes">Ja</button>
+    </div>
+  </div>
+</div>
+
 <!-- UMZUGS-HINWEIS (temporär, Nov. 2026) -->
 <div class="overlay" id="moveNote">
   <div class="sheet">
@@ -1267,7 +1298,7 @@ const STRINGS = {
     multiT:'Mehrspieler', multiS:'Gegen Freunde', soon:'BALD',
     lblRegion:'REGION', lblLookup:'NACHSCHLAGEN', regBtnT:'Länderregister',
     countries:'Länder', entries:'EINTRÄGE', play:'Spielen',
-    regSearchPh:'Register durchsuchen …', tblT:'DATENTABELLE', tblRegion:'Region', tblLand:'Land', inputPh:'Deine Antwort …',
+    regSearchPh:'Register durchsuchen …', tblT:'DATENTABELLE', dbJumpT:'Zur Datentabelle wechseln?', dbJumpNo:'Nein', dbJumpYes:'Ja', dbBackReg:'Zurück zum Register', navGlobeT:'Zum Globus wechseln?', navRegT:'Zum Länderregister wechseln?', tblRegion:'Region', tblLand:'Land', inputPh:'Deine Antwort …',
     training:'TRAINING', iso:'ISO-Modus', skip:'Überspringen', mastered:'Sicher',
     hit:'Getroffen', hintPop:'Einwohner', hintCap:'Hauptstadt', hintFlag:'Flagge',
     fromTry:'ab Versuch', stateOpen:'OFFEN', stateOver:'VORBEI', stateSolved:'GELÖST',
@@ -1396,7 +1427,7 @@ const STRINGS = {
     multiT:'Multiplayer', multiS:'With friends', soon:'SOON',
     lblRegion:'REGION', lblLookup:'LOOK UP', regBtnT:'Country index',
     countries:'countries', entries:'ENTRIES', play:'Play',
-    regSearchPh:'Search the index …', tblT:'DATA TABLE', tblRegion:'Region', tblLand:'Country', inputPh:'Your answer …',
+    regSearchPh:'Search the index …', tblT:'DATA TABLE', dbJumpT:'Open the data table?', dbJumpNo:'No', dbJumpYes:'Yes', dbBackReg:'Back to the index', navGlobeT:'Open the globe?', navRegT:'Open the country index?', tblRegion:'Region', tblLand:'Country', inputPh:'Your answer …',
     training:'TRAINING', iso:'ISO mode', skip:'Skip', mastered:'Mastered',
     hit:'Correct', hintPop:'Population', hintCap:'Capital', hintFlag:'Flag',
     fromTry:'from guess', stateOpen:'OPEN', stateOver:'DONE', stateSolved:'SOLVED',
@@ -1690,7 +1721,7 @@ function renderDiffs(){
   };
   list.appendChild(bx);
 }
-const APP_VERSION = 'v1.65 · Beta · 2026-11-17';
+const APP_VERSION = 'v1.66 · Beta · 2026-11-17';
 let qtype = store0('kontur.qtype') || 'shape';
 if(!['shape','flag','cap'].includes(qtype)) qtype='shape';
 { const qx=new URLSearchParams(location.search).get('qx');
@@ -2063,6 +2094,7 @@ function show(screen){
   $('regionChip').style.display = (screen===gameScreen||screen===trainScreen)?'':'none';
   $('homeBtn').style.display    = screen===startScreen?'none':'';
   $('edgeStrip').style.display  = (screen===registerScreen||screen===globeScreen||screen===fbScreen||screen===dbScreen||screen===glossScreen)?'':'none';
+  $('dbBack').style.display = (screen===dbScreen && window.dbReturnA2) ? 'flex' : 'none';
   window.scrollTo(0, screen===startScreen ? startScroll : 0);                                       // heimkehren, wo man war
 }
 
@@ -2173,7 +2205,9 @@ function openOutlineLb(c){
   const b = boxFor(c.a2, c.d, p && p.d);
   const W = b.w>=b.h ? 840 : Math.round(840*b.w/b.h);
   const H = b.w>=b.h ? Math.round(840*b.h/b.w) : 840;
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="${b.x.toFixed(1)} ${b.y.toFixed(1)} ${b.w.toFixed(1)} ${b.h.toFixed(1)}">${ghost}${main}</svg>`;
+  const r = Math.max(b.w,b.h)*0.0165 + 4.5;
+  const capDot = c.cc ? `<circle cx="${c.cc[0]}" cy="${c.cc[1]}" r="${(r*1.7).toFixed(1)}" fill="rgba(36,86,230,.25)"/><circle cx="${c.cc[0]}" cy="${c.cc[1]}" r="${r.toFixed(1)}" fill="#2456E6" stroke="#fff" stroke-width="${(r*0.42).toFixed(1)}"/>` : '';
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="${b.x.toFixed(1)} ${b.y.toFixed(1)} ${b.w.toFixed(1)} ${b.h.toFixed(1)}">${ghost}${main}${capDot}</svg>`;
   const img=$('flagLbImg');
   img.onerror=null;
   img.src='data:image/svg+xml;utf8,'+encodeURIComponent(svg);
@@ -2205,6 +2239,7 @@ const ICONS={
   pop:   IC('<path d="M17 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="10" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>'),
   flag:  IC('<path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><path d="M4 22v-7"/>'),
   area:  IC('<path d="M2 6v15l7-3 6 3 7-3V3l-7 3-6-3-7 3z"/><path d="M9 3v15M15 6v15"/>'),
+  cur:   IC('<rect x="2.5" y="6.5" width="19" height="11" rx="2"/><circle cx="12" cy="12" r="2.6"/><path d="M6.2 12h.01M17.8 12h.01"/>'),
   mt:    IC('<path d="M8 3l4 8 5-5 5 15H2L8 3z"/>'),
   rv:    IC('<path d="M2 6c.6.5 1.2 1 2.5 1C7 7 7 5 9.5 5c2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/><path d="M2 12c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/><path d="M2 18c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/>'),
   dens:  IC('<circle cx="5" cy="5" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="19" cy="5" r="1"/><circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="19" r="1"/><circle cx="12" cy="19" r="1"/><circle cx="19" cy="19" r="1"/>'),
@@ -2783,6 +2818,7 @@ const svgObserver = new IntersectionObserver(entries=>{
 function buildRegister(){
   if(regBuilt) return; regBuilt=true;
   const list=$('regList'); list.innerHTML='';
+  const L=t('locale'), mi=unit==='mi';
   CONT_ORDER.forEach(cc=>{
     const items = DATA.filter(c=>c.cont===cc)
       .slice().sort((a,b)=>cname(a).localeCompare(cname(b), lang));
@@ -2804,9 +2840,15 @@ function buildRegister(){
            <div class="reg-big"></div>
            <div class="reg-facts">
              <span class="reg-flagtap">${flagHtml(c.a2).replace('h24','h60').replace('h48','h120')}</span>
-             <div>
-               ${ccap(c) ? `<div class="fact">${ICONS.cap} ${t('hintCap')}: <b>${ccap(c)}</b></div>` : ''}
-               ${c.pop ? `<div class="fact">${ICONS.pop} ${t('hintPop')}: <b>${fmtPop(c.pop)}</b></div>` : ''}
+             <div class="reg-fcol">
+               ${ccap(c) ? `<div class="fact fx" data-col="cap"><span class="ic">${ICONS.cap}</span><b class="lnk">${ccap(c)}</b></div>` : ''}
+               ${c.pop ? `<div class="fact fx" data-col="pop"><span class="ic">${ICONS.pop}</span><b class="lnk">${fmtPop(c.pop)}</b></div>` : ''}
+               ${c.ar ? `<div class="fact fx" data-col="ar"><span class="ic">${ICONS.area}</span><b class="lnk">${Math.round(uKm2(c.ar)).toLocaleString(L)} ${mi?'mi²':'km²'}</b></div>` : ''}
+             </div>
+             <div class="reg-fcol">
+               ${c.mt ? `<div class="fact fx" data-col="mt"><span class="ic">${ICONS.mt}</span><span class="nm">${escH(c.mt[0])}</span><span class="sep">·</span><b>${uM(c.mt[1]).toLocaleString(L)} ${mi?'ft':'m'}</b></div>` : ''}
+               ${c.rv ? `<div class="fact fx" data-col="rv"><span class="ic">${ICONS.rv}</span><span class="nm">${escH(c.rv[0])}</span><span class="sep">·</span><b>${Math.round(uKm(c.rv[1])).toLocaleString(L)} ${mi?'mi':'km'}</b></div>` : ''}
+               ${c.cur ? `<div class="fact fx" data-col="cur"><span class="ic">${ICONS.cur}</span><span class="nm">${escH(c.cur[lang==='de'?0:1])}</span><span class="sep">·</span><b>${c.cur[2]}</b></div>` : ''}
              </div>
            </div>
            <div class="coords">${t('centroid')} ${c.lat.toFixed(2)}°, ${c.lon.toFixed(2)}° · ${t('conts')[c.cont]}</div>
@@ -2815,11 +2857,12 @@ function buildRegister(){
       row.querySelector('button').onclick = ()=>{
         row.classList.toggle('open');
         const big = row.querySelector('.reg-big');
-        if(row.classList.contains('open') && !big.innerHTML) big.innerHTML = svgFor(c);
+        if(row.classList.contains('open') && !big.innerHTML) big.innerHTML = svgFor(c,1);
       };
       row.querySelector('.reg-globe').onclick = (e)=>{ e.stopPropagation(); if(window.globeShow) window.globeShow(c.a2); };
       row.querySelector('.reg-big').onclick = (e)=>{ e.stopPropagation(); openOutlineLb(c); };
       row.querySelector('.reg-flagtap').onclick = (e)=>{ e.stopPropagation(); openFlagLb(c.a2, cname(c)); };
+      row.querySelectorAll('.fact.fx[data-col]').forEach(f=>{ f.onclick=(e)=>{ e.stopPropagation(); if(window.dbJumpAskOpen) window.dbJumpAskOpen(c.a2, f.dataset.col); }; });
       svgObserver.observe(row.querySelector('.reg-mini'));
       rows.appendChild(row);
     });
@@ -3020,7 +3063,50 @@ document.addEventListener('click', e=>{   // Konturen-Freiblick: Tipp auf die Ka
   if(!qn || qn.style.display==='none') return;
   qn.style.opacity = qn.style.opacity==='0' ? '' : '0';
 });
-$('dbBtn').onclick = ()=>{ loadFx(); buildTableChips(); buildTableRows(); dbUnitHeads(); fxBaseSync(); fxNoteSync(); show(dbScreen); };
+$('dbBtn').onclick = ()=>{ window.dbReturnA2=null; loadFx(); buildTableChips(); buildTableRows(); dbUnitHeads(); fxBaseSync(); fxNoteSync(); show(dbScreen); };
+let navAskFn=null;
+window.navAsk=(key,fn)=>{ navAskFn=fn; $('dbJumpTitle').textContent=t(key); $('dbJumpAsk').classList.add('open'); };
+window.dbJumpAskOpen=(a2,col)=>{ window.navAsk('dbJumpT', ()=>{
+  tblRegion=0;                                 // Welt: Eintrag garantiert im Blick
+  $('dbSearch').value='';
+  window.dbReturnA2=a2;                        // Rückfahrkarte zum Register-Eintrag
+  loadFx(); buildTableChips(); buildTableRows(); dbUnitHeads(); fxBaseSync(); fxNoteSync(); show(dbScreen);
+  dbFlashPend={a2:a2, col:col, until:Date.now()+2800};
+  applyDbFlash(true);
+}); };
+$('dbJumpNo').onclick=()=>{ navAskFn=null; $('dbJumpAsk').classList.remove('open'); };
+$('dbJumpAsk').addEventListener('click', e=>{ if(e.target===$('dbJumpAsk')){ navAskFn=null; $('dbJumpAsk').classList.remove('open'); } });
+const DB_COLS={cap:[3],pop:[4],ar:[5],mt:[7,8],rv:[9,10],cur:[13,14]};
+let dbFlashPend=null;
+window.dbReturnA2=null;
+$('dbBack').onclick=()=>{
+  const a2=window.dbReturnA2; window.dbReturnA2=null;
+  $('dbBack').style.display='none';
+  if(a2 && window.regShow) window.regShow(a2);
+};
+function applyDbFlash(doScroll){
+  if(!dbFlashPend) return;
+  const rest=dbFlashPend.until-Date.now();
+  if(rest<=0){ dbFlashPend=null; return; }
+  const tr=document.querySelector('#regTableBody tr[data-a2="'+dbFlashPend.a2+'"]');
+  if(!tr) return;
+  const cells=(DB_COLS[dbFlashPend.col]||[]).map(i=>tr.children && tr.children[i]).filter(Boolean);
+  const mark=cells.length?cells:[tr];
+  mark.forEach(el=>el.classList.add('db-flash'));
+  setTimeout(()=>mark.forEach(el=>el.classList.remove('db-flash')), rest);
+  if(doScroll){
+    const wrap=document.querySelector('.reg-tablewrap');
+    if(wrap){
+      wrap.scrollTop=Math.max(0, tr.offsetTop-110);
+      wrap.scrollLeft=cells[0] ? Math.max(0, cells[0].offsetLeft-96) : 0;
+    }
+  }
+}
+$('dbJumpYes').onclick=()=>{
+  const f=navAskFn; navAskFn=null;
+  $('dbJumpAsk').classList.remove('open');
+  if(f) f();
+};
 $('glossBtn').onclick = ()=>{ buildGloss(); show(glossScreen); };
 $('fxEur').onclick = ()=>{ fxBase='EUR'; store.set('kontur.fxbase','EUR'); fxBaseSync(); buildTableRows(); };
 $('fxUsd').onclick = ()=>{ fxBase='USD'; store.set('kontur.fxbase','USD'); fxBaseSync(); buildTableRows(); };
@@ -3127,13 +3213,12 @@ window.fbLangSync = ()=>{
   $('fbMini').textContent = totalSeen()+' / '+(DATA.length*3);
   if(fbScreen.classList.contains('active')){ buildFB(); if(fbDcur==='earth') openEarth(); else if(fbDcur) openFbDetail(fbDcur); }
 };
-$('gpRegBtn').onclick = ()=>{
-  const sel = window.gFocusC;
-  if(!sel || !sel.a2) return;
+window.regShow = (a2)=>{
+  if(!a2) return;
   buildRegister(); show(registerScreen);
   $('regSearch').value='';
   document.querySelectorAll('.reg-row').forEach(r=>{ r.style.display=''; r.classList.remove('isohit'); });
-  const row=document.querySelector(`.reg-row[data-a2="${sel.a2.toLowerCase()}"]`);
+  const row=document.querySelector(`.reg-row[data-a2="${a2.toLowerCase()}"]`);
   if(!row) return;
   if(!row.classList.contains('open')) row.querySelector('button').click();
   const land=()=>row.scrollIntoView({block:'center'});
@@ -3143,6 +3228,7 @@ $('gpRegBtn').onclick = ()=>{
     row.classList.remove('spot'); void row.offsetWidth; row.classList.add('spot');
   }, 350);
 };
+$('gpRegBtn').onclick = ()=>{ const sel = window.gFocusC; if(sel && sel.a2) window.regShow(sel.a2); };
 /* ---------- Datentabelle im Register ---------- */
 const TBL_CONT={de:{EU:'Europa',AF:'Afrika',AS:'Asien',NA:'Nordamerika',SA:'Südamerika',OC:'Ozeanien'},
                 en:{EU:'Europe',AF:'Africa',AS:'Asia',NA:'North America',SA:'South America',OC:'Oceania'}};
@@ -3214,9 +3300,10 @@ function buildTableRows(){
   const tb=$('regTableBody'); tb.innerHTML='';
   for(const c of rows){
     const tr=document.createElement('tr');
+    tr.dataset.a2 = c.a2;
     tr.dataset.q = fold(c.name)+' '+fold(c.en)+' '+fold(c.cap||'')+' '+fold(c.capEn||'')+' '+c.a2.toLowerCase()+' '+(ALIAS[c.a2]||'')+' '+fold(c.cur?c.cur[0]+' '+c.cur[1]+' '+c.cur[2]:'')+' '+fold(c.gov?c.gov[0]+' '+c.gov[1]:'')+' '+fold(c.mt?c.mt[0]:'')+' '+fold(c.rv?c.rv[0]:'')+' '+fold(c.lg?c.lg[0]+' '+c.lg[1]:'');
-    tr.innerHTML=`<td class="iso">${c.a2}</td><td><b>${cname(c)}</b></td><td class="rg">${TBL_CONT[lang][c.cont]}</td>`+
-      `<td>${ccap(c)||'–'}</td><td class="num">${c.pop==null ? '–' : c.pop.toLocaleString(t('locale'))}</td>`+
+    tr.innerHTML=`<td class="iso">${c.a2}</td><td class="lnkc"><b>${cname(c)}</b></td><td class="rg">${TBL_CONT[lang][c.cont]}</td>`+
+      `<td class="lnkc">${ccap(c)||'–'}</td><td class="num">${c.pop==null ? '–' : c.pop.toLocaleString(t('locale'))}</td>`+
       `<td class="num">${c.ar!=null ? uKm2(c.ar).toLocaleString(t('locale'),{maximumFractionDigits:c.ar<10?2:0}) : '–'}</td>`+
       `<td class="num">${(c.ar&&c.pop!=null) ? (c.pop/uKm2(c.ar)).toLocaleString(t('locale'),{maximumFractionDigits:(c.pop/c.ar)<10?1:0}) : '–'}</td>`+
       `<td>${c.mt ? escH(c.mt[0]) : '–'}</td><td class="num">${c.mt ? uM(c.mt[1]).toLocaleString(t('locale')) : '–'}</td>`+
@@ -3224,10 +3311,13 @@ function buildTableRows(){
       `<td>${c.gov ? c.gov[lang==='de'?0:1] : '–'}</td>`+
       `<td>${c.lg ? c.lg[lang==='de'?0:1] : '–'}</td>`+
       `<td>${c.cur ? c.cur[lang==='de'?0:1] : '–'}</td><td>${c.cur ? c.cur[2] : '–'}</td><td class="num">${fxCell(c.cur&&c.cur[2])}</td>`;
+    if(tr.children[1]) tr.children[1].onclick=()=>{ if(window.navAsk) window.navAsk('navGlobeT', ()=>{ if(window.globeShow) window.globeShow(c.a2); }); };
+    if(tr.children[3]) tr.children[3].onclick=()=>{ if(window.navAsk) window.navAsk('navRegT', ()=>{ if(window.regShow) window.regShow(c.a2); }); };
     tb.appendChild(tr);
   }
   if($('dbSearch')) dbApplyFilter();
   if(typeof dbUnitHeads==='function') dbUnitHeads();
+  if(typeof applyDbFlash==='function') applyDbFlash(false);
 }
 document.querySelectorAll('.reg-table th.sortable').forEach(th=>{
   th.onclick=()=>{
@@ -3380,6 +3470,8 @@ function applyUnit(u){
 document.querySelectorAll('#unitSeg button').forEach(b=>{
   b.onclick = ()=>{ applyUnit(b.dataset.unit);
     if(typeof dbUnitHeads==='function' && document.querySelector('#regTableBody tr')){ buildTableRows(); dbUnitHeads(); }
+    regBuilt=false;
+    if(registerScreen.classList.contains('active')) buildRegister();
   };
 });
 applyUnit(unit);
