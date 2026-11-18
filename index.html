@@ -444,6 +444,15 @@
   .fr-mini{width:auto !important;padding:7px 11px !important;font-size:12px !important;margin:0 !important;flex:none}
   .fr-acts{display:flex;gap:6px;flex-wrap:wrap;padding:8px 2px;border-bottom:1px solid var(--line)}
   body.lock{overflow:hidden}
+  .fr-ok{color:#2fa05c !important;border-color:rgba(47,160,92,.55) !important}
+  .acct-danger.fr-mini{border-color:rgba(208,80,80,.5) !important}
+  #frPill{position:fixed;top:calc(8px + var(--sat));left:50%;transform:translateX(-50%) translateY(-110px);z-index:45;
+    display:flex;align-items:center;gap:9px;max-width:94vw;background:var(--card);border:1px solid var(--line);
+    border-radius:16px;padding:10px 12px;box-shadow:0 8px 26px var(--shadow);transition:transform .35s ease}
+  #frPill.show{transform:translateX(-50%) translateY(0)}
+  #frPill .frp-t{min-width:0}
+  #frPill b{display:block;font-size:13.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  #frPill small{font-size:11px;color:var(--ink-soft);white-space:nowrap}
   .lblrow{display:flex;align-items:center;justify-content:space-between}
   #orbitBadge{display:flex;align-items:center;gap:5px;color:var(--accent);font-weight:800;font-size:12.5px}
   .btn.ghost.arm{border-color:var(--red);color:var(--red)}
@@ -1374,8 +1383,9 @@
         <p class="acct-sub" id="frAccHint" data-i18n="frAccHint">Beim Annehmen seht ihr gegenseitig eure Statistiken.</p>
         <div id="frReqs"></div>
         <p class="acct-sub" style="margin-top:14px" data-i18n="frSearchSub">Suche nach dem exakten Spielernamen:</p>
-        <div class="sa-colrow"><input class="reg-search" id="frSearch" maxlength="16" placeholder="Spielername" data-i18n-ph="acctNamePh" autocomplete="off" autocapitalize="off"><button class="btn ghost" id="frSendBtn" data-i18n="frSend">Anfrage senden</button></div>
+        <div class="sa-colrow"><input class="reg-search" id="frSearch" maxlength="16" placeholder="Spielername" data-i18n-ph="acctNamePh" autocomplete="off" autocapitalize="off"><button class="btn ghost" id="frSendBtn" data-i18n="frSearchBtn">Suchen</button></div>
         <p class="acct-err" id="frErr"></p>
+        <div id="frResults"></div>
         <h2 style="font-size:14px" data-i18n="frFriendsH">Deine Freunde</h2>
         <p class="acct-sub" id="frNone" data-i18n="frNone">Noch keine Freunde – such oben nach einem Namen.</p>
         <div id="frList"></div>
@@ -1437,6 +1447,12 @@
     <button class="btn" id="wgLogin" data-i18n="acctOpenGuest" style="margin-top:8px">Anmelden / Registrieren</button>
     <button class="btn ghost" id="wgGuest" data-i18n="wgGuest" style="margin-top:9px">Als Gast spielen</button>
   </div>
+</div>
+<div id="frPill">
+  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="flex:none;color:var(--accent)"><circle cx="9" cy="8" r="3.4"/><path d="M2.5 19c1-2.9 3.4-4.3 6.5-4.3s5.5 1.4 6.5 4.3"/><path d="M18 6v6M15 9h6"/></svg>
+  <span class="frp-t"><b id="frPillName"></b><small data-i18n="frPillS">möchte mit dir befreundet sein</small></span>
+  <button class="btn ghost fr-mini fr-ok" id="frPillYes" data-i18n="frAccept">Annehmen</button>
+  <button class="btn ghost fr-mini acct-danger" id="frPillNo" data-i18n="frDecline">Ablehnen</button>
 </div>
 <div id="ptrPill">
   <svg class="ptr-ring" width="46" height="46" viewBox="0 0 46 46">
@@ -1531,7 +1547,7 @@ const STRINGS = {
     saColSub:'Deine Standard-Farbe im Mehrspieler – in der Lobby pro Raum änderbar.', saColGo:'Übernehmen',
     saMore:'Namen, Farbe und weitere Optionen findest du in den Einstellungen.',
     wgT:'Willkommen bei KONTUR!', wgHint:'Mit einem kostenlosen Konto sicherst du deine Lernstände und spielst auf allen Geräten weiter – Bestenlisten bleiben standardmäßig privat.', wgGuest:'Als Gast spielen',
-    privSub:'Alles standardmäßig privat. Aktivierst du eine Option, wird nur das Genannte veröffentlicht – Abschalten löscht den Eintrag wieder.',
+    privSub:'Bestenlisten sind standardmäßig aus; die Auffindbarkeit ist zu Beginn aktiviert. Abschalten löscht den jeweiligen Eintrag wieder.',
     privGuest:'Sichtbarkeits-Optionen sind mit einem Konto verfügbar.',
     pswFindT:'Bei Freundessuche auffindbar', pswFindS:'Spieler können dich über deinen exakten Namen finden.',
     pswPtsT:'Punkte-Bestenliste', pswPtsS:'Dein Name erscheint im öffentlichen Punkte-Board.',
@@ -1544,7 +1560,8 @@ const STRINGS = {
     frFriendsH:'Deine Freunde', frNone:'Noch keine Freunde – such oben nach einem Namen.', frOutH:'Gesendete Anfragen',
     frAccept:'Annehmen', frDecline:'Ablehnen', frRemove:'Entfernen', frBlock:'Blockieren', frReport:'Melden', frWithdraw:'Zurückziehen',
     frRepName:'Name unangebracht', frRepSpam:'Spam', frRepFake:'Gibt sich als jemand aus', frRepOther:'Sonstiges',
-    frReported:'Meldung übermittelt – danke!',
+    frReported:'Meldung übermittelt – danke!', frSearchBtn:'Suchen', frNoRes:'Keine Treffer.',
+    frQueryBad:'2–16 Zeichen, A–Z und 0–9.', frPillS:'möchte mit dir befreundet sein',
     shareFree:'Freies Spiel', shareTrain:'Training',
     solvedOf:(a,b)=>`${a}/${b} gelöst`, firstTryOf:(a,b)=>`${a}/${b} im 1. Versuch`,
     multiS:'Gegen Freunde – jeder auf seinem Gerät',
@@ -1694,7 +1711,7 @@ const STRINGS = {
     saColSub:'Your default colour in multiplayer – changeable per room in the lobby.', saColGo:'Apply',
     saMore:'Name, colour and more options live in the settings.',
     wgT:'Welcome to KONTUR!', wgHint:'A free account backs up your progress and syncs it across devices – leaderboards stay private by default.', wgGuest:'Play as guest',
-    privSub:'Everything private by default. Turning an option on publishes only what it names – turning it off deletes the entry again.',
+    privSub:'Leaderboards are off by default; findability starts enabled. Turning an option off deletes its entry again.',
     privGuest:'Visibility options are available with an account.',
     pswFindT:'Findable in friend search', pswFindS:'Players can find you via your exact name.',
     pswPtsT:'Points leaderboard', pswPtsS:'Your name appears on the public points board.',
@@ -1707,7 +1724,8 @@ const STRINGS = {
     frFriendsH:'Your friends', frNone:'No friends yet – search for a name above.', frOutH:'Sent requests',
     frAccept:'Accept', frDecline:'Decline', frRemove:'Remove', frBlock:'Block', frReport:'Report', frWithdraw:'Withdraw',
     frRepName:'Inappropriate name', frRepSpam:'Spam', frRepFake:'Impersonation', frRepOther:'Other',
-    frReported:'Report submitted – thank you!',
+    frReported:'Report submitted – thank you!', frSearchBtn:'Search', frNoRes:'No matches.',
+    frQueryBad:'2–16 characters, A–Z and 0–9.', frPillS:'wants to be friends with you',
     shareFree:'Free play', shareTrain:'Training',
     solvedOf:(a,b)=>`${a}/${b} solved`, firstTryOf:(a,b)=>`${a}/${b} on the 1st try`,
     multiS:'Against friends – everyone on their own device',
@@ -1968,7 +1986,7 @@ function renderDiffs(){
   };
   list.appendChild(bx);
 }
-const APP_VERSION = 'v1.74 · Beta · 2026-11-18';
+const APP_VERSION = 'v1.75 · Beta · 2026-11-18';
 let qtype = store0('kontur.qtype') || 'shape';
 if(!['shape','flag','cap'].includes(qtype)) qtype='shape';
 { const qx=new URLSearchParams(location.search).get('qx');
@@ -4634,7 +4652,7 @@ function normN(n){ return n.toLowerCase().replace(/0/g,'o').replace(/1/g,'i').re
 function nameBlocked(n){ const a=n.toLowerCase(), b=normN(n); return BAD.some(w=> a.includes(w) || b.includes(w)); }
 function nameValid(n){ return /^[A-Za-z0-9]{3,16}$/.test(n); }
 
-let mode='in', myName=null, myNameAt=0, myCol=null, myPriv={find:0,lbPts:0,lbStreak:0,lbFacts:0}, nameFrom='';
+let mode='in', myName=null, myNameAt=0, myCol=null, myPriv={find:1,lbPts:0,lbStreak:0,lbFacts:0}, nameFrom='';
 function au(){ return firebase.auth(); }
 function rdb(){ return firebase.database(); }
 function acctToast(msg){ const el=$('toast'); el.textContent=msg; el.classList.add('show'); setTimeout(()=>el.classList.remove('show'), 2600); }
@@ -4661,7 +4679,7 @@ async function loadProfile(){
   myNameAt = d.nameAt || 0;
   myCol = d.col || store0('kontur.col') || null;
   if(myCol) store.set('kontur.col', myCol);
-  myPriv = Object.assign({find:0,lbPts:0,lbStreak:0,lbFacts:0}, d.priv||{});
+  myPriv = Object.assign({find:1,lbPts:0,lbStreak:0,lbFacts:0}, d.priv||{});
   return myName;
 }
 function renderProfile(){
@@ -4746,7 +4764,7 @@ PRIVS.forEach(([k,id])=>{
     rdb().ref('users/'+u.uid+'/priv').set(myPriv).catch(()=>{});
     if(k==='find' && myName){
       const lower=myName.toLowerCase();
-      if(myPriv.find) rdb().ref('pub/find/'+lower).set(u.uid).catch(()=>{});
+      if(myPriv.find) rdb().ref('pub/find/'+lower).set({u:u.uid,n:myName}).catch(()=>{});
       else rdb().ref('pub/find/'+lower).remove().catch(()=>{});
     }
     privRender();
@@ -4784,13 +4802,13 @@ function frRender(){
     const q=frData.req[fid]||{};
     const row=document.createElement('div'); row.className='fr-row';
     const nm=document.createElement('b'); nm.textContent=q.n||'?'; row.appendChild(nm);
-    row.appendChild(frBtn(t('frAccept'),'',async()=>{
+    row.appendChild(frBtn(t('frAccept'),'fr-ok',async()=>{
       await rdb().ref('friends/'+me+'/'+fid).set({n:q.n||'?'});
       await rdb().ref('friends/'+fid+'/'+me).set({n:myName||'?'});
       await rdb().ref('freq/'+me+'/'+fid).remove();
       frLoad();
     }));
-    row.appendChild(frBtn(t('frDecline'),'',async()=>{ await rdb().ref('freq/'+me+'/'+fid).remove(); frLoad(); }));
+    row.appendChild(frBtn(t('frDecline'),'acct-danger',async()=>{ await rdb().ref('freq/'+me+'/'+fid).remove(); frLoad(); }));
     rq.appendChild(row);
   });
   const fl=$('frList'); fl.innerHTML='';
@@ -4846,22 +4864,90 @@ $('frSendBtn').onclick=async()=>{
   const u=acctUser(); if(!u || u.isAnonymous) return;
   const q=$('frSearch').value.trim();
   const err=(m)=>{ $('frErr').textContent=m||''; };
-  if(!nameValid(q)){ err(t('acctNameBad')); return; }
-  const lower=q.toLowerCase();
-  if(myName && lower===myName.toLowerCase()){ err(t('frSelf')); return; }
+  const res=$('frResults'); res.innerHTML='';
+  if(!/^[A-Za-z0-9]{2,16}$/.test(q)){ err(t('frQueryBad')); return; }
   err('');
   try{
-    const sn=await rdb().ref('pub/find/'+lower).get().catch(()=>null);
-    if(!sn || !sn.exists()){ err(t('frNotFound')); return; }
-    const uid2=sn.val();
-    if(frData.fr[uid2]){ err(t('frAlready')); return; }
-    await rdb().ref('freq/'+uid2+'/'+u.uid).set({n:myName||'?', at:firebase.database.ServerValue.TIMESTAMP});
-    const o=store.get('kontur.frout')||{}; o[uid2]={n:q}; store.set('kontur.frout', o);
-    $('frSearch').value='';
-    acctToast(t('frSent'));
-    frRender();
+    const sn=await rdb().ref('pub/find').get().catch(()=>null);
+    const all=(sn && sn.exists()) ? (sn.val()||{}) : {};
+    const ql=q.toLowerCase();
+    const hits=Object.keys(all).filter(k=>k.includes(ql) && !(myName && k===myName.toLowerCase())).sort().slice(0,12);
+    if(!hits.length){ err(t('frNoRes')); return; }
+    hits.forEach(k=>{
+      const v=all[k];
+      const uid2=(v && typeof v==='object') ? v.u : v;        // Alt-Einträge waren blanke Kennungen
+      const nm2=(v && typeof v==='object' && v.n) ? v.n : k;
+      const row=document.createElement('div'); row.className='fr-row';
+      const nm=document.createElement('b'); nm.textContent=nm2; row.appendChild(nm);
+      const done=frData.fr[uid2] || (store.get('kontur.frout')||{})[uid2];
+      if(done){
+        const ok=document.createElement('small'); ok.textContent='✓'; ok.style.color='var(--accent)'; ok.style.fontWeight='800'; row.appendChild(ok);
+      } else {
+        row.appendChild(frBtn(t('frSend'),'fr-ok',async()=>{
+          try{
+            await rdb().ref('freq/'+uid2+'/'+u.uid).set({n:myName||'?', at:firebase.database.ServerValue.TIMESTAMP});
+            const o=store.get('kontur.frout')||{}; o[uid2]={n:nm2}; store.set('kontur.frout', o);
+            acctToast(t('frSent'));
+            frRender();
+            $('frSendBtn').onclick();                          // Trefferliste auffrischen
+          }catch(e){ err(errMap(e)); }
+        }));
+      }
+      res.appendChild(row);
+    });
   }catch(e){ err(errMap(e)); }
 };
+
+/* ---- Index-Selbstheilung + Live-Pille für eingehende Anfragen ---- */
+function ensureFindIdx(){
+  const u=acctUser(); if(!u || u.isAnonymous || !myName || !myPriv.find) return;
+  rdb().ref('pub/find/'+myName.toLowerCase()).set({u:u.uid,n:myName}).catch(()=>{});
+}
+let frPillQ=[], frPillCur=null, frReqRef=null, frSeen={};
+function frPillShow(){
+  if(frPillCur || !frPillQ.length) return;
+  frPillCur=frPillQ.shift();
+  $('frPillName').textContent=frPillCur.n||'?';
+  $('frPill').classList.add('show');
+}
+function frPillHide(){
+  $('frPill').classList.remove('show');
+  frPillCur=null;
+  setTimeout(frPillShow, 450);
+}
+async function frPillAct(ok){
+  const c=frPillCur; if(!c) return;
+  const u=acctUser(); if(!u || u.isAnonymous){ frPillHide(); return; }
+  try{
+    if(ok){
+      await rdb().ref('friends/'+u.uid+'/'+c.id).set({n:c.n||'?'});
+      await rdb().ref('friends/'+c.id+'/'+u.uid).set({n:myName||'?'});
+    }
+    await rdb().ref('freq/'+u.uid+'/'+c.id).remove();
+  }catch(e){}
+  frPillHide();
+  frLoad();
+}
+$('frPillYes').onclick=()=>{ frPillAct(true); };
+$('frPillNo').onclick=()=>{ frPillAct(false); };
+async function frWatch(){
+  const u=acctUser(); if(!u || u.isAnonymous || frReqRef) return;
+  const bl=await rdb().ref('blocks/'+u.uid).get().catch(()=>null);
+  frData.bl=(bl && bl.exists()) ? (bl.val()||{}) : {};
+  frReqRef=rdb().ref('freq/'+u.uid);
+  frReqRef.on('child_added', sn=>{
+    const id=sn.key, v=sn.val()||{};
+    if(frSeen[id]) return; frSeen[id]=1;
+    if(frData.bl[id]){ rdb().ref('freq/'+u.uid+'/'+id).remove().catch(()=>{}); return; }
+    frPillQ.push({id:id, n:v.n});
+    frPillShow();
+  });
+}
+function frUnwatch(){
+  if(frReqRef){ frReqRef.off(); frReqRef=null; }
+  frPillQ=[]; frSeen={};
+  if(frPillCur){ $('frPill').classList.remove('show'); frPillCur=null; }
+}
 /* Namenswechsel aus den Einstellungen (14-Tage-Regel) */
 $('saNameChg').onclick=()=>{
   const until = myNameAt ? myNameAt + 14*86400000 : 0;
@@ -4922,6 +5008,7 @@ $('acctGo').onclick = async ()=>{
     $('acctPw').value='';
     await loadProfile();
     svSync().catch(()=>{});
+    ensureFindIdx(); frWatch();
     if(!myName){ view('avName'); } else { renderProfile(); view('avProfile'); }
     syncBtn();
   }catch(e){ setErr('acctErr', errMap(e)); }
@@ -4950,7 +5037,7 @@ $('acctNameGo').onclick = async ()=>{
       await rdb().ref('users/'+uid).update({ name:n, nameLower:lower, nameAt:firebase.database.ServerValue.TIMESTAMP });
       if(old && old!==lower) rdb().ref('usernames/'+old).remove().catch(()=>{});
       if(myPriv.find){
-        rdb().ref('pub/find/'+lower).set(uid).catch(()=>{});
+        rdb().ref('pub/find/'+lower).set({u:uid,n:n}).catch(()=>{});
         if(old && old!==lower) rdb().ref('pub/find/'+old).remove().catch(()=>{});
       }
       myName=n; myNameAt=Date.now();
@@ -4971,9 +5058,10 @@ $('avpResend').onclick = async ()=>{ try{ await au().currentUser.sendEmailVerifi
 $('avpPwMail').onclick = async ()=>{ try{ await au().sendPasswordResetEmail(au().currentUser.email,{url:APP_URL}); acctToast(t('acctForgotSent')); }catch(e){ setErr('saErr', errMap(e)); } };
 $('avpLogout').onclick = async ()=>{
   try{
+    frUnwatch();
     await au().signOut();
     store.set('kontur.acct',''); store.set('kontur.guest','1');
-    myName=null; myNameAt=0; myPriv={find:0,lbPts:0,lbStreak:0,lbFacts:0};
+    myName=null; myNameAt=0; myPriv={find:1,lbPts:0,lbStreak:0,lbFacts:0};
     await au().signInAnonymously().catch(()=>{});   // Gast-Auth für Mehrspieler wiederherstellen
     $('acctOverlay').classList.remove('open');
     $('settingsOverlay').classList.remove('open');
@@ -4991,6 +5079,7 @@ $('avpDelete').onclick = async ()=>{
     return;
   }
   delArm=0; $('avpDelete').textContent=t('acctDelete');
+  frUnwatch();
   try{
     const u=au().currentUser, uid=u.uid, lower=myName ? myName.toLowerCase() : null;
     if(lower) await rdb().ref('usernames/'+lower).remove().catch(()=>{});
@@ -5005,7 +5094,7 @@ $('avpDelete').onclick = async ()=>{
     await rdb().ref('users/'+uid).remove().catch(()=>{});
     await u.delete();
     store.set('kontur.acct',''); store.set('kontur.guest','1');
-    myName=null; myNameAt=0; myPriv={find:0,lbPts:0,lbStreak:0,lbFacts:0};
+    myName=null; myNameAt=0; myPriv={find:1,lbPts:0,lbStreak:0,lbFacts:0};
     await au().signInAnonymously().catch(()=>{});
     $('acctOverlay').classList.remove('open');
     $('settingsOverlay').classList.remove('open');
@@ -5151,7 +5240,7 @@ document.addEventListener('touchend', async ()=>{
 if(store0('kontur.acct')){
   window.fbEnsure().then(async ()=>{
     const u=au().currentUser;
-    if(u && !u.isAnonymous){ await loadProfile(); svSync().catch(()=>{}); }
+    if(u && !u.isAnonymous){ await loadProfile(); svSync().catch(()=>{}); ensureFindIdx(); frWatch(); }
     syncBtn();
   }).catch(()=>{});
 }
