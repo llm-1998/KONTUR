@@ -2040,7 +2040,7 @@ function renderDiffs(){
   };
   list.appendChild(bx);
 }
-const APP_VERSION = 'v1.78 · Beta · 2026-11-18';
+const APP_VERSION = 'v1.79 · Beta · 2026-11-18';
 let qtype = store0('kontur.qtype') || 'shape';
 if(!['shape','flag','cap'].includes(qtype)) qtype='shape';
 { const qx=new URLSearchParams(location.search).get('qx');
@@ -4800,7 +4800,7 @@ $('saColGo').onclick=()=>{ let v=$('saColHex').value.trim(); if(v && v[0]!=='#')
 $('saColPick').oninput=(e)=>{ $('saColHex').value=e.target.value; };
 /* Menü-Navigation */
 function svView(v){
-  ['svMenu','svGame','svPriv','svAcct','svFriends','svReset'].forEach(id=>{ $(id).style.display = id===v ? '' : 'none'; });
+  ['svMenu','svGame','svPriv','svAcct','svReset'].forEach(id=>{ const el=$(id); if(el) el.style.display = id===v ? '' : 'none'; });
   $('svBack').style.display = v==='svMenu' ? 'none' : '';
 }
 function bodyLock(){
@@ -4810,7 +4810,6 @@ function bodyLock(){
 window.bodyLock=bodyLock;
 window.svMenuOpen = ()=>{ svView('svMenu'); syncBtn(); };
 $('smAcct').onclick = ()=>{ svView('svAcct'); syncBtn(); };
-$('smFriends').onclick = ()=>{ svView('svFriends'); frLoad(); };
 $('smGame').onclick = ()=>{ svView('svGame'); };
 $('smPriv').onclick = ()=>{ svView('svPriv'); privRender(); };
 $('smReset').onclick = ()=>{ svView('svReset'); };
