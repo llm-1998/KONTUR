@@ -847,6 +847,10 @@
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 3.9 5.7 3.9 9s-1.4 6.4-3.9 9c-2.5-2.6-3.9-5.7-3.9-9s1.4-6.4 3.9-9z"/></svg>
       <span data-i18n="appLink">App im Browser öffnen</span>
     </a>
+    <div class="legalrow">
+      <a class="ghlink" href="datenschutz.html"><span data-i18n="dsLink">Datenschutz</span></a>
+      <a class="ghlink" href="impressum.html"><span data-i18n="imLink">Impressum</span></a>
+    </div>
     <div class="cta"><button class="btn" id="startBtn">
       <span data-i18n="play">Spielen</span>
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
@@ -1721,7 +1725,7 @@ function renderDiffs(){
   };
   list.appendChild(bx);
 }
-const APP_VERSION = 'v1.66 · Beta · 2026-11-17';
+const APP_VERSION = 'v1.67 · Beta · 2026-11-18';
 let qtype = store0('kontur.qtype') || 'shape';
 if(!['shape','flag','cap'].includes(qtype)) qtype='shape';
 { const qx=new URLSearchParams(location.search).get('qx');

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>KONTUR · Impressum</title>
+<meta name="robots" content="noindex">
+<style>
+  :root{
+    --bg:#f6f7f9; --card:#fff; --ink:#15181d; --ink-soft:#5c6470;
+    --line:#e3e6eb; --accent:#2456E6;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{ --bg:#101318; --card:#171b22; --ink:#edeff3; --ink-soft:#9aa3b0; --line:#262c36; }
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; background:var(--bg); color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+    line-height:1.6; font-size:15.5px;
+    padding:28px 18px calc(40px + env(safe-area-inset-bottom));
+    display:flex; justify-content:center;
+  }
+  main{width:100%; max-width:640px}
+  .brand{font-weight:800; letter-spacing:.18em; font-size:15px; margin-bottom:4px}
+  .brand b{color:var(--accent)}
+  h1{font-size:25px; letter-spacing:-.02em; margin:2px 0 6px}
+  .meta{color:var(--ink-soft); font-size:13px; margin-bottom:22px}
+  h2{font-size:17px; margin:30px 0 8px; letter-spacing:-.01em}
+  h3{font-size:14.5px; margin:18px 0 6px}
+  p, li{color:var(--ink); margin:0 0 10px}
+  ul{padding-left:20px; margin:0 0 10px}
+  .soft{color:var(--ink-soft)}
+  .card{background:var(--card); border:1px solid var(--line); border-radius:16px; padding:16px 18px; margin:14px 0}
+  .ph{background:rgba(36,86,230,.12); border:1px dashed var(--accent); border-radius:6px; padding:1px 7px; font-weight:700; white-space:nowrap}
+  a{color:var(--accent); text-decoration:none; font-weight:600}
+  a:hover{text-decoration:underline}
+  .back{display:inline-block; margin-bottom:20px; font-size:14px}
+  hr{border:0; border-top:1px solid var(--line); margin:34px 0}
+  .en{color:var(--ink-soft); font-size:13px; font-style:italic}
+</style>
+</head>
+<body>
+<main>
+  <div class="brand">KON<b>TUR</b></div>
+  <a class="back" href="./">← Zurück zur App</a>
+
+  <h1>Impressum</h1>
+  <p class="meta">Angaben gemäß § 5 DDG</p>
+  <p>
+    Luca Meisinger<br>
+    Am Campus 5<br>
+    64807 Dieburg, Deutschland<br>
+    E-Mail: <a href="mailto:kontakt@kontur-app.com">kontakt@kontur-app.com</a>
+  </p>
+  <p class="soft">KONTUR ist ein nicht-kommerzielles Open-Source-Projekt. Quellcode: <a href="https://github.com/llm-1998/KONTUR" target="_blank" rel="noopener">github.com/llm-1998/KONTUR</a></p>
+  <h3>Kartendaten &amp; Quellen</h3>
+  <p class="soft">Kartendaten © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>-Mitwirkende (ODbL). Flaggenbilder über <a href="https://flagpedia.net" target="_blank" rel="noopener">Flagpedia</a>. Alle Länderdaten wurden sorgfältig kuratiert; Angaben ohne Gewähr (Beta-Version).</p>
+  <h3>Haftung für Links</h3>
+  <p class="soft">Für Inhalte externer Links sind ausschließlich deren Betreiber verantwortlich. Zum Zeitpunkt der Verlinkung waren keine Rechtsverstöße erkennbar.</p>
+  <hr>
+  <p class="soft">Siehe auch: <a href="datenschutz.html">Datenschutzerklärung</a></p>
+</main>
+</body>
+</html>
