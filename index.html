@@ -399,9 +399,22 @@
   .acct-val.acct-ok{color:var(--accent)}
   .acct-danger{color:#d05050}
   #ptrPill{position:fixed;top:calc(6px + var(--sat));left:50%;transform:translateX(-50%);z-index:40;
-    background:var(--ink);color:var(--bg);font-size:12.5px;font-weight:700;padding:7px 15px;border-radius:99px;
-    box-shadow:0 4px 14px var(--shadow);opacity:0;pointer-events:none;transition:opacity .2s;white-space:nowrap}
+    width:46px;height:46px;border-radius:50%;background:var(--card);border:1px solid var(--line);
+    box-shadow:0 4px 14px var(--shadow);opacity:0;pointer-events:none;transition:opacity .25s, transform .3s ease;
+    display:flex;align-items:center;justify-content:center}
   #ptrPill.show{opacity:1}
+  #ptrPill.drag{transition:opacity .25s}
+  #ptrPill .ptr-ring{position:absolute;inset:-1px;transform:rotate(-90deg)}
+  #ptrPill .ptr-ring circle{fill:none;stroke-width:2.5}
+  #ptrPill .ptr-track{stroke:var(--line)}
+  #ptrPill #ptrProg{stroke:var(--accent);stroke-linecap:round;stroke-dasharray:119.4;stroke-dashoffset:119.4}
+  #ptrPill #ptrGlobe{color:var(--ink-soft)}
+  #ptrPill.ready #ptrGlobe{color:var(--accent)}
+  #ptrPill #ptrCheck{display:none;color:var(--accent)}
+  #ptrPill.done #ptrGlobe{display:none}
+  #ptrPill.done #ptrCheck{display:block}
+  #ptrPill.spin #ptrGlobe{animation:ptrspin .8s linear infinite}
+  @keyframes ptrspin{to{transform:rotate(360deg)}}
   .btn.ghost.arm{border-color:var(--red);color:var(--red)}
   .tcol{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:7px;
     min-height:122px;padding:12px 4px}
@@ -1324,7 +1337,14 @@
   </div>
 </div>
 <div class="toast" id="toast">In die Zwischenablage kopiert</div>
-<div id="ptrPill">↓</div>
+<div id="ptrPill">
+  <svg class="ptr-ring" width="46" height="46" viewBox="0 0 46 46">
+    <circle class="ptr-track" cx="23" cy="23" r="19"/>
+    <circle id="ptrProg" cx="23" cy="23" r="19"/>
+  </svg>
+  <svg id="ptrGlobe" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 3.9 5.7 3.9 9s-1.4 6.4-3.9 9c-2.5-2.6-3.9-5.7-3.9-9s1.4-6.4 3.9-9z"/></svg>
+  <svg id="ptrCheck" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 12.5l5 5 10-11"/></svg>
+</div>
 
 <script>
 const TWINS={"groups":[["ID","MC","PL","SG"],["RO","TD","AD","MD"],["NL","LU","RU","RS","SI","SK"],["NZ","AU"],["IE","CI"],["NO","IS"],["CO","EC","VE"],["US","LR","MY"],["SV","HN","NI"],["GN","ML","SN","CM"],["TR","TN"],["QA","BH"],["AT","LV"],["IT","MX"],["JO","PS"],["SY","IQ","EG","YE"],["AR","UY"],["TH","CR"],["CU","PR"],["FJ","TV"],["JP","BD","PW"]],"marks":{"ID":["Oben Rot, unten Weiß – und breiter als Monaco.","Red on top, white below – and wider than Monaco."],"MC":["Wie Indonesien, aber fast quadratisch kurz.","Like Indonesia, but almost square in shape."],"PL":["Die Umkehrung: Weiß oben, Rot unten.","The inversion: white on top, red below."],"SG":["Verrät sich durch Halbmond und fünf Sterne im roten Feld.","Gives itself away with the crescent and five stars in the red field."],"RO":["Das hellere Blau – und ohne Wappen.","The lighter blue – and no coat of arms."],"TD":["Das dunklere Blau ist der Tschad.","The darker blue is Chad."],"AD":["Gelb ist breiter und trägt das Wappen mit Mitra.","The yellow is wider and bears the arms with the mitre."],"MD":["Im Wappen sitzt der Adler mit Auerochsenkopf.","The arms show the eagle with the aurochs head."],"NL":["Das dunklere, kräftige Blau unten.","The darker, stronger blue at the bottom."],"LU":["Das deutlich hellere Himmelblau.","The clearly lighter sky blue."],"RU":["Weiß-Blau-Rot ohne jedes Wappen.","White-blue-red with no arms at all."],"RS":["Rot oben – plus Doppeladler mit Krone.","Red on top – plus the crowned double-headed eagle."],"SI":["Kleines Wappen mit Triglav-Berg links oben.","Small arms with Mount Triglav in the upper hoist."],"SK":["Das Doppelkreuz auf drei blauen Hügeln.","The double cross on three blue hills."],"NZ":["Vier Sterne, alle rot umrandet – kein Extra-Stern.","Four stars, all red-edged – no extra star."],"AU":["Sechs weiße Sterne, links unten der große Commonwealth-Stern.","Six white stars, with the big Commonwealth Star at lower hoist."],"IE":["Grün am Mast (links).","Green at the hoist (left)."],"CI":["Orange am Mast (links).","Orange at the hoist (left)."],"NO":["Rotes Feld, blaues Kreuz mit weißem Rand.","Red field, blue cross with white edging."],"IS":["Blaues Feld, rotes Kreuz mit weißem Rand – die Umkehrung Norwegens.","Blue field, red cross with white edging – Norway inverted."],"CO":["Ohne Sterne und ohne Wappen – das Gelb füllt die Hälfte.","No stars, no arms – yellow fills half."],"EC":["Trägt mittig ein großes Wappen mit Kondor.","Carries a large central coat of arms with a condor."],"VE":["Der Bogen aus acht Sternen im Blau.","The arc of eight stars in the blue."],"US":["Fünfzig Sterne im blauen Feld.","Fifty stars in the blue canton."],"LR":["Nur ein einzelner Stern – und elf Streifen.","Just one single star – and eleven stripes."],"MY":["Halbmond und Stern statt Sternenfeld.","Crescent and star instead of a star field."],"SV":["Wappen mit Schriftzug im weißen Streifen.","Arms with lettering in the white stripe."],"HN":["Fünf blaue Sterne im weißen Streifen.","Five blue stars in the white stripe."],"NI":["Wappen-Dreieck mit Regenbogen (und dem seltenen Violett).","Arms triangle with rainbow (and the rare purple)."],"GN":["Rot am Mast, Grün außen.","Red at the hoist, green at the fly."],"ML":["Grün am Mast, Rot außen – Guineas Spiegelbild.","Green at the hoist, red at the fly – Guinea mirrored."],"SN":["Der grüne Stern im gelben Mittelstreifen.","The green star in the yellow centre stripe."],"CM":["Der gelbe Stern im roten Mittelstreifen.","The yellow star in the red centre stripe."],"TR":["Halbmond und Stern direkt auf Rot.","Crescent and star directly on red."],"TN":["Halbmond und Stern im weißen Kreis.","Crescent and star inside a white circle."],"QA":["Kastanienbraun mit neun Zacken.","Maroon with nine serrations."],"BH":["Klares Rot mit nur fünf Zacken.","Bright red with just five serrations."],"AT":["Klares Rot, alle Streifen gleich breit.","Clear red, all stripes equal width."],"LV":["Dunkles Karmesin, der weiße Streifen ist schmaler.","Dark carmine, the white stripe is narrower."],"IT":["Grün-Weiß-Rot ohne Wappen.","Green-white-red without arms."],"MX":["Der Adler mit Schlange im weißen Streifen.","The eagle with the snake in the white stripe."],"JO":["Mit weißem Stern im roten Dreieck.","With a white star in the red triangle."],"PS":["Ohne Stern im roten Dreieck.","No star in the red triangle."],"SY":["Drei rote Sterne im weißen Streifen.","Three red stars in the white stripe."],"IQ":["Grüner Schriftzug im weißen Streifen.","Green script in the white stripe."],"EG":["Der goldene Adler im weißen Streifen.","The golden eagle in the white stripe."],"YE":["Rot-Weiß-Schwarz ganz ohne Emblem.","Red-white-black with no emblem at all."],"AR":["Die Sonne sitzt mittig im weißen Streifen.","The sun sits centred in the white stripe."],"UY":["Streifen wie die USA – die Sonne oben links.","Stripes like the USA – the sun in the canton."],"TH":["Der breite Mittelstreifen ist blau.","The wide centre stripe is blue."],"CR":["Der breite Mittelstreifen ist rot.","The wide centre stripe is red."],"CU":["Blaue Streifen, rotes Dreieck.","Blue stripes, red triangle."],"PR":["Rote Streifen, blaues Dreieck – Kubas Umkehrung.","Red stripes, blue triangle – Cuba inverted."],"FJ":["Hellblau mit Wappen (Schild) rechts.","Light blue with the shield arms at the fly."],"TV":["Hellblau mit neun gelben Sternen.","Light blue with nine yellow stars."],"JP":["Roter Kreis, exakt zentriert auf Weiß.","Red disc, exactly centred on white."],"BD":["Rote Scheibe leicht versetzt auf Grün.","Red disc slightly offset on green."],"PW":["Gelbe Scheibe (der Mond!) versetzt auf Blau.","Yellow disc (the moon!) offset on blue."]}};
@@ -1809,7 +1829,7 @@ function renderDiffs(){
   };
   list.appendChild(bx);
 }
-const APP_VERSION = 'v1.70 · Beta · 2026-11-18';
+const APP_VERSION = 'v1.72 · Beta · 2026-11-18';
 let qtype = store0('kontur.qtype') || 'shape';
 if(!['shape','flag','cap'].includes(qtype)) qtype='shape';
 { const qx=new URLSearchParams(location.search).get('qx');
@@ -4689,31 +4709,45 @@ document.addEventListener('touchstart', e=>{
   if($('acctOverlay').classList.contains('open') || $('settingsOverlay').classList.contains('open')) return;
   ptrY0=e.touches[0].clientY; ptrDy=0; ptrOn=true;
 }, {passive:true});
+const PTR_C=119.4, PTR_FULL=130;        // Ringumfang (r=19) · Zugweg für eine volle Umdrehung
+function ptrSet(p){
+  $('ptrGlobe').style.transform='rotate('+(p*360).toFixed(0)+'deg)';
+  $('ptrProg').style.strokeDashoffset=(PTR_C*(1-p)).toFixed(1);
+}
+function ptrReset(pill){
+  pill.classList.remove('show','ready','spin','done');
+  pill.style.transform='translateX(-50%)';
+  setTimeout(()=>ptrSet(0), 300);        // erst ausblenden lassen, dann zurückdrehen
+}
 document.addEventListener('touchmove', e=>{
   if(!ptrOn || ptrY0<0) return;
   ptrDy=e.touches[0].clientY-ptrY0;
   const pill=$('ptrPill');
   if(ptrDy<=10){ pill.classList.remove('show'); pill.style.transform='translateX(-50%)'; return; }
+  const p=Math.min((ptrDy-10)/PTR_FULL, 1);
   const d=Math.min((ptrDy-10)*0.5, 74);
-  pill.textContent = t(d>=60 ? 'ptrRelease' : 'ptrPull');
+  pill.classList.add('drag','show');
+  pill.classList.toggle('ready', p>=1);
   pill.style.transform='translate(-50%,'+d.toFixed(0)+'px)';
-  pill.classList.add('show');
+  ptrSet(p);
 }, {passive:true});
 document.addEventListener('touchend', async ()=>{
   if(!ptrOn) return;
   ptrOn=false; ptrY0=-1;
-  const d=Math.min(Math.max(ptrDy-10,0)*0.5, 74);
+  const p=Math.min(Math.max(ptrDy-10,0)/PTR_FULL, 1);
   ptrDy=0;
   const pill=$('ptrPill');
-  if(d>=60){
-    pill.textContent=t('ptrSync');
+  pill.classList.remove('drag');
+  if(p>=1){
+    pill.classList.add('spin');
     pill.style.transform='translate(-50%,46px)';
     try{ await svSync(); }catch(e){}
     svLastSoft=Date.now();
-    pill.textContent=t('ptrDone');
-    setTimeout(()=>{ pill.classList.remove('show'); pill.style.transform='translateX(-50%)'; }, 1100);
+    pill.classList.remove('spin');
+    pill.classList.add('done');
+    setTimeout(()=>ptrReset(pill), 1000);
   } else {
-    pill.classList.remove('show'); pill.style.transform='translateX(-50%)';
+    ptrReset(pill);
   }
 });
 
