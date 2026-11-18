@@ -1561,7 +1561,7 @@ const STRINGS = {
     frAccept:'Annehmen', frDecline:'Ablehnen', frRemove:'Entfernen', frBlock:'Blockieren', frReport:'Melden', frWithdraw:'Zurückziehen',
     frRepName:'Name unangebracht', frRepSpam:'Spam', frRepFake:'Gibt sich als jemand aus', frRepOther:'Sonstiges',
     frReported:'Meldung übermittelt – danke!', frSearchBtn:'Suchen', frNoRes:'Keine Treffer.',
-    frQueryBad:'2–16 Zeichen, A–Z und 0–9.', frPillS:'möchte mit dir befreundet sein',
+    frQueryBad:'2–16 Zeichen, A–Z und 0–9.', frPillS:'möchte mit dir befreundet sein', frIsFriend:'✓ Befreundet', frIsPending:'Angefragt',
     shareFree:'Freies Spiel', shareTrain:'Training',
     solvedOf:(a,b)=>`${a}/${b} gelöst`, firstTryOf:(a,b)=>`${a}/${b} im 1. Versuch`,
     multiS:'Gegen Freunde – jeder auf seinem Gerät',
@@ -1725,7 +1725,7 @@ const STRINGS = {
     frAccept:'Accept', frDecline:'Decline', frRemove:'Remove', frBlock:'Block', frReport:'Report', frWithdraw:'Withdraw',
     frRepName:'Inappropriate name', frRepSpam:'Spam', frRepFake:'Impersonation', frRepOther:'Other',
     frReported:'Report submitted – thank you!', frSearchBtn:'Search', frNoRes:'No matches.',
-    frQueryBad:'2–16 characters, A–Z and 0–9.', frPillS:'wants to be friends with you',
+    frQueryBad:'2–16 characters, A–Z and 0–9.', frPillS:'wants to be friends with you', frIsFriend:'✓ Friends', frIsPending:'Requested',
     shareFree:'Free play', shareTrain:'Training',
     solvedOf:(a,b)=>`${a}/${b} solved`, firstTryOf:(a,b)=>`${a}/${b} on the 1st try`,
     multiS:'Against friends – everyone on their own device',
@@ -4879,9 +4879,14 @@ $('frSendBtn').onclick=async()=>{
       const nm2=(v && typeof v==='object' && v.n) ? v.n : k;
       const row=document.createElement('div'); row.className='fr-row';
       const nm=document.createElement('b'); nm.textContent=nm2; row.appendChild(nm);
-      const done=frData.fr[uid2] || (store.get('kontur.frout')||{})[uid2];
-      if(done){
-        const ok=document.createElement('small'); ok.textContent='✓'; ok.style.color='var(--accent)'; ok.style.fontWeight='800'; row.appendChild(ok);
+      const isFr=!!frData.fr[uid2], isOut=!!(store.get('kontur.frout')||{})[uid2];
+      if(isFr || isOut){
+        const ok=document.createElement('small');
+        if(isFr){ ok.textContent = t('frIsFriend'); }
+        else { ok.innerHTML = '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1px"><path d="M5 22h14M5 2h14M17 22v-4.2a2 2 0 0 0-.6-1.4L12 12 7.6 16.4a2 2 0 0 0-.6 1.4V22M7 2v4.2a2 2 0 0 0 .6 1.4L12 12l4.4-4.4a2 2 0 0 0 .6-1.4V2"/></svg> '+t('frIsPending'); }
+        ok.style.color = isFr ? 'var(--accent)' : 'var(--ink-soft)';
+        ok.style.fontWeight='700'; ok.style.flex='none';
+        row.appendChild(ok);
       } else {
         row.appendChild(frBtn(t('frSend'),'fr-ok',async()=>{
           try{
