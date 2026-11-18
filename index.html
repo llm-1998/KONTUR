@@ -438,6 +438,12 @@
   .sa-colrow{display:flex;gap:8px;align-items:center}
   .sa-colrow .reg-search{flex:1;margin:0}
   .sa-colrow .btn{flex:none;width:auto;padding:10px 14px}
+  .sa-colrow input[type=color]{flex:none;width:46px;height:42px;border:1px solid var(--line);border-radius:10px;background:var(--card);padding:3px;cursor:pointer}
+  .fr-row{display:flex;align-items:center;gap:8px;padding:9px 2px;border-bottom:1px solid var(--line)}
+  .fr-row b{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:14px}
+  .fr-mini{width:auto !important;padding:7px 11px !important;font-size:12px !important;margin:0 !important;flex:none}
+  .fr-acts{display:flex;gap:6px;flex-wrap:wrap;padding:8px 2px;border-bottom:1px solid var(--line)}
+  body.lock{overflow:hidden}
   .lblrow{display:flex;align-items:center;justify-content:space-between}
   #orbitBadge{display:flex;align-items:center;gap:5px;color:var(--accent);font-weight:800;font-size:12.5px}
   .btn.ghost.arm{border-color:var(--red);color:var(--red)}
@@ -1295,6 +1301,7 @@
 
     <div id="svMenu">
       <button class="menu-row" id="smAcct"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4.5 20c1.2-3.4 4-5 7.5-5s6.3 1.6 7.5 5"/></svg><span class="mr-t"><b data-i18n="acctT">Konto</b><small id="smAcctSub"></small></span><svg class="chev" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M9 6l6 6-6 6"/></svg></button>
+      <button class="menu-row" id="smFriends"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="9" cy="8" r="3.4"/><path d="M2.5 19c1-2.9 3.4-4.3 6.5-4.3s5.5 1.4 6.5 4.3"/><circle cx="17.5" cy="9" r="2.6"/><path d="M16.5 14.9c2.6.2 4.4 1.5 5 3.9"/></svg><b data-i18n="frT">Freunde</b><svg class="chev" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M9 6l6 6-6 6"/></svg></button>
       <button class="menu-row" id="smGame"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 8h10M18 8h2M4 16h2M10 16h10"/><circle cx="16" cy="8" r="2.2"/><circle cx="8" cy="16" r="2.2"/></svg><b data-i18n="smGameT">Spiel &amp; Darstellung</b><svg class="chev" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M9 6l6 6-6 6"/></svg></button>
       <button class="menu-row" id="smPriv"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 3l7 3v5c0 4.5-3 8.2-7 10-4-1.8-7-5.5-7-10V6z"/></svg><b data-i18n="smPrivT">Datenschutz &amp; Sichtbarkeit</b><svg class="chev" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M9 6l6 6-6 6"/></svg></button>
       <button class="menu-row" id="smReset" style="border-bottom:0"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 12a9 9 0 1 0 3-6.7M4 4v5h5"/></svg><b data-i18n="resetT">Zurücksetzen</b><svg class="chev" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M9 6l6 6-6 6"/></svg></button>
@@ -1349,13 +1356,31 @@
         <h2 data-i18n="saColT">Spieler-Farbe</h2>
         <p class="acct-sub" data-i18n="saColSub">Deine Standard-Farbe im Mehrspieler – in der Lobby pro Raum änderbar.</p>
         <div class="swatches" id="saCols"></div>
-        <div class="sa-colrow"><input class="reg-search" id="saColHex" maxlength="7" placeholder="#RRGGBB" autocomplete="off" autocapitalize="off"><button class="btn ghost" id="saColGo" data-i18n="saColGo">Übernehmen</button></div>
+        <div class="sa-colrow"><input type="color" id="saColPick" value="#2456E6"><input class="reg-search" id="saColHex" maxlength="7" placeholder="#RRGGBB" autocomplete="off" autocapitalize="off"><button class="btn ghost" id="saColGo" data-i18n="saColGo">Übernehmen</button></div>
         <div class="acct-row" style="margin-top:14px"><span class="acct-lbl">E-Mail</span><span class="acct-val" id="saMail">–</span></div>
         <div class="acct-row"><span class="acct-lbl" data-i18n="acctVerifLbl">E-Mail bestätigt</span><span class="acct-val" id="saVerif">–</span></div>
         <p class="acct-err" id="saErr"></p>
         <button class="btn ghost" id="avpPwMail" data-i18n="acctPwChange">Passwort ändern (per E-Mail)</button>
         <button class="btn ghost" id="avpLogout" data-i18n="acctLogout">Abmelden</button>
         <button class="btn ghost acct-danger" id="avpDelete" data-i18n="acctDelete" style="border-color:rgba(208,80,80,.45)">Konto löschen</button>
+      </div>
+    </div>
+
+    <div id="svFriends" style="display:none">
+      <h2 data-i18n="frT">Freunde</h2>
+      <p class="acct-sub" id="frGuestHint" data-i18n="frGuest">Freunde sind mit einem Konto verfügbar.</p>
+      <div id="frUser" style="display:none">
+        <h2 style="font-size:14px" id="frReqHead" data-i18n="frReqH">Anfragen an dich</h2>
+        <p class="acct-sub" id="frAccHint" data-i18n="frAccHint">Beim Annehmen seht ihr gegenseitig eure Statistiken.</p>
+        <div id="frReqs"></div>
+        <p class="acct-sub" style="margin-top:14px" data-i18n="frSearchSub">Suche nach dem exakten Spielernamen:</p>
+        <div class="sa-colrow"><input class="reg-search" id="frSearch" maxlength="16" placeholder="Spielername" data-i18n-ph="acctNamePh" autocomplete="off" autocapitalize="off"><button class="btn ghost" id="frSendBtn" data-i18n="frSend">Anfrage senden</button></div>
+        <p class="acct-err" id="frErr"></p>
+        <h2 style="font-size:14px" data-i18n="frFriendsH">Deine Freunde</h2>
+        <p class="acct-sub" id="frNone" data-i18n="frNone">Noch keine Freunde – such oben nach einem Namen.</p>
+        <div id="frList"></div>
+        <h2 style="font-size:14px" id="frOutHead" data-i18n="frOutH">Gesendete Anfragen</h2>
+        <div id="frOut"></div>
       </div>
     </div>
 
@@ -1512,6 +1537,14 @@ const STRINGS = {
     pswPtsT:'Punkte-Bestenliste', pswPtsS:'Dein Name erscheint im öffentlichen Punkte-Board.',
     pswStreakT:'Streak-Bestenliste', pswStreakS:'Dein Name erscheint im öffentlichen Serien-Board.',
     pswFactsT:'Fakten-Bestenliste', pswFactsS:'Dein Name erscheint im öffentlichen Fakten-Board.',
+    frT:'Freunde', frGuest:'Freunde sind mit einem Konto verfügbar.', frReqH:'Anfragen an dich',
+    frAccHint:'Beim Annehmen seht ihr gegenseitig eure Statistiken.', frSearchSub:'Suche nach dem exakten Spielernamen:',
+    frSend:'Anfrage senden', frSent:'Anfrage verschickt.', frNotFound:'Kein Spieler mit diesem Namen auffindbar.',
+    frSelf:'Das bist du selbst 😄', frAlready:'Ihr seid schon befreundet.',
+    frFriendsH:'Deine Freunde', frNone:'Noch keine Freunde – such oben nach einem Namen.', frOutH:'Gesendete Anfragen',
+    frAccept:'Annehmen', frDecline:'Ablehnen', frRemove:'Entfernen', frBlock:'Blockieren', frReport:'Melden', frWithdraw:'Zurückziehen',
+    frRepName:'Name unangebracht', frRepSpam:'Spam', frRepFake:'Gibt sich als jemand aus', frRepOther:'Sonstiges',
+    frReported:'Meldung übermittelt – danke!',
     shareFree:'Freies Spiel', shareTrain:'Training',
     solvedOf:(a,b)=>`${a}/${b} gelöst`, firstTryOf:(a,b)=>`${a}/${b} im 1. Versuch`,
     multiS:'Gegen Freunde – jeder auf seinem Gerät',
@@ -1667,6 +1700,14 @@ const STRINGS = {
     pswPtsT:'Points leaderboard', pswPtsS:'Your name appears on the public points board.',
     pswStreakT:'Streak leaderboard', pswStreakS:'Your name appears on the public streak board.',
     pswFactsT:'Facts leaderboard', pswFactsS:'Your name appears on the public facts board.',
+    frT:'Friends', frGuest:'Friends are available with an account.', frReqH:'Requests for you',
+    frAccHint:'Accepting lets you see each other’s statistics.', frSearchSub:'Search for the exact player name:',
+    frSend:'Send request', frSent:'Request sent.', frNotFound:'No player findable under this name.',
+    frSelf:'That’s you 😄', frAlready:'You are already friends.',
+    frFriendsH:'Your friends', frNone:'No friends yet – search for a name above.', frOutH:'Sent requests',
+    frAccept:'Accept', frDecline:'Decline', frRemove:'Remove', frBlock:'Block', frReport:'Report', frWithdraw:'Withdraw',
+    frRepName:'Inappropriate name', frRepSpam:'Spam', frRepFake:'Impersonation', frRepOther:'Other',
+    frReported:'Report submitted – thank you!',
     shareFree:'Free play', shareTrain:'Training',
     solvedOf:(a,b)=>`${a}/${b} solved`, firstTryOf:(a,b)=>`${a}/${b} on the 1st try`,
     multiS:'Against friends – everyone on their own device',
@@ -1927,7 +1968,7 @@ function renderDiffs(){
   };
   list.appendChild(bx);
 }
-const APP_VERSION = 'v1.73 · Beta · 2026-11-18';
+const APP_VERSION = 'v1.74 · Beta · 2026-11-18';
 let qtype = store0('kontur.qtype') || 'shape';
 if(!['shape','flag','cap'].includes(qtype)) qtype='shape';
 { const qx=new URLSearchParams(location.search).get('qx');
@@ -3754,8 +3795,8 @@ armReset($('resetStatsBtn'), ()=>{
   stats = {games:0, wins:0, streak:0};
   store.set('kontur.stats', stats);
 });
-$('settingsBtn').onclick = ()=>{ $('settingsOverlay').classList.add('open'); if(window.svMenuOpen) window.svMenuOpen(); };
-$('settingsClose').onclick = ()=> $('settingsOverlay').classList.remove('open');
+$('settingsBtn').onclick = ()=>{ $('settingsOverlay').classList.add('open'); if(window.svMenuOpen) window.svMenuOpen(); if(window.bodyLock) window.bodyLock(); };
+$('settingsClose').onclick = ()=>{ $('settingsOverlay').classList.remove('open'); if(window.bodyLock) window.bodyLock(); };
 document.querySelectorAll('#langSeg button').forEach(b=>{
   b.onclick = ()=> applyLang(b.dataset.lang);
 });
@@ -4658,6 +4699,7 @@ function saColsRender(){
     wrap.appendChild(b);
   });
   $('saColHex').value = (myCol && !(window.MPCOLORS||[]).includes(myCol)) ? myCol : '';
+  if(myCol) $('saColPick').value=myCol;
 }
 function saveCol(c){
   if(!/^#[0-9a-fA-F]{6}$/.test(c)) return;
@@ -4667,13 +4709,20 @@ function saveCol(c){
   saColsRender();
 }
 $('saColGo').onclick=()=>{ let v=$('saColHex').value.trim(); if(v && v[0]!=='#') v='#'+v; saveCol(v); };
+$('saColPick').oninput=(e)=>{ $('saColHex').value=e.target.value; };
 /* Menü-Navigation */
 function svView(v){
-  ['svMenu','svGame','svPriv','svAcct','svReset'].forEach(id=>{ $(id).style.display = id===v ? '' : 'none'; });
+  ['svMenu','svGame','svPriv','svAcct','svFriends','svReset'].forEach(id=>{ $(id).style.display = id===v ? '' : 'none'; });
   $('svBack').style.display = v==='svMenu' ? 'none' : '';
 }
+function bodyLock(){
+  const any=['settingsOverlay','acctOverlay','welcomeGate'].some(id=>{ const el=$(id); return el && el.classList.contains('open'); });
+  document.body.classList.toggle('lock', any);
+}
+window.bodyLock=bodyLock;
 window.svMenuOpen = ()=>{ svView('svMenu'); syncBtn(); };
 $('smAcct').onclick = ()=>{ svView('svAcct'); syncBtn(); };
+$('smFriends').onclick = ()=>{ svView('svFriends'); frLoad(); };
 $('smGame').onclick = ()=>{ svView('svGame'); };
 $('smPriv').onclick = ()=>{ svView('svPriv'); privRender(); };
 $('smReset').onclick = ()=>{ svView('svReset'); };
@@ -4695,9 +4744,124 @@ PRIVS.forEach(([k,id])=>{
     const u=acctUser(); if(!u || u.isAnonymous) return;
     myPriv[k]=myPriv[k]?0:1;
     rdb().ref('users/'+u.uid+'/priv').set(myPriv).catch(()=>{});
+    if(k==='find' && myName){
+      const lower=myName.toLowerCase();
+      if(myPriv.find) rdb().ref('pub/find/'+lower).set(u.uid).catch(()=>{});
+      else rdb().ref('pub/find/'+lower).remove().catch(()=>{});
+    }
     privRender();
   };
 });
+
+/* ---------- Freunde ---------- */
+let frData={req:{},fr:{},bl:{}};
+async function frLoad(){
+  const u=acctUser();
+  if(!u || u.isAnonymous){ frRender(); return; }
+  const [rq,fr,bl]=await Promise.all([
+    rdb().ref('freq/'+u.uid).get().catch(()=>null),
+    rdb().ref('friends/'+u.uid).get().catch(()=>null),
+    rdb().ref('blocks/'+u.uid).get().catch(()=>null)
+  ]);
+  frData={ req:(rq&&rq.exists())?(rq.val()||{}):{}, fr:(fr&&fr.exists())?(fr.val()||{}):{}, bl:(bl&&bl.exists())?(bl.val()||{}):{} };
+  Object.keys(frData.req).forEach(fid=>{            // Anfragen von Blockierten still entsorgen
+    if(frData.bl[fid]){ rdb().ref('freq/'+u.uid+'/'+fid).remove().catch(()=>{}); delete frData.req[fid]; }
+  });
+  frRender();
+}
+function frBtn(lbl,cls,fn){ const b=document.createElement('button'); b.className='btn ghost fr-mini'+(cls?' '+cls:''); b.textContent=lbl; b.onclick=fn; return b; }
+function frRender(){
+  const u=acctUser(); const logged=u && !u.isAnonymous;
+  $('frGuestHint').style.display=logged?'none':'';
+  $('frUser').style.display=logged?'':'none';
+  if(!logged) return;
+  const me=u.uid;
+  const rq=$('frReqs'); rq.innerHTML='';
+  const rids=Object.keys(frData.req);
+  $('frReqHead').style.display=rids.length?'':'none';
+  $('frAccHint').style.display=rids.length?'':'none';
+  rids.forEach(fid=>{
+    const q=frData.req[fid]||{};
+    const row=document.createElement('div'); row.className='fr-row';
+    const nm=document.createElement('b'); nm.textContent=q.n||'?'; row.appendChild(nm);
+    row.appendChild(frBtn(t('frAccept'),'',async()=>{
+      await rdb().ref('friends/'+me+'/'+fid).set({n:q.n||'?'});
+      await rdb().ref('friends/'+fid+'/'+me).set({n:myName||'?'});
+      await rdb().ref('freq/'+me+'/'+fid).remove();
+      frLoad();
+    }));
+    row.appendChild(frBtn(t('frDecline'),'',async()=>{ await rdb().ref('freq/'+me+'/'+fid).remove(); frLoad(); }));
+    rq.appendChild(row);
+  });
+  const fl=$('frList'); fl.innerHTML='';
+  const fids=Object.keys(frData.fr);
+  $('frNone').style.display=fids.length?'none':'';
+  fids.forEach(fid=>{
+    const f=frData.fr[fid]||{};
+    const row=document.createElement('div'); row.className='fr-row';
+    const nm=document.createElement('b'); nm.textContent=f.n||'?'; row.appendChild(nm);
+    const act=document.createElement('div'); act.className='fr-acts'; act.style.display='none';
+    const rep2=document.createElement('div'); rep2.className='fr-acts'; rep2.style.display='none';
+    row.appendChild(frBtn('⋯','',()=>{ act.style.display = act.style.display==='none' ? '' : 'none'; rep2.style.display='none'; }));
+    act.appendChild(frBtn(t('frRemove'),'',async()=>{
+      await rdb().ref('friends/'+me+'/'+fid).remove();
+      await rdb().ref('friends/'+fid+'/'+me).remove().catch(()=>{});
+      frLoad();
+    }));
+    act.appendChild(frBtn(t('frBlock'),'acct-danger',async()=>{
+      await rdb().ref('blocks/'+me+'/'+fid).set({n:f.n||'?'});
+      await rdb().ref('friends/'+me+'/'+fid).remove();
+      await rdb().ref('friends/'+fid+'/'+me).remove().catch(()=>{});
+      frLoad();
+    }));
+    act.appendChild(frBtn(t('frReport'),'acct-danger',()=>{ rep2.style.display = rep2.style.display==='none' ? '' : 'none'; }));
+    [['name','frRepName'],['spam','frRepSpam'],['fake','frRepFake'],['other','frRepOther']].forEach(([code,key])=>{
+      rep2.appendChild(frBtn(t(key),'',async()=>{
+        await rdb().ref('reports/'+fid+'/'+me).set({r:code,at:firebase.database.ServerValue.TIMESTAMP}).catch(()=>{});
+        rep2.style.display='none'; act.style.display='none';
+        acctToast(t('frReported'));
+      }));
+    });
+    fl.appendChild(row); fl.appendChild(act); fl.appendChild(rep2);
+  });
+  const out=store.get('kontur.frout')||{};
+  let moved=false;
+  Object.keys(out).forEach(oid=>{ if(frData.fr[oid]){ delete out[oid]; moved=true; } });
+  if(moved) store.set('kontur.frout', out);
+  const ol=$('frOut'); ol.innerHTML='';
+  const oids=Object.keys(out);
+  $('frOutHead').style.display=oids.length?'':'none';
+  oids.forEach(oid=>{
+    const row=document.createElement('div'); row.className='fr-row';
+    const nm=document.createElement('b'); nm.textContent=(out[oid]&&out[oid].n)||'?'; row.appendChild(nm);
+    row.appendChild(frBtn(t('frWithdraw'),'',async()=>{
+      await rdb().ref('freq/'+oid+'/'+me).remove().catch(()=>{});
+      const o=store.get('kontur.frout')||{}; delete o[oid]; store.set('kontur.frout', o);
+      frRender();
+    }));
+    ol.appendChild(row);
+  });
+}
+$('frSendBtn').onclick=async()=>{
+  const u=acctUser(); if(!u || u.isAnonymous) return;
+  const q=$('frSearch').value.trim();
+  const err=(m)=>{ $('frErr').textContent=m||''; };
+  if(!nameValid(q)){ err(t('acctNameBad')); return; }
+  const lower=q.toLowerCase();
+  if(myName && lower===myName.toLowerCase()){ err(t('frSelf')); return; }
+  err('');
+  try{
+    const sn=await rdb().ref('pub/find/'+lower).get().catch(()=>null);
+    if(!sn || !sn.exists()){ err(t('frNotFound')); return; }
+    const uid2=sn.val();
+    if(frData.fr[uid2]){ err(t('frAlready')); return; }
+    await rdb().ref('freq/'+uid2+'/'+u.uid).set({n:myName||'?', at:firebase.database.ServerValue.TIMESTAMP});
+    const o=store.get('kontur.frout')||{}; o[uid2]={n:q}; store.set('kontur.frout', o);
+    $('frSearch').value='';
+    acctToast(t('frSent'));
+    frRender();
+  }catch(e){ err(errMap(e)); }
+};
 /* Namenswechsel aus den Einstellungen (14-Tage-Regel) */
 $('saNameChg').onclick=()=>{
   const until = myNameAt ? myNameAt + 14*86400000 : 0;
@@ -4708,6 +4872,7 @@ $('saNameChg').onclick=()=>{
   nameFrom='settings';
   $('settingsOverlay').classList.remove('open');
   $('acctOverlay').classList.add('open');
+  bodyLock();
   $('acctName').value=''; setErr('acctNameErr');
   view('avName');
 };
@@ -4716,6 +4881,7 @@ window.acctLangSync = ()=>{ syncBtn(); };
 async function openAcct(){
   $('settingsOverlay').classList.remove('open');
   $('acctOverlay').classList.add('open');
+  bodyLock();
   setErr('acctErr'); setErr('acctNameErr'); setErr('acctProfErr');
   $('avpDelete').textContent=t('acctDelete');
   try{ await window.fbEnsure(); }
@@ -4731,7 +4897,7 @@ async function openAcct(){
   syncBtn();
 }
 $('acctOpenBtn').onclick = ()=>{ openAcct(); };
-$('acctClose').onclick = ()=>{ $('acctOverlay').classList.remove('open'); };
+$('acctClose').onclick = ()=>{ $('acctOverlay').classList.remove('open'); bodyLock(); };
 
 $('acctTabIn').onclick = ()=>{ mode='in'; $('acctTabIn').classList.add('on'); $('acctTabUp').classList.remove('on'); $('acctGo').textContent=t('acctLogin'); $('acctForgot').style.display=''; $('acctPw').setAttribute('autocomplete','current-password'); setErr('acctErr'); };
 $('acctTabUp').onclick = ()=>{ mode='up'; $('acctTabUp').classList.add('on'); $('acctTabIn').classList.remove('on'); $('acctGo').textContent=t('acctRegister'); $('acctForgot').style.display='none'; $('acctPw').setAttribute('autocomplete','new-password'); setErr('acctErr'); };
@@ -4783,11 +4949,16 @@ $('acctNameGo').onclick = async ()=>{
       const old = myName ? myName.toLowerCase() : null;
       await rdb().ref('users/'+uid).update({ name:n, nameLower:lower, nameAt:firebase.database.ServerValue.TIMESTAMP });
       if(old && old!==lower) rdb().ref('usernames/'+old).remove().catch(()=>{});
+      if(myPriv.find){
+        rdb().ref('pub/find/'+lower).set(uid).catch(()=>{});
+        if(old && old!==lower) rdb().ref('pub/find/'+old).remove().catch(()=>{});
+      }
       myName=n; myNameAt=Date.now();
       if(nameFrom==='settings'){
         nameFrom='';
         $('acctOverlay').classList.remove('open');
         $('settingsOverlay').classList.add('open');
+        bodyLock();
         svView('svAcct');
       } else { renderProfile(); view('avProfile'); }
       syncBtn();
@@ -4806,6 +4977,7 @@ $('avpLogout').onclick = async ()=>{
     await au().signInAnonymously().catch(()=>{});   // Gast-Auth für Mehrspieler wiederherstellen
     $('acctOverlay').classList.remove('open');
     $('settingsOverlay').classList.remove('open');
+    bodyLock();
     syncBtn();
   }catch(e){ setErr('saErr', errMap(e)); }
 };
@@ -4822,6 +4994,14 @@ $('avpDelete').onclick = async ()=>{
   try{
     const u=au().currentUser, uid=u.uid, lower=myName ? myName.toLowerCase() : null;
     if(lower) await rdb().ref('usernames/'+lower).remove().catch(()=>{});
+    if(lower) await rdb().ref('pub/find/'+lower).remove().catch(()=>{});
+    const frSn=await rdb().ref('friends/'+uid).get().catch(()=>null);
+    if(frSn && frSn.exists()){
+      for(const fid of Object.keys(frSn.val()||{})) await rdb().ref('friends/'+fid+'/'+uid).remove().catch(()=>{});
+    }
+    await rdb().ref('friends/'+uid).remove().catch(()=>{});
+    await rdb().ref('blocks/'+uid).remove().catch(()=>{});
+    await rdb().ref('freq/'+uid).remove().catch(()=>{});
     await rdb().ref('users/'+uid).remove().catch(()=>{});
     await u.delete();
     store.set('kontur.acct',''); store.set('kontur.guest','1');
@@ -4829,6 +5009,7 @@ $('avpDelete').onclick = async ()=>{
     await au().signInAnonymously().catch(()=>{});
     $('acctOverlay').classList.remove('open');
     $('settingsOverlay').classList.remove('open');
+    bodyLock();
     syncBtn();
   }catch(e){ setErr('saErr', errMap(e)); }
 };
@@ -4978,9 +5159,10 @@ if(store0('kontur.acct')){
 /* Willkommens-Karte: einmalig für neue Gäste */
 if(!store0('kontur.acct') && !store0('kontur.guest') && !(new URLSearchParams(location.search).get('join'))){
   $('welcomeGate').classList.add('open');
+  bodyLock();
 }
 $('wgLogin').onclick = ()=>{ $('welcomeGate').classList.remove('open'); openAcct(); };
-$('wgGuest').onclick = ()=>{ store.set('kontur.guest','1'); $('welcomeGate').classList.remove('open'); };
+$('wgGuest').onclick = ()=>{ store.set('kontur.guest','1'); $('welcomeGate').classList.remove('open'); bodyLock(); };
 })();
 
 /* ==================== WELTGLOBUS ==================== */
