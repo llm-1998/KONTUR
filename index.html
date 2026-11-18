@@ -387,6 +387,17 @@
   #settingsOverlay h2{font-size:16.5px;margin:13px 0 2px}
   #settingsOverlay .sheet>p{font-size:12.5px;margin:2px 0 8px;color:var(--ink-soft)}
   #settingsOverlay .btn{padding:11px;font-size:13.5px}
+  /* Konto */
+  #acctOverlay .btn{padding:11px;font-size:13.5px}
+  #acctOverlay .reg-search{width:100%;margin:5px 0}
+  #acctOverlay h2{font-size:16.5px;margin:13px 0 2px}
+  .acct-sub{font-size:12.5px;margin:2px 0 10px;color:var(--ink-soft)}
+  .acct-err{color:#d05050;font-size:13px;min-height:18px;margin:6px 0 2px}
+  .acct-row{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:9px 0}
+  .acct-lbl{font-size:13px;color:var(--ink-soft);flex:none}
+  .acct-val{font-weight:700;font-size:14px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .acct-val.acct-ok{color:var(--accent)}
+  .acct-danger{color:#d05050}
   .btn.ghost.arm{border-color:var(--red);color:var(--red)}
   .tcol{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:7px;
     min-height:122px;padding:12px 4px}
@@ -1239,6 +1250,9 @@
 <div class="overlay" id="settingsOverlay">
   <div class="sheet">
     <div class="badge" style="color:var(--accent)" data-i18n="settingsT">EINSTELLUNGEN</div>
+    <h2 data-i18n="acctT">Konto</h2>
+    <p data-i18n="acctSub">Lernstand sichern und Geräte synchronisieren</p>
+    <button class="btn ghost" id="acctOpenBtn" data-i18n="acctOpenGuest">Anmelden / Registrieren</button>
     <h2 data-i18n="langT">Sprache</h2>
     <p data-i18n="langSub">Ländernamen, Hauptstädte und Oberfläche</p>
     <div class="seg" id="langSeg">
@@ -1268,6 +1282,41 @@
     <button class="btn ghost" id="resetMasteryBtn" data-i18n="resetMastery">Lernstand (Sicher-Status)</button>
     <button class="btn ghost" id="resetStatsBtn" data-i18n="resetStats">Spiel-Statistiken</button>
     <button class="btn" id="settingsClose" data-i18n="close" style="margin-top:18px">Schließen</button>
+  </div>
+</div>
+
+<div class="overlay" id="acctOverlay">
+  <div class="sheet">
+    <div class="badge" style="color:var(--accent)" data-i18n="acctT">KONTO</div>
+    <div id="avLogin">
+      <div class="seg" id="acctSeg" style="margin:12px 0 14px">
+        <button class="on" id="acctTabIn" data-i18n="acctLogin">Anmelden</button>
+        <button id="acctTabUp" data-i18n="acctRegister">Registrieren</button>
+      </div>
+      <input class="reg-search" id="acctEmail" type="email" placeholder="E-Mail" data-i18n-ph="acctEmailPh" autocomplete="email" autocapitalize="off">
+      <input class="reg-search" id="acctPw" type="password" placeholder="Passwort (mind. 6 Zeichen)" data-i18n-ph="acctPwPh" autocomplete="current-password">
+      <p class="acct-err" id="acctErr"></p>
+      <button class="btn" id="acctGo" data-i18n="acctLogin">Anmelden</button>
+      <button class="btn ghost" id="acctForgot" data-i18n="acctForgot" style="margin-top:8px">Passwort vergessen?</button>
+    </div>
+    <div id="avName" style="display:none">
+      <h2 data-i18n="acctNameT">Spielername wählen</h2>
+      <p class="acct-sub" data-i18n="acctNameSub">3–16 Zeichen, nur Buchstaben und Ziffern.</p>
+      <input class="reg-search" id="acctName" maxlength="16" placeholder="Spielername" data-i18n-ph="acctNamePh" autocomplete="off" autocapitalize="off">
+      <p class="acct-err" id="acctNameErr"></p>
+      <button class="btn" id="acctNameGo" data-i18n="acctNameGo">Namen festlegen</button>
+    </div>
+    <div id="avProfile" style="display:none">
+      <div class="acct-row"><span class="acct-lbl" data-i18n="acctNameLbl">Spielername</span><span class="acct-val" id="avpName">–</span></div>
+      <div class="acct-row"><span class="acct-lbl">E-Mail</span><span class="acct-val" id="avpMail">–</span></div>
+      <div class="acct-row"><span class="acct-lbl" data-i18n="acctVerifLbl">E-Mail bestätigt</span><span class="acct-val" id="avpVerif">–</span></div>
+      <p class="acct-err" id="acctProfErr"></p>
+      <button class="btn ghost" id="avpResend" data-i18n="acctResend" style="display:none">Bestätigungs-Mail erneut senden</button>
+      <button class="btn ghost" id="avpPwMail" data-i18n="acctPwChange">Passwort ändern (per E-Mail)</button>
+      <button class="btn ghost" id="avpLogout" data-i18n="acctLogout">Abmelden</button>
+      <button class="btn ghost acct-danger" id="avpDelete" data-i18n="acctDelete">Konto löschen</button>
+    </div>
+    <button class="btn" id="acctClose" data-i18n="close" style="margin-top:16px">Schließen</button>
   </div>
 </div>
 <div class="toast" id="toast">In die Zwischenablage kopiert</div>
@@ -1336,6 +1385,20 @@ const STRINGS = {
     resetMastery:'Lernstand (Sicher-Status)', resetStats:'Spiel-Statistiken',
     resetConfirm:'Wirklich zurücksetzen?', resetDone:'Zurückgesetzt ✓',
     ghLink:'Open Source auf GitHub', appLink:'App im Browser öffnen', dsLink:'Datenschutz', imLink:'Impressum',
+    acctT:'Konto', acctSub:'Lernstand sichern und Geräte synchronisieren', acctOpenGuest:'Anmelden / Registrieren',
+    acctLogin:'Anmelden', acctRegister:'Registrieren', acctEmailPh:'E-Mail', acctPwPh:'Passwort (mind. 6 Zeichen)',
+    acctForgot:'Passwort vergessen?', acctForgotSent:'E-Mail zum Zurücksetzen ist unterwegs.',
+    acctVerifSent:'Bestätigungs-Mail ist unterwegs – bitte Postfach prüfen.',
+    acctNameT:'Spielername wählen', acctNameSub:'3–16 Zeichen, nur Buchstaben und Ziffern. Dein Name ist einmalig in KONTUR und alle 14 Tage änderbar.',
+    acctNamePh:'Spielername', acctNameGo:'Namen festlegen', acctNameLbl:'Spielername', acctVerifLbl:'E-Mail bestätigt',
+    acctResend:'Bestätigungs-Mail erneut senden', acctPwChange:'Passwort ändern (per E-Mail)', acctLogout:'Abmelden',
+    acctDelete:'Konto löschen', acctDelete2:'Wirklich? Nochmal tippen zum Löschen',
+    acctErrMail:'Bitte eine gültige E-Mail-Adresse eingeben.', acctErrPw:'Das Passwort braucht mindestens 6 Zeichen.',
+    acctErrInUse:'Für diese E-Mail existiert schon ein Konto.', acctErrLogin:'E-Mail oder Passwort falsch.',
+    acctErrMany:'Zu viele Versuche – bitte kurz warten.', acctErrNet:'Keine Verbindung – bitte später erneut versuchen.',
+    acctNameBad:'3–16 Zeichen, nur A–Z und 0–9.', acctNameBlocked:'Dieser Name ist nicht erlaubt.',
+    acctNameTaken:'Dieser Name ist schon vergeben.', acctRelogin:'Bitte neu anmelden und direkt erneut versuchen.',
+    acctYes:'Ja', acctNo:'Nein',
     shareFree:'Freies Spiel', shareTrain:'Training',
     solvedOf:(a,b)=>`${a}/${b} gelöst`, firstTryOf:(a,b)=>`${a}/${b} im 1. Versuch`,
     multiS:'Gegen Freunde – jeder auf seinem Gerät',
@@ -1465,6 +1528,20 @@ const STRINGS = {
     resetMastery:'Training progress (mastered)', resetStats:'Game statistics',
     resetConfirm:'Really reset?', resetDone:'Reset done ✓',
     ghLink:'Open source on GitHub', appLink:'Open app in browser', dsLink:'Privacy policy', imLink:'Legal notice',
+    acctT:'Account', acctSub:'Back up your progress and sync devices', acctOpenGuest:'Sign in / Register',
+    acctLogin:'Sign in', acctRegister:'Register', acctEmailPh:'Email', acctPwPh:'Password (min. 6 characters)',
+    acctForgot:'Forgot password?', acctForgotSent:'Reset email is on its way.',
+    acctVerifSent:'Verification email sent – please check your inbox.',
+    acctNameT:'Choose a player name', acctNameSub:'3–16 characters, letters and digits only. Your name is unique across KONTUR and can be changed every 14 days.',
+    acctNamePh:'Player name', acctNameGo:'Set name', acctNameLbl:'Player name', acctVerifLbl:'Email verified',
+    acctResend:'Resend verification email', acctPwChange:'Change password (via email)', acctLogout:'Sign out',
+    acctDelete:'Delete account', acctDelete2:'Really? Tap again to delete',
+    acctErrMail:'Please enter a valid email address.', acctErrPw:'The password needs at least 6 characters.',
+    acctErrInUse:'An account already exists for this email.', acctErrLogin:'Wrong email or password.',
+    acctErrMany:'Too many attempts – please wait a moment.', acctErrNet:'No connection – please try again later.',
+    acctNameBad:'3–16 characters, A–Z and 0–9 only.', acctNameBlocked:'This name is not allowed.',
+    acctNameTaken:'This name is already taken.', acctRelogin:'Please sign in again and retry right away.',
+    acctYes:'Yes', acctNo:'No',
     shareFree:'Free play', shareTrain:'Training',
     solvedOf:(a,b)=>`${a}/${b} solved`, firstTryOf:(a,b)=>`${a}/${b} on the 1st try`,
     multiS:'Against friends – everyone on their own device',
@@ -1725,7 +1802,7 @@ function renderDiffs(){
   };
   list.appendChild(bx);
 }
-const APP_VERSION = 'v1.67 · Beta · 2026-11-18';
+const APP_VERSION = 'v1.68 · Beta · 2026-11-18';
 let qtype = store0('kontur.qtype') || 'shape';
 if(!['shape','flag','cap'].includes(qtype)) qtype='shape';
 { const qx=new URLSearchParams(location.search).get('qx');
@@ -2504,7 +2581,7 @@ $('menuBtn').onclick = ()=>{ closeOverlay(); refreshDailyState(); show(startScre
     const c=cur();
     if(!c) return;
     // Schutzklauseln: Galerie, Einstellungen, Kopfzeile, Banner und Textfelder wischen nie
-    if(e.target.closest && e.target.closest('#flagLb,#settingsOverlay,header,.offline-bar,input,textarea,.reg-tablewrap,.fb-detail')) return;
+    if(e.target.closest && e.target.closest('#flagLb,#settingsOverlay,#acctOverlay,header,.offline-bar,input,textarea,.reg-tablewrap,.fb-detail')) return;
     const inEdge = e.clientX<=EDGE;
     const wide = (c===registerScreen || c===fbScreen || c===dbScreen || c===glossScreen)    // Listen-Seiten: volle Fläche
               || (c===globeScreen && !(e.target.closest && e.target.closest('.globe-wrap'))); // Globus: unterhalb der Kugel
@@ -3435,6 +3512,7 @@ function applyLang(l){
   document.querySelectorAll('[data-i18n-ph]').forEach(el=>{ el.placeholder = t(el.dataset.i18nPh); });
   if(window.a2hsSync) window.a2hsSync();
   if(window.mpLangSync) window.mpLangSync();                 // Mehrspieler-Chips live mitübersetzen
+  if(window.acctLangSync) window.acctLangSync();             // Konto-Knopf behält Namen statt Standard-Label
   if(window.fbLangSync) window.fbLangSync();                 // Faktenbuch live mitübersetzen
   // Sichtbaren Flaggen-Fakt live mitübersetzen
   const subs=t('trainSubs');
@@ -3575,11 +3653,14 @@ function fb(){
       ]))
       .then(()=>{ firebase.initializeApp(FB_CONFIG); db=firebase.database();
         db.ref('.info/serverTimeOffset').on('value', sn=>{ svOff=sn.val()||0; });
-        return firebase.auth().signInAnonymously(); })
+        firebase.auth().onAuthStateChanged(u=>{ if(u) pid=u.uid; });   // hält pid bei Kontowechsel aktuell
+        return new Promise(res=>{ const off=firebase.auth().onAuthStateChanged(u=>{ off(); res(u); }); }); })
+      .then(u=> u ? {user:u} : firebase.auth().signInAnonymously())   // gespeicherte Sitzung schlägt Anonym-Login
       .then(cred=>{ pid = cred.user.uid; });
   }
   return fbPromise;
 }
+window.fbEnsure = fb;
 
 const byA2 = Object.fromEntries(DATA.map(c=>[c.a2,c]));
 let pid = store0('kontur.mp.pid');
@@ -4357,6 +4438,168 @@ if(joinParam){
   show(mpScreen); mpView('mpSetup');
   $('mpNameInput').value=store0('kontur.mp.name')||'';
   $('mpCodeInput').value=joinParam.toUpperCase().slice(0,4);
+}
+})();
+
+/* ==================== KONTO (Etappe 1) ==================== */
+(function(){
+const BAD=['hitler','adolf','nazi','fuehrer','fuhrer','goebbels','himmler','goering','stalin','mussolini','polpot','binladen','osama','kkk','1488','hurensohn','fotze','wichs','nutte','arschloch','fick','fuck','bitch','cunt','nigg','neger','fag','slut','whore','rape','porn','schwuchtel','spast','judensau','zyklonb'];
+function normN(n){ return n.toLowerCase().replace(/0/g,'o').replace(/1/g,'i').replace(/3/g,'e').replace(/4/g,'a').replace(/5/g,'s'); }
+function nameBlocked(n){ const a=n.toLowerCase(), b=normN(n); return BAD.some(w=> a.includes(w) || b.includes(w)); }
+function nameValid(n){ return /^[A-Za-z0-9]{3,16}$/.test(n); }
+
+let mode='in', myName=null;
+function au(){ return firebase.auth(); }
+function rdb(){ return firebase.database(); }
+function acctToast(msg){ const el=$('toast'); el.textContent=msg; el.classList.add('show'); setTimeout(()=>el.classList.remove('show'), 2600); }
+function errMap(e){
+  const c=(e && e.code)||'';
+  if(c.includes('invalid-email')) return t('acctErrMail');
+  if(c.includes('weak-password')) return t('acctErrPw');
+  if(c.includes('email-already-in-use')) return t('acctErrInUse');
+  if(c.includes('wrong-password')||c.includes('user-not-found')||c.includes('invalid-credential')||c.includes('invalid-login')) return t('acctErrLogin');
+  if(c.includes('too-many-requests')) return t('acctErrMany');
+  if(c.includes('network')) return t('acctErrNet');
+  if(c.includes('requires-recent-login')) return t('acctRelogin');
+  return (e && e.message) || 'Fehler';
+}
+function view(v){ ['avLogin','avName','avProfile'].forEach(id=>{ $(id).style.display = id===v ? '' : 'none'; }); }
+function setErr(id,msg){ $(id).textContent = msg || ''; }
+function acctUser(){ try{ return (window.firebase && firebase.auth) ? au().currentUser : null; }catch(e){ return null; } }
+
+async function loadProfile(){
+  const u=au().currentUser; if(!u || u.isAnonymous){ myName=null; return null; }
+  const sn=await rdb().ref('users/'+u.uid+'/name').get().catch(()=>null);
+  myName = (sn && sn.exists()) ? sn.val() : null;
+  return myName;
+}
+function renderProfile(){
+  const u=au().currentUser; if(!u) return;
+  $('avpName').textContent = myName || '–';
+  $('avpMail').textContent = u.email || '–';
+  $('avpVerif').textContent = u.emailVerified ? t('acctYes') : t('acctNo');
+  $('avpVerif').classList.toggle('acct-ok', !!u.emailVerified);
+  $('avpResend').style.display = u.emailVerified ? 'none' : '';
+}
+function syncBtn(){
+  const u=acctUser();
+  const logged = u && !u.isAnonymous;
+  $('acctOpenBtn').textContent = logged ? (myName || u.email || '…') : t('acctOpenGuest');
+}
+window.acctLangSync = ()=>{ syncBtn(); };
+
+async function openAcct(){
+  $('settingsOverlay').classList.remove('open');
+  $('acctOverlay').classList.add('open');
+  setErr('acctErr'); setErr('acctNameErr'); setErr('acctProfErr');
+  $('avpDelete').textContent=t('acctDelete');
+  try{ await window.fbEnsure(); }
+  catch(e){ view('avLogin'); setErr('acctErr', t('acctErrNet')); return; }
+  const u=au().currentUser;
+  if(u && !u.isAnonymous){
+    await u.reload().catch(()=>{});
+    await loadProfile();
+    if(!myName){ view('avName'); } else { renderProfile(); view('avProfile'); }
+  } else {
+    view('avLogin');
+  }
+  syncBtn();
+}
+$('acctOpenBtn').onclick = ()=>{ openAcct(); };
+$('acctClose').onclick = ()=>{ $('acctOverlay').classList.remove('open'); };
+
+$('acctTabIn').onclick = ()=>{ mode='in'; $('acctTabIn').classList.add('on'); $('acctTabUp').classList.remove('on'); $('acctGo').textContent=t('acctLogin'); $('acctForgot').style.display=''; $('acctPw').setAttribute('autocomplete','current-password'); setErr('acctErr'); };
+$('acctTabUp').onclick = ()=>{ mode='up'; $('acctTabUp').classList.add('on'); $('acctTabIn').classList.remove('on'); $('acctGo').textContent=t('acctRegister'); $('acctForgot').style.display='none'; $('acctPw').setAttribute('autocomplete','new-password'); setErr('acctErr'); };
+
+$('acctGo').onclick = async ()=>{
+  const em=$('acctEmail').value.trim(), pw=$('acctPw').value;
+  if(!/^\S+@\S+\.\S+$/.test(em)){ setErr('acctErr', t('acctErrMail')); return; }
+  if(pw.length<6){ setErr('acctErr', t('acctErrPw')); return; }
+  setErr('acctErr'); $('acctGo').disabled=true;
+  try{
+    await window.fbEnsure();
+    let cred;
+    if(mode==='up'){
+      cred = await au().createUserWithEmailAndPassword(em,pw);
+      cred.user.sendEmailVerification({url:APP_URL}).catch(()=>{});
+      acctToast(t('acctVerifSent'));
+    } else {
+      cred = await au().signInWithEmailAndPassword(em,pw);
+    }
+    store.set('kontur.acct','1');
+    $('acctPw').value='';
+    await loadProfile();
+    if(!myName){ view('avName'); } else { renderProfile(); view('avProfile'); }
+    syncBtn();
+  }catch(e){ setErr('acctErr', errMap(e)); }
+  $('acctGo').disabled=false;
+};
+
+$('acctForgot').onclick = async ()=>{
+  const em=$('acctEmail').value.trim();
+  if(!/^\S+@\S+\.\S+$/.test(em)){ setErr('acctErr', t('acctErrMail')); return; }
+  try{ await window.fbEnsure(); await au().sendPasswordResetEmail(em,{url:APP_URL}); setErr('acctErr'); acctToast(t('acctForgotSent')); }
+  catch(e){ setErr('acctErr', errMap(e)); }
+};
+
+$('acctNameGo').onclick = async ()=>{
+  const n=$('acctName').value.trim();
+  if(!nameValid(n)){ setErr('acctNameErr', t('acctNameBad')); return; }
+  if(nameBlocked(n)){ setErr('acctNameErr', t('acctNameBlocked')); return; }
+  setErr('acctNameErr'); $('acctNameGo').disabled=true;
+  try{
+    const uid=au().currentUser.uid, lower=n.toLowerCase();
+    const res=await rdb().ref('usernames/'+lower).transaction(cur=> (cur===null || cur===uid) ? uid : undefined);
+    const ok = res.committed || (res.snapshot && res.snapshot.val()===uid);
+    if(!ok){ setErr('acctNameErr', t('acctNameTaken')); }
+    else{
+      await rdb().ref('users/'+uid).update({ name:n, nameLower:lower, nameAt:firebase.database.ServerValue.TIMESTAMP });
+      myName=n; renderProfile(); view('avProfile'); syncBtn();
+    }
+  }catch(e){ setErr('acctNameErr', errMap(e)); }
+  $('acctNameGo').disabled=false;
+};
+
+$('avpResend').onclick = async ()=>{ try{ await au().currentUser.sendEmailVerification({url:APP_URL}); acctToast(t('acctVerifSent')); }catch(e){ setErr('acctProfErr', errMap(e)); } };
+$('avpPwMail').onclick = async ()=>{ try{ await au().sendPasswordResetEmail(au().currentUser.email,{url:APP_URL}); acctToast(t('acctForgotSent')); }catch(e){ setErr('acctProfErr', errMap(e)); } };
+$('avpLogout').onclick = async ()=>{
+  try{
+    await au().signOut();
+    store.set('kontur.acct','');
+    myName=null;
+    await au().signInAnonymously().catch(()=>{});   // Gast-Auth für Mehrspieler wiederherstellen
+    $('acctOverlay').classList.remove('open');
+    syncBtn();
+  }catch(e){ setErr('acctProfErr', errMap(e)); }
+};
+
+let delArm=0;
+$('avpDelete').onclick = async ()=>{
+  if(Date.now()-delArm>4000){
+    delArm=Date.now();
+    $('avpDelete').textContent=t('acctDelete2');
+    setTimeout(()=>{ if(Date.now()-delArm>=3900) $('avpDelete').textContent=t('acctDelete'); }, 4200);
+    return;
+  }
+  delArm=0; $('avpDelete').textContent=t('acctDelete');
+  try{
+    const u=au().currentUser, uid=u.uid, lower=myName ? myName.toLowerCase() : null;
+    if(lower) await rdb().ref('usernames/'+lower).remove().catch(()=>{});
+    await rdb().ref('users/'+uid).remove().catch(()=>{});
+    await u.delete();
+    store.set('kontur.acct',''); myName=null;
+    await au().signInAnonymously().catch(()=>{});
+    $('acctOverlay').classList.remove('open');
+    syncBtn();
+  }catch(e){ setErr('acctProfErr', errMap(e)); }
+};
+
+if(store0('kontur.acct')){
+  window.fbEnsure().then(async ()=>{
+    const u=au().currentUser;
+    if(u && !u.isAnonymous) await loadProfile();
+    syncBtn();
+  }).catch(()=>{});
 }
 })();
 
