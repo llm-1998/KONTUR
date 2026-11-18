@@ -1802,7 +1802,7 @@ function renderDiffs(){
   };
   list.appendChild(bx);
 }
-const APP_VERSION = 'v1.68 · Beta · 2026-11-18';
+const APP_VERSION = 'v1.69 · Beta · 2026-11-18';
 let qtype = store0('kontur.qtype') || 'shape';
 if(!['shape','flag','cap'].includes(qtype)) qtype='shape';
 { const qx=new URLSearchParams(location.search).get('qx');
@@ -4529,6 +4529,7 @@ $('acctGo').onclick = async ()=>{
     store.set('kontur.acct','1');
     $('acctPw').value='';
     await loadProfile();
+    svSync().catch(()=>{});
     if(!myName){ view('avName'); } else { renderProfile(); view('avProfile'); }
     syncBtn();
   }catch(e){ setErr('acctErr', errMap(e)); }
@@ -4594,10 +4595,77 @@ $('avpDelete').onclick = async ()=>{
   }catch(e){ setErr('acctProfErr', errMap(e)); }
 };
 
+/* ---- Spielstand-Sync (Etappe 2): Vereinigung bei Fakten, Maximum bei Bestwerten ---- */
+const SYNC_CATS=['pop','ar','dens','mt','rv','mix'];
+const SYNC_KEYS=['kontur.mastered','kontur.mastered.flag','kontur.mastered.cap','kontur.facts','kontur.stats','kontur.daily','kontur.unlockx'];
+let svMute=false, svPushT=0;
+
+function svCollect(){
+  const dbv={}; SYNC_CATS.forEach(c=>{ const v=store0('kontur.duelbest.'+c); if(v) dbv[c]=v; });
+  return {
+    m:[...masteredMap.shape], mf:[...masteredMap.flag], mc:[...masteredMap.cap],
+    fx:seenFacts, st:stats, db:dbv,
+    x: store0('kontur.unlockx')==='1' ? 1 : 0,
+    dy: store.get('kontur.daily') || null
+  };
+}
+function svMerge(sv,loc){
+  sv=sv||{};
+  const uni=(a,b)=>[...new Set([...(a||[]),...(b||[])])];
+  const fx={l:{},f:{},c:{}};
+  ['l','f','c'].forEach(k=>Object.assign(fx[k], (sv.fx&&sv.fx[k])||{}, (loc.fx&&loc.fx[k])||{}));
+  const st={ games:Math.max((sv.st&&sv.st.games)||0, (loc.st&&loc.st.games)||0),
+             wins:Math.max((sv.st&&sv.st.wins)||0, (loc.st&&loc.st.wins)||0),
+             streak:Math.max((sv.st&&sv.st.streak)||0, (loc.st&&loc.st.streak)||0) };
+  const dbv={}; SYNC_CATS.forEach(c=>{ const v=Math.max((sv.db&&sv.db[c])||0, (loc.db&&loc.db[c])||0); if(v) dbv[c]=v; });
+  let dy=loc.dy||null;
+  if(sv.dy && (!dy || sv.dy.date>dy.date || (sv.dy.date===dy.date && sv.dy.finished && !dy.finished))) dy=sv.dy;
+  return { m:uni(sv.m,loc.m), mf:uni(sv.mf,loc.mf), mc:uni(sv.mc,loc.mc), fx:fx, st:st, db:dbv, x:(sv.x||loc.x)?1:0, dy:dy };
+}
+function svApply(v){
+  svMute=true;
+  try{
+    masteredMap.shape=new Set(v.m); masteredMap.flag=new Set(v.mf); masteredMap.cap=new Set(v.mc);
+    store.set('kontur.mastered', v.m); store.set('kontur.mastered.flag', v.mf); store.set('kontur.mastered.cap', v.mc);
+    ['l','f','c'].forEach(k=>{ if(!v.fx[k]) v.fx[k]={}; });
+    seenFacts=v.fx; store.set('kontur.facts', seenFacts);
+    stats=v.st; store.set('kontur.stats', stats);
+    SYNC_CATS.forEach(c=>{ if(v.db[c]) store.set('kontur.duelbest.'+c, v.db[c]); });
+    if(v.x) store.set('kontur.unlockx','1');
+    if(v.dy) store.set('kontur.daily', v.dy);
+  } finally { svMute=false; }
+  regBuilt=false;
+  if(typeof renderDiffs==='function') renderDiffs();
+  const el=$('fbMini'); if(el) el.textContent=totalSeen()+' / '+(DATA.length*3);
+}
+function svPush(){
+  const u=acctUser(); if(!u || u.isAnonymous) return;
+  clearTimeout(svPushT);
+  svPushT=setTimeout(()=>{
+    const v=svCollect(); v.at=firebase.database.ServerValue.TIMESTAMP;
+    rdb().ref('users/'+u.uid+'/sv').set(v).catch(()=>{});
+  }, 800);
+}
+async function svSync(){
+  const u=au().currentUser; if(!u || u.isAnonymous) return;
+  const sn=await rdb().ref('users/'+u.uid+'/sv').get().catch(()=>null);
+  const sv=(sn && sn.exists()) ? sn.val() : null;
+  const merged=svMerge(sv, svCollect());
+  svApply(merged);
+  const out=Object.assign({}, merged, {at:firebase.database.ServerValue.TIMESTAMP});
+  await rdb().ref('users/'+u.uid+'/sv').set(out).catch(()=>{});
+}
+/* Store-Wächter: jede Lernstand-Änderung wandert gebündelt auf den Server */
+const _storeSet = store.set.bind(store);
+store.set = (k,v)=>{
+  _storeSet(k,v);
+  if(!svMute && (SYNC_KEYS.includes(k) || k.startsWith('kontur.duelbest.'))) svPush();
+};
+
 if(store0('kontur.acct')){
   window.fbEnsure().then(async ()=>{
     const u=au().currentUser;
-    if(u && !u.isAnonymous) await loadProfile();
+    if(u && !u.isAnonymous){ await loadProfile(); svSync().catch(()=>{}); }
     syncBtn();
   }).catch(()=>{});
 }
