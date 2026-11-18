@@ -435,10 +435,14 @@
   .swatches{display:flex;gap:9px;flex-wrap:wrap;margin:8px 0 4px}
   .swatch{width:30px;height:30px;border-radius:50%;border:2.5px solid transparent;cursor:pointer;padding:0}
   .swatch.sel{border-color:var(--ink)}
-  .sa-colrow{display:flex;gap:8px;align-items:center}
+  .sa-colrow{display:flex;gap:8px;align-items:stretch}
   .sa-colrow .reg-search{flex:1;margin:0}
   .sa-colrow .btn{flex:none;width:auto;padding:10px 14px}
-  .sa-colrow input[type=color]{flex:none;width:46px;height:42px;border:1px solid var(--line);border-radius:10px;background:var(--card);padding:3px;cursor:pointer}
+  .sa-colrow .btn.fr-ok{transition:color .25s, border-color .25s}
+  .sa-colrow input[type=color]{flex:none;width:52px;height:auto;border:1px solid var(--line);border-radius:12px;background:var(--card);padding:5px;cursor:pointer}
+  .sa-colrow input[type=color]::-webkit-color-swatch-wrapper{padding:0}
+  .sa-colrow input[type=color]::-webkit-color-swatch{border:none;border-radius:7px}
+  .sa-colrow input[type=color]::-moz-color-swatch{border:none;border-radius:7px}
   .fr-row{display:flex;align-items:center;gap:8px;padding:9px 2px;border-bottom:1px solid var(--line)}
   .fr-row b{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:14px}
   .fr-mini{width:auto !important;padding:7px 11px !important;font-size:12px !important;margin:0 !important;flex:none}
@@ -2042,7 +2046,7 @@ function renderDiffs(){
   };
   list.appendChild(bx);
 }
-const APP_VERSION = 'v1.83 · Beta · 2026-11-18';
+const APP_VERSION = 'v1.84 · Beta · 2026-11-18';
 let qtype = store0('kontur.qtype') || 'shape';
 if(!['shape','flag','cap'].includes(qtype)) qtype='shape';
 { const qx=new URLSearchParams(location.search).get('qx');
@@ -4792,13 +4796,21 @@ function saColsRender(){
   if(myCol) $('saColPick').value=myCol;
 }
 function saveCol(c){
-  if(!/^#[0-9a-fA-F]{6}$/.test(c)) return;
+  if(!/^#[0-9a-fA-F]{6}$/.test(c)) return false;
   myCol=c; store.set('kontur.col', c);
   const u=acctUser();
   if(u && !u.isAnonymous) rdb().ref('users/'+u.uid+'/col').set(c).catch(()=>{});
   saColsRender();
+  return true;
 }
-$('saColGo').onclick=()=>{ let v=$('saColHex').value.trim(); if(v && v[0]!=='#') v='#'+v; saveCol(v); };
+$('saColGo').onclick=()=>{
+  let v=$('saColHex').value.trim(); if(v && v[0]!=='#') v='#'+v;
+  if(saveCol(v)){
+    const b=$('saColGo');
+    b.classList.add('fr-ok');                        // kurzes grünes „Übernommen"-Feedback
+    setTimeout(()=>b.classList.remove('fr-ok'), 1200);
+  }
+};
 $('saColPick').oninput=(e)=>{ $('saColHex').value=e.target.value; };
 /* Menü-Navigation */
 function svView(v){
