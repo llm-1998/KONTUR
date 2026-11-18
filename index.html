@@ -1592,7 +1592,7 @@ const STRINGS = {
     wgT:'Willkommen bei KONTUR!', wgHint:'Mit einem kostenlosen Konto sicherst du deine Lernstände und spielst auf allen Geräten weiter – Bestenlisten bleiben standardmäßig privat.', wgGuest:'Als Gast spielen',
     privSub:'Bestenlisten sind standardmäßig aus; die Auffindbarkeit ist zu Beginn aktiviert. Abschalten löscht den jeweiligen Eintrag wieder.',
     privGuest:'Sichtbarkeits-Optionen sind mit einem Konto verfügbar.',
-    pswFindT:'Bei Freundessuche auffindbar', pswFindS:'Spieler können dich über deinen exakten Namen finden.',
+    pswFindT:'Bei Freundessuche auffindbar', pswFindS:'Spieler können dich finden und dir Anfragen senden – auch aus den Bestenlisten.',
     pswPtsT:'Punkte-Bestenliste', pswPtsS:'Dein Name erscheint im öffentlichen Punkte-Board.',
     pswStreakT:'Streak-Bestenliste', pswStreakS:'Dein Name erscheint im öffentlichen Serien-Board.',
     pswFactsT:'Fakten-Bestenliste', pswFactsS:'Dein Name erscheint im öffentlichen Fakten-Board.',
@@ -1609,7 +1609,7 @@ const STRINGS = {
     lbCatPts:'Punkte', lbCatStreak:'Streak', lbCatFacts:'Fakten', lbYou:'Du', lbEmpty:'Noch keine Einträge.',
     lbPrivHint:'Privat – aktiviere deinen Eintrag unter Datenschutz & Sichtbarkeit.',
     frInvite:'Freund einladen (Link)', frInvTxt:'Spiel mit mir KONTUR!', frInvDone:'Einladungslink geteilt bzw. kopiert.',
-    frInvBad:'Einladung ungültig oder abgelaufen.', frInvOk:(n)=>'Du bist jetzt mit '+n+' befreundet 🎉',
+    frInvBad:'Einladung ungültig oder abgelaufen.', frInvOk:(n)=>'Du bist jetzt mit '+n+' befreundet 🎉', lbNoReq:'Nimmt keine Anfragen an',
     shareFree:'Freies Spiel', shareTrain:'Training',
     solvedOf:(a,b)=>`${a}/${b} gelöst`, firstTryOf:(a,b)=>`${a}/${b} im 1. Versuch`,
     multiS:'Gegen Freunde – jeder auf seinem Gerät',
@@ -1761,7 +1761,7 @@ const STRINGS = {
     wgT:'Welcome to KONTUR!', wgHint:'A free account backs up your progress and syncs it across devices – leaderboards stay private by default.', wgGuest:'Play as guest',
     privSub:'Leaderboards are off by default; findability starts enabled. Turning an option off deletes its entry again.',
     privGuest:'Visibility options are available with an account.',
-    pswFindT:'Findable in friend search', pswFindS:'Players can find you via your exact name.',
+    pswFindT:'Findable in friend search', pswFindS:'Players can find you and send you requests – including from the leaderboards.',
     pswPtsT:'Points leaderboard', pswPtsS:'Your name appears on the public points board.',
     pswStreakT:'Streak leaderboard', pswStreakS:'Your name appears on the public streak board.',
     pswFactsT:'Facts leaderboard', pswFactsS:'Your name appears on the public facts board.',
@@ -1778,7 +1778,7 @@ const STRINGS = {
     lbCatPts:'Points', lbCatStreak:'Streak', lbCatFacts:'Facts', lbYou:'You', lbEmpty:'No entries yet.',
     lbPrivHint:'Private – enable your entry under Privacy & visibility.',
     frInvite:'Invite a friend (link)', frInvTxt:'Play KONTUR with me!', frInvDone:'Invite link shared or copied.',
-    frInvBad:'Invite invalid or expired.', frInvOk:(n)=>'You are now friends with '+n+' 🎉',
+    frInvBad:'Invite invalid or expired.', frInvOk:(n)=>'You are now friends with '+n+' 🎉', lbNoReq:'Not accepting requests',
     shareFree:'Free play', shareTrain:'Training',
     solvedOf:(a,b)=>`${a}/${b} solved`, firstTryOf:(a,b)=>`${a}/${b} on the 1st try`,
     multiS:'Against friends – everyone on their own device',
@@ -2040,7 +2040,7 @@ function renderDiffs(){
   };
   list.appendChild(bx);
 }
-const APP_VERSION = 'v1.79 · Beta · 2026-11-18';
+const APP_VERSION = 'v1.80 · Beta · 2026-11-18';
 let qtype = store0('kontur.qtype') || 'shape';
 if(!['shape','flag','cap'].includes(qtype)) qtype='shape';
 { const qx=new URLSearchParams(location.search).get('qx');
@@ -5122,9 +5122,12 @@ async function lbRender(){
   const u=acctUser(); const logged=u && !u.isAnonymous;
   if(!logged){ $('lbHint').textContent=t('frGuest'); return; }
   let rows=[];
-  if(lbScope==='fr'){
+  {
     const frSn=await rdb().ref('friends/'+u.uid).get().catch(()=>null);
-    const fr=(frSn && frSn.exists()) ? (frSn.val()||{}) : {};
+    frData.fr=(frSn && frSn.exists()) ? (frSn.val()||{}) : {};
+  }
+  if(lbScope==='fr'){
+    const fr=frData.fr;
     const mine=lbLocalVals();
     rows.push({uid:u.uid, n:(myName||'?'), v:mine[lbCat], me:true});
     await Promise.all(Object.entries(fr).map(async([fid,f])=>{
@@ -5141,6 +5144,7 @@ async function lbRender(){
     rows=Object.entries(lbCache[lbCat]).map(([uid2,e])=>({uid:uid2, n:(e&&e.n)||'?', v:(e&&e.v)||0, me:uid2===u.uid}));
   }
   rows.sort((a,b)=> b.v-a.v || a.n.localeCompare(b.n));
+  const fIdx = lbScope==='gl' ? await frIdxGet(false) : null;   // wer Anfragen annimmt, steht im Suchindex
   const top = lbScope==='gl' ? rows.slice(0,50) : rows;
   if(!top.length){ $('lbHint').textContent=t('lbEmpty'); }
   top.forEach((r,i)=>{
@@ -5149,6 +5153,50 @@ async function lbRender(){
     const nm=document.createElement('b'); nm.textContent=r.n+(r.me?' ('+t('lbYou')+')':''); row.appendChild(nm);
     const vv=document.createElement('span'); vv.className='lb-v'; vv.textContent=(r.v||0).toLocaleString(t('locale')); row.appendChild(vv);
     list.appendChild(row);
+    if(r.me) return;
+    const act=document.createElement('div'); act.className='fr-acts'; act.style.display='none';
+    const rep2=document.createElement('div'); rep2.className='fr-acts'; rep2.style.display='none';
+    row.appendChild(frBtn('⋯','',()=>{ act.style.display = act.style.display==='none' ? '' : 'none'; rep2.style.display='none'; }));
+    const isFr=!!frData.fr[r.uid];
+    if(isFr){
+      act.appendChild(frBtn(t('frRemove'),'',async()=>{
+        await rdb().ref('friends/'+u.uid+'/'+r.uid).remove();
+        await rdb().ref('friends/'+r.uid+'/'+u.uid).remove().catch(()=>{});
+        lbRender();
+      }));
+      act.appendChild(frBtn(t('frBlock'),'acct-danger',async()=>{
+        await rdb().ref('blocks/'+u.uid+'/'+r.uid).set({n:r.n});
+        await rdb().ref('friends/'+u.uid+'/'+r.uid).remove();
+        await rdb().ref('friends/'+r.uid+'/'+u.uid).remove().catch(()=>{});
+        lbRender();
+      }));
+    } else if((store.get('kontur.frout')||{})[r.uid]){
+      const ok=document.createElement('small'); ok.textContent=t('frIsPending');
+      ok.style.color='var(--ink-soft)'; ok.style.fontWeight='700'; ok.style.alignSelf='center';
+      act.appendChild(ok);
+    } else if(fIdx && !fIdx[(r.n||'').toLowerCase()]){
+      const no=document.createElement('small'); no.textContent=t('lbNoReq');
+      no.style.color='var(--ink-soft)'; no.style.fontWeight='700'; no.style.alignSelf='center';
+      act.appendChild(no);
+    } else {
+      act.appendChild(frBtn(t('frSend'),'fr-ok',async()=>{
+        try{
+          await rdb().ref('freq/'+r.uid+'/'+u.uid).set({n:myName||'?', at:firebase.database.ServerValue.TIMESTAMP});
+          const o=store.get('kontur.frout')||{}; o[r.uid]={n:r.n}; store.set('kontur.frout', o);
+          acctToast(t('frSent'));
+          lbRender();
+        }catch(e){ acctToast(errMap(e)); }
+      }));
+    }
+    act.appendChild(frBtn(t('frReport'),'acct-danger',()=>{ rep2.style.display = rep2.style.display==='none' ? '' : 'none'; }));
+    [['name','frRepName'],['spam','frRepSpam'],['fake','frRepFake'],['other','frRepOther']].forEach(([code2,key])=>{
+      rep2.appendChild(frBtn(t(key),'',async()=>{
+        await rdb().ref('reports/'+r.uid+'/'+u.uid).set({r:code2,at:firebase.database.ServerValue.TIMESTAMP}).catch(()=>{});
+        rep2.style.display='none'; act.style.display='none';
+        acctToast(t('frReported'));
+      }));
+    });
+    list.appendChild(act); list.appendChild(rep2);
   });
   if(lbScope==='gl'){
     const privKey = lbCat==='pts' ? 'lbPts' : lbCat==='streak' ? 'lbStreak' : 'lbFacts';
