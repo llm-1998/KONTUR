@@ -452,7 +452,8 @@
   .lb-row{display:flex;align-items:center;gap:10px;padding:10px 6px;border-bottom:1px solid var(--line)}
   .lb-row .lb-rk{flex:none;width:30px;color:var(--ink-soft);font-weight:700;font-size:13px}
   .lb-row b{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:14px}
-  .lb-row .lb-v{flex:none;font-weight:800;font-size:14px}
+  .lb-row .lb-v{flex:none;font-weight:800;font-size:14px;text-align:right;min-width:52px;font-variant-numeric:tabular-nums}
+  .lb-dots{flex:none;width:36px;display:flex;justify-content:flex-end}
   .lb-row.me{background:rgba(36,86,230,.1);border-radius:10px}
   #lbMine{margin-top:14px;padding:11px 13px;border:1.5px dashed var(--line);border-radius:12px;display:none;flex-wrap:wrap;gap:6px;align-items:center}
   #lbMine b{flex:1;min-width:0;font-size:14px}
@@ -2041,7 +2042,7 @@ function renderDiffs(){
   };
   list.appendChild(bx);
 }
-const APP_VERSION = 'v1.81 · Beta · 2026-11-18';
+const APP_VERSION = 'v1.82 · Beta · 2026-11-18';
 let qtype = store0('kontur.qtype') || 'shape';
 if(!['shape','flag','cap'].includes(qtype)) qtype='shape';
 { const qx=new URLSearchParams(location.search).get('qx');
@@ -5153,11 +5154,12 @@ async function lbRender(){
     const rk=document.createElement('span'); rk.className='lb-rk'; rk.textContent=(i+1)+'.'; row.appendChild(rk);
     const nm=document.createElement('b'); nm.textContent=r.n+(r.me?' ('+t('lbYou')+')':''); row.appendChild(nm);
     const vv=document.createElement('span'); vv.className='lb-v'; vv.textContent=(r.v||0).toLocaleString(t('locale')); row.appendChild(vv);
+    const slot=document.createElement('span'); slot.className='lb-dots'; row.appendChild(slot);
     list.appendChild(row);
     if(r.me) return;
     const act=document.createElement('div'); act.className='fr-acts'; act.style.display='none';
     const rep2=document.createElement('div'); rep2.className='fr-acts'; rep2.style.display='none';
-    row.appendChild(frBtn('⋯','',()=>{ act.style.display = act.style.display==='none' ? '' : 'none'; rep2.style.display='none'; }));
+    slot.appendChild(frBtn('⋯','',()=>{ act.style.display = act.style.display==='none' ? '' : 'none'; rep2.style.display='none'; }));
     const isFr=!!frData.fr[r.uid];
     if(isFr){
       act.appendChild(frBtn(t('frRemove'),'',async()=>{
