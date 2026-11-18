@@ -432,13 +432,14 @@
     box-shadow:0 1px 4px rgba(0,0,0,.25);transition:left .25s}
   .sw.on{background:var(--accent)}
   .sw.on::after{left:21px}
-  .swatches{display:flex;gap:9px;flex-wrap:wrap;margin:8px 0 4px}
+  .swatches{display:flex;gap:9px;flex-wrap:wrap;margin:8px 0 16px}
   .swatch{width:30px;height:30px;border-radius:50%;border:2.5px solid transparent;cursor:pointer;padding:0}
   .swatch.sel{border-color:var(--ink)}
   .sa-colrow{display:flex;gap:8px;align-items:stretch}
   .sa-colrow .reg-search{flex:1;margin:0}
   .sa-colrow .btn{flex:none;width:auto;padding:10px 14px}
-  .sa-colrow .btn.fr-ok{transition:color .25s, border-color .25s}
+  .sa-colrow .btn{transition:color .8s ease, border-color .8s ease}
+  .sa-colrow .btn.fr-ok{transition:color .15s, border-color .15s}
   .sa-colrow input[type=color]{flex:none;width:52px;height:auto;border:1px solid var(--line);border-radius:12px;background:var(--card);padding:5px;cursor:pointer}
   .sa-colrow input[type=color]::-webkit-color-swatch-wrapper{padding:0}
   .sa-colrow input[type=color]::-webkit-color-swatch{border:none;border-radius:7px}
@@ -2046,7 +2047,7 @@ function renderDiffs(){
   };
   list.appendChild(bx);
 }
-const APP_VERSION = 'v1.84 · Beta · 2026-11-18';
+const APP_VERSION = 'v1.85 · Beta · 2026-11-18';
 let qtype = store0('kontur.qtype') || 'shape';
 if(!['shape','flag','cap'].includes(qtype)) qtype='shape';
 { const qx=new URLSearchParams(location.search).get('qx');
@@ -4805,10 +4806,11 @@ function saveCol(c){
 }
 $('saColGo').onclick=()=>{
   let v=$('saColHex').value.trim(); if(v && v[0]!=='#') v='#'+v;
-  if(saveCol(v)){
+  const ok = v ? saveCol(v) : (myCol ? (saveCol(myCol), true) : false);   // leer = aktuelle Auswahl bestätigen
+  if(ok){
     const b=$('saColGo');
-    b.classList.add('fr-ok');                        // kurzes grünes „Übernommen"-Feedback
-    setTimeout(()=>b.classList.remove('fr-ok'), 1200);
+    b.classList.add('fr-ok');                        // schnell grün, weich zurück
+    setTimeout(()=>b.classList.remove('fr-ok'), 1000);
   }
 };
 $('saColPick').oninput=(e)=>{ $('saColHex').value=e.target.value; };
