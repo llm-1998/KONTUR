@@ -2042,7 +2042,7 @@ function renderDiffs(){
   };
   list.appendChild(bx);
 }
-const APP_VERSION = 'v1.82 · Beta · 2026-11-18';
+const APP_VERSION = 'v1.83 · Beta · 2026-11-18';
 let qtype = store0('kontur.qtype') || 'shape';
 if(!['shape','flag','cap'].includes(qtype)) qtype='shape';
 { const qx=new URLSearchParams(location.search).get('qx');
@@ -2410,7 +2410,7 @@ const glossScreen=$('glossScreen');
 const duelScreen=$('duelScreen');
 function show(screen){
   if(screen!==startScreen && startScreen.classList.contains('active')) startScroll=window.scrollY;  // Position merken
-  [startScreen,gameScreen,registerScreen,trainScreen,mpScreen,globeScreen,fbScreen,dbScreen,glossScreen,duelScreen].forEach(s=>s.classList.remove('active'));
+  [startScreen,gameScreen,registerScreen,trainScreen,mpScreen,globeScreen,fbScreen,dbScreen,glossScreen,duelScreen,frScreen,lbScreen].forEach(s=>s.classList.remove('active'));
   screen.classList.add('active');
   $('regionChip').style.display = (screen===gameScreen||screen===trainScreen)?'':'none';
   $('homeBtn').style.display    = screen===startScreen?'none':'';
