@@ -1382,7 +1382,7 @@
         <h2 style="font-size:14px" id="frReqHead" data-i18n="frReqH">Anfragen an dich</h2>
         <p class="acct-sub" id="frAccHint" data-i18n="frAccHint">Beim Annehmen seht ihr gegenseitig eure Statistiken.</p>
         <div id="frReqs"></div>
-        <p class="acct-sub" style="margin-top:14px" data-i18n="frSearchSub">Suche nach dem exakten Spielernamen:</p>
+        <p class="acct-sub" style="margin-top:14px" data-i18n="frSearchSub">Suche nach einem Namen oder Namensteil:</p>
         <div class="sa-colrow"><input class="reg-search" id="frSearch" maxlength="16" placeholder="Spielername" data-i18n-ph="acctNamePh" autocomplete="off" autocapitalize="off"><button class="btn ghost" id="frSendBtn" data-i18n="frSearchBtn">Suchen</button></div>
         <p class="acct-err" id="frErr"></p>
         <div id="frResults"></div>
@@ -1554,7 +1554,7 @@ const STRINGS = {
     pswStreakT:'Streak-Bestenliste', pswStreakS:'Dein Name erscheint im öffentlichen Serien-Board.',
     pswFactsT:'Fakten-Bestenliste', pswFactsS:'Dein Name erscheint im öffentlichen Fakten-Board.',
     frT:'Freunde', frGuest:'Freunde sind mit einem Konto verfügbar.', frReqH:'Anfragen an dich',
-    frAccHint:'Beim Annehmen seht ihr gegenseitig eure Statistiken.', frSearchSub:'Suche nach dem exakten Spielernamen:',
+    frAccHint:'Beim Annehmen seht ihr gegenseitig eure Statistiken.', frSearchSub:'Suche nach einem Namen oder Namensteil:',
     frSend:'Anfrage senden', frSent:'Anfrage verschickt.', frNotFound:'Kein Spieler mit diesem Namen auffindbar.',
     frSelf:'Das bist du selbst 😄', frAlready:'Ihr seid schon befreundet.',
     frFriendsH:'Deine Freunde', frNone:'Noch keine Freunde – such oben nach einem Namen.', frOutH:'Gesendete Anfragen',
@@ -1718,7 +1718,7 @@ const STRINGS = {
     pswStreakT:'Streak leaderboard', pswStreakS:'Your name appears on the public streak board.',
     pswFactsT:'Facts leaderboard', pswFactsS:'Your name appears on the public facts board.',
     frT:'Friends', frGuest:'Friends are available with an account.', frReqH:'Requests for you',
-    frAccHint:'Accepting lets you see each other’s statistics.', frSearchSub:'Search for the exact player name:',
+    frAccHint:'Accepting lets you see each other’s statistics.', frSearchSub:'Search for a name or part of it:',
     frSend:'Send request', frSent:'Request sent.', frNotFound:'No player findable under this name.',
     frSelf:'That’s you 😄', frAlready:'You are already friends.',
     frFriendsH:'Your friends', frNone:'No friends yet – search for a name above.', frOutH:'Sent requests',
@@ -1986,7 +1986,7 @@ function renderDiffs(){
   };
   list.appendChild(bx);
 }
-const APP_VERSION = 'v1.75 · Beta · 2026-11-18';
+const APP_VERSION = 'v1.76 · Beta · 2026-11-18';
 let qtype = store0('kontur.qtype') || 'shape';
 if(!['shape','flag','cap'].includes(qtype)) qtype='shape';
 { const qx=new URLSearchParams(location.search).get('qx');
@@ -4870,6 +4870,10 @@ $('frSendBtn').onclick=async()=>{
   try{
     const sn=await rdb().ref('pub/find').get().catch(()=>null);
     const all=(sn && sn.exists()) ? (sn.val()||{}) : {};
+    Object.entries(frData.fr).forEach(([fid,f])=>{          // Freunde sind immer findbar, auch ohne Index
+      const ln=((f && f.n)||'').toLowerCase();
+      if(ln && !all[ln]) all[ln]={u:fid, n:f.n};
+    });
     const ql=q.toLowerCase();
     const hits=Object.keys(all).filter(k=>k.includes(ql) && !(myName && k===myName.toLowerCase())).sort().slice(0,12);
     if(!hits.length){ err(t('frNoRes')); return; }
@@ -4884,7 +4888,7 @@ $('frSendBtn').onclick=async()=>{
         const ok=document.createElement('small');
         if(isFr){ ok.textContent = t('frIsFriend'); }
         else { ok.innerHTML = '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1px"><path d="M5 22h14M5 2h14M17 22v-4.2a2 2 0 0 0-.6-1.4L12 12 7.6 16.4a2 2 0 0 0-.6 1.4V22M7 2v4.2a2 2 0 0 0 .6 1.4L12 12l4.4-4.4a2 2 0 0 0 .6-1.4V2"/></svg> '+t('frIsPending'); }
-        ok.style.color = isFr ? 'var(--accent)' : 'var(--ink-soft)';
+        ok.style.color = isFr ? '#2fa05c' : 'var(--ink-soft)';
         ok.style.fontWeight='700'; ok.style.flex='none';
         row.appendChild(ok);
       } else {
