@@ -1986,7 +1986,7 @@ function renderDiffs(){
   };
   list.appendChild(bx);
 }
-const APP_VERSION = 'v1.76 · Beta · 2026-11-18';
+const APP_VERSION = 'v1.77 · Beta · 2026-11-18';
 let qtype = store0('kontur.qtype') || 'shape';
 if(!['shape','flag','cap'].includes(qtype)) qtype='shape';
 { const qx=new URLSearchParams(location.search).get('qx');
@@ -4860,16 +4860,26 @@ function frRender(){
     ol.appendChild(row);
   });
 }
-$('frSendBtn').onclick=async()=>{
+let frIdxCache=null, frIdxAt=0, frTypeT=0;
+async function frIdxGet(force){
+  if(!force && frIdxCache && Date.now()-frIdxAt<60000) return frIdxCache;   // 60 s Sitzungs-Cache
+  const sn=await rdb().ref('pub/find').get().catch(()=>null);
+  frIdxCache=(sn && sn.exists()) ? (sn.val()||{}) : {};
+  frIdxAt=Date.now();
+  return frIdxCache;
+}
+async function frSearchRun(force, viaBtn){
   const u=acctUser(); if(!u || u.isAnonymous) return;
   const q=$('frSearch').value.trim();
   const err=(m)=>{ $('frErr').textContent=m||''; };
-  const res=$('frResults'); res.innerHTML='';
-  if(!/^[A-Za-z0-9]{2,16}$/.test(q)){ err(t('frQueryBad')); return; }
+  const res=$('frResults');
+  if(!/^[A-Za-z0-9]{2,16}$/.test(q)){ res.innerHTML=''; err(viaBtn ? t('frQueryBad') : ''); return; }
   err('');
   try{
-    const sn=await rdb().ref('pub/find').get().catch(()=>null);
-    const all=(sn && sn.exists()) ? (sn.val()||{}) : {};
+    const base=await frIdxGet(force);
+    if($('frSearch').value.trim()!==q) return;      // Tippstand ist weitergewandert: Ergebnis verwerfen
+    res.innerHTML='';
+    const all=Object.assign({}, base);
     Object.entries(frData.fr).forEach(([fid,f])=>{          // Freunde sind immer findbar, auch ohne Index
       const ln=((f && f.n)||'').toLowerCase();
       if(ln && !all[ln]) all[ln]={u:fid, n:f.n};
@@ -4898,14 +4908,16 @@ $('frSendBtn').onclick=async()=>{
             const o=store.get('kontur.frout')||{}; o[uid2]={n:nm2}; store.set('kontur.frout', o);
             acctToast(t('frSent'));
             frRender();
-            $('frSendBtn').onclick();                          // Trefferliste auffrischen
+            frSearchRun(false, false);                         // Trefferliste auffrischen
           }catch(e){ err(errMap(e)); }
         }));
       }
       res.appendChild(row);
     });
   }catch(e){ err(errMap(e)); }
-};
+}
+$('frSendBtn').onclick=()=>{ frSearchRun(true, true); };
+$('frSearch').oninput=()=>{ clearTimeout(frTypeT); frTypeT=setTimeout(()=>{ frSearchRun(false, false); }, 250); };
 
 /* ---- Index-Selbstheilung + Live-Pille für eingehende Anfragen ---- */
 function ensureFindIdx(){
