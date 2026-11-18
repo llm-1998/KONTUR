@@ -451,9 +451,15 @@
   .fr-badge{margin-left:auto;background:var(--accent);color:#fff;border-radius:99px;min-width:21px;height:21px;
     display:flex;align-items:center;justify-content:center;font-size:11.5px;font-weight:800;padding:0 6px;flex:none}
   #frScreen .btn, #frScreen .reg-search{font-size:13.5px}
-  .lb-head{display:flex;flex-direction:column;gap:10px;margin:4px 0 14px}
+  .lb-head{display:flex;flex-direction:column;gap:10px;margin:4px 0 8px}
   .lb-head .seg{margin-left:0}
   .lb-head .seg button{flex:1}
+  .lb-head .lb-cats{display:flex;flex-wrap:nowrap;width:100%}
+  .lb-cats button{flex:1 1 0;min-width:0;display:flex;align-items:center;justify-content:center;padding:8px 0}
+  .lb-cats button svg{display:block}
+  .lb-cats button.pop svg{animation:lbpop .35s ease}
+  @keyframes lbpop{0%{transform:scale(1)}45%{transform:scale(1.3)}100%{transform:scale(1)}}
+  .lb-desc{font-size:12px;color:var(--ink-soft);margin:0 2px 12px;min-height:16px;transition:opacity .25s}
   .lb-row{display:flex;align-items:center;gap:10px;padding:10px 6px;border-bottom:1px solid var(--line)}
   .lb-row .lb-rk{flex:none;width:30px;color:var(--ink-soft);font-weight:700;font-size:13px}
   .lb-row b{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:14px}
@@ -1266,9 +1272,10 @@
     </div>
   </div>
   <div class="lb-head">
-    <div class="seg"><button id="lbScopeFr" class="on" data-i18n="frT">Freunde</button><button id="lbScopeGl" data-i18n="lbGlobal">Global</button></div>
-    <div class="seg"><button id="lbCatP" class="on" data-i18n="lbCatPts">Punkte</button><button id="lbCatS" data-i18n="lbCatStreak">Streak</button><button id="lbCatF" data-i18n="lbCatFacts">Fakten</button></div>
+    <div class="seg lb-scope"><button id="lbScopeFr" class="on" data-i18n="frT">Freunde</button><button id="lbScopeGl" data-i18n="lbGlobal">Global</button></div>
+    <div class="seg lb-cats"><button id="lbCatP" class="on" title="Punkte · Points"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3l2.8 6.6M16 3l-2.8 6.6M8 3h8"/><circle cx="12" cy="15.5" r="5.2"/><path fill="currentColor" stroke="none" d="M12 12.8l.68 1.77 1.89.1-1.48 1.19.5 1.82L12 16.65l-1.59 1.03.5-1.82-1.48-1.19 1.89-.1z"/></svg></button><button id="lbCatS" title="Streak"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3 1.07-2.14 2.5-3.5 4.5-4.5-.5 2.5.5 4 2 5.5a7 7 0 1 1-9.5 4.5z"/></svg></button><button id="lbCatF" title="Fakten · Facts"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></button></div>
   </div>
+  <p class="lb-desc" id="lbDesc"></p>
   <p class="acct-sub" id="lbHint"></p>
   <div id="lbList"></div>
   <div id="lbMine"></div>
@@ -1615,6 +1622,7 @@ const STRINGS = {
     lblCom:'COMMUNITY', frTitle:'FREUNDE', lbTitle:'LEADERBOARD', lbT:'Leaderboard', lbGlobal:'Global',
     lbCatPts:'Punkte', lbCatStreak:'Streak', lbCatFacts:'Fakten', lbYou:'Du', lbEmpty:'Noch keine Einträge.',
     lbPrivHint:'Privat – aktiviere deinen Eintrag unter Datenschutz & Sichtbarkeit.',
+    lbDescPts:'Bisher gesammelte Mehrspieler-Punkte.', lbDescStreak:'Längste Serie an Tages-Challenges.', lbDescFacts:'Freigeschaltete Fakten.',
     frInvite:'Freund einladen (Link)', frInvTxt:'Spiel mit mir KONTUR!', frInvDone:'Einladungslink geteilt bzw. kopiert.',
     frInvBad:'Einladung ungültig oder abgelaufen.', frInvOk:(n)=>'Du bist jetzt mit '+n+' befreundet 🎉', lbNoReq:'Nimmt keine Anfragen an',
     shareFree:'Freies Spiel', shareTrain:'Training',
@@ -1784,6 +1792,7 @@ const STRINGS = {
     lblCom:'COMMUNITY', frTitle:'FRIENDS', lbTitle:'LEADERBOARD', lbT:'Leaderboard', lbGlobal:'Global',
     lbCatPts:'Points', lbCatStreak:'Streak', lbCatFacts:'Facts', lbYou:'You', lbEmpty:'No entries yet.',
     lbPrivHint:'Private – enable your entry under Privacy & visibility.',
+    lbDescPts:'Multiplayer points collected so far.', lbDescStreak:'Longest run of daily challenges.', lbDescFacts:'Facts unlocked.',
     frInvite:'Invite a friend (link)', frInvTxt:'Play KONTUR with me!', frInvDone:'Invite link shared or copied.',
     frInvBad:'Invite invalid or expired.', frInvOk:(n)=>'You are now friends with '+n+' 🎉', lbNoReq:'Not accepting requests',
     shareFree:'Free play', shareTrain:'Training',
@@ -2047,7 +2056,7 @@ function renderDiffs(){
   };
   list.appendChild(bx);
 }
-const APP_VERSION = 'v1.85 · Beta · 2026-11-18';
+const APP_VERSION = 'v1.86 · Beta · 2026-11-18';
 let qtype = store0('kontur.qtype') || 'shape';
 if(!['shape','flag','cap'].includes(qtype)) qtype='shape';
 { const qx=new URLSearchParams(location.search).get('qx');
@@ -5132,6 +5141,10 @@ async function lbRender(){
   $('lbScopeFr').classList.toggle('on', lbScope==='fr');
   $('lbScopeGl').classList.toggle('on', lbScope==='gl');
   [['pts','lbCatP'],['streak','lbCatS'],['facts','lbCatF']].forEach(([c,id])=>$(id).classList.toggle('on', lbCat===c));
+  const dEl=$('lbDesc');
+  const dKey = lbCat==='pts' ? 'lbDescPts' : lbCat==='streak' ? 'lbDescStreak' : 'lbDescFacts';
+  dEl.style.opacity='0';
+  setTimeout(()=>{ dEl.textContent=t(dKey); dEl.style.opacity='1'; }, 150);
   const list=$('lbList'); list.innerHTML='';
   $('lbMine').style.display='none';
   $('lbHint').textContent='';
@@ -5232,11 +5245,12 @@ async function lbRender(){
     }
   }
 }
+function lbPop(id){ const b=$(id); b.classList.remove('pop'); void b.offsetWidth; b.classList.add('pop'); setTimeout(()=>b.classList.remove('pop'), 400); }
 $('lbScopeFr').onclick=()=>{ lbScope='fr'; lbRender(); };
 $('lbScopeGl').onclick=()=>{ lbScope='gl'; lbRender(); };
-$('lbCatP').onclick=()=>{ lbCat='pts'; lbRender(); };
-$('lbCatS').onclick=()=>{ lbCat='streak'; lbRender(); };
-$('lbCatF').onclick=()=>{ lbCat='facts'; lbRender(); };
+$('lbCatP').onclick=()=>{ lbCat='pts'; lbPop('lbCatP'); lbRender(); };
+$('lbCatS').onclick=()=>{ lbCat='streak'; lbPop('lbCatS'); lbRender(); };
+$('lbCatF').onclick=()=>{ lbCat='facts'; lbPop('lbCatF'); lbRender(); };
 /* Namenswechsel aus den Einstellungen (14-Tage-Regel) */
 $('saNameChg').onclick=()=>{
   const until = myNameAt ? myNameAt + 14*86400000 : 0;
