@@ -443,6 +443,21 @@
   .fr-row b{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:14px}
   .fr-mini{width:auto !important;padding:7px 11px !important;font-size:12px !important;margin:0 !important;flex:none}
   .fr-acts{display:flex;gap:6px;flex-wrap:wrap;padding:8px 2px;border-bottom:1px solid var(--line)}
+  .fr-badge{margin-left:auto;background:var(--accent);color:#fff;border-radius:99px;min-width:21px;height:21px;
+    display:flex;align-items:center;justify-content:center;font-size:11.5px;font-weight:800;padding:0 6px;flex:none}
+  #frScreen .btn, #frScreen .reg-search{font-size:13.5px}
+  .lb-head{display:flex;flex-direction:column;gap:10px;margin:4px 0 14px}
+  .lb-head .seg{margin-left:0}
+  .lb-head .seg button{flex:1}
+  .lb-row{display:flex;align-items:center;gap:10px;padding:10px 6px;border-bottom:1px solid var(--line)}
+  .lb-row .lb-rk{flex:none;width:30px;color:var(--ink-soft);font-weight:700;font-size:13px}
+  .lb-row b{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:14px}
+  .lb-row .lb-v{flex:none;font-weight:800;font-size:14px}
+  .lb-row.me{background:rgba(36,86,230,.1);border-radius:10px}
+  #lbMine{margin-top:14px;padding:11px 13px;border:1.5px dashed var(--line);border-radius:12px;display:none;flex-wrap:wrap;gap:6px;align-items:center}
+  #lbMine b{flex:1;min-width:0;font-size:14px}
+  #lbMine .lb-v{font-weight:800}
+  #lbMine small{width:100%;color:var(--ink-soft);font-size:11.5px}
   body.lock{overflow:hidden}
   .fr-ok{color:#2fa05c !important;border-color:rgba(47,160,92,.55) !important}
   .acct-danger.fr-mini{border-color:rgba(208,80,80,.5) !important}
@@ -491,7 +506,7 @@
   .train-foot .mastery{justify-self:start}
   .train-foot .skiplink{justify-self:end}
   .foot-mid{display:flex;gap:8px;justify-content:center}
-  #registerScreen,#globeScreen,#fbScreen,#dbScreen,#glossScreen{touch-action:pan-y}
+  #registerScreen,#globeScreen,#fbScreen,#dbScreen,#glossScreen,#frScreen,#lbScreen{touch-action:pan-y}
   #edgeStrip{position:fixed;left:0;top:0;bottom:0;width:30px;z-index:45;
     touch-action:none;display:none}
   .swiping .reg-searchwrap::before{left:0;right:0}
@@ -901,6 +916,16 @@
         <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9.2"/><path d="M9.3 9.2a2.7 2.7 0 1 1 3.9 2.4c-.8.4-1.2.9-1.2 1.9"/><circle cx="12" cy="17" r="0.4" fill="currentColor"/></svg>
         <span data-i18n="glossOpen">Wusstest du?</span>
       </button>
+    <div class="label" data-i18n="lblCom">COMMUNITY</div>
+    <button class="reg-open" id="frBtn2">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="9" cy="8" r="3.4"/><path d="M2.5 19c1-2.9 3.4-4.3 6.5-4.3s5.5 1.4 6.5 4.3"/><circle cx="17.5" cy="9" r="2.6"/><path d="M16.5 14.9c2.6.2 4.4 1.5 5 3.9"/></svg>
+      <span data-i18n="frT">Freunde</span>
+      <span class="fr-badge" id="frBadge" style="display:none">0</span>
+    </button>
+    <button class="reg-open" id="lbBtn" style="margin-top:10px">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M7 5H4.5a1 1 0 0 0-1 1.2C4 9 5.5 10.4 7 10.7M17 5h2.5a1 1 0 0 1 1 1.2C20 9 18.5 10.4 17 10.7M12 14v3M8.5 21h7M9.5 17h5a1 1 0 0 1 1 1v3h-7v-3a1 1 0 0 1 1-1z"/></svg>
+      <span data-i18n="lbT">Leaderboard</span>
+    </button>
     <div class="a2hs" id="a2hsCard" style="display:none">
       <button class="a2hs-x" id="a2hsClose" aria-label="Schließen">×</button>
       <div class="a2hs-t">📲 <span data-i18n="a2hsT">KONTUR als App</span></div>
@@ -1203,6 +1228,44 @@
   </div>
   <div id="glossList"></div>
 </section>
+<section class="screen" id="frScreen">
+  <div class="fb-sticky">
+    <div class="fb-toprow">
+      <div class="fb-title" data-i18n="frTitle">FREUNDE</div>
+    </div>
+  </div>
+  <p class="acct-sub" id="frGuestHint" style="font-size:13.5px" data-i18n="frGuest">Freunde sind mit einem Konto verfügbar.</p>
+  <button class="btn" id="frLoginBtn" data-i18n="acctOpenGuest" style="display:none">Anmelden / Registrieren</button>
+  <div id="frUser" style="display:none">
+    <button class="btn ghost" id="frInvBtn" data-i18n="frInvite">Freund einladen (Link)</button>
+    <h2 style="font-size:14px;margin:16px 0 2px" id="frReqHead" data-i18n="frReqH">Anfragen an dich</h2>
+    <p class="acct-sub" id="frAccHint" data-i18n="frAccHint">Beim Annehmen seht ihr gegenseitig eure Statistiken.</p>
+    <div id="frReqs"></div>
+    <p class="acct-sub" style="margin-top:14px" data-i18n="frSearchSub">Suche nach einem Namen oder Namensteil:</p>
+    <div class="sa-colrow"><input class="reg-search" id="frSearch" maxlength="16" placeholder="Spielername" data-i18n-ph="acctNamePh" autocomplete="off" autocapitalize="off"><button class="btn ghost" id="frSendBtn" data-i18n="frSearchBtn">Suchen</button></div>
+    <p class="acct-err" id="frErr"></p>
+    <div id="frResults"></div>
+    <h2 style="font-size:14px;margin:18px 0 2px" data-i18n="frFriendsH">Deine Freunde</h2>
+    <p class="acct-sub" id="frNone" data-i18n="frNone">Noch keine Freunde – such oben nach einem Namen.</p>
+    <div id="frList"></div>
+    <h2 style="font-size:14px;margin:18px 0 6px" id="frOutHead" data-i18n="frOutH">Gesendete Anfragen</h2>
+    <div id="frOut"></div>
+  </div>
+</section>
+<section class="screen" id="lbScreen">
+  <div class="fb-sticky">
+    <div class="fb-toprow">
+      <div class="fb-title" data-i18n="lbTitle">LEADERBOARD</div>
+    </div>
+  </div>
+  <div class="lb-head">
+    <div class="seg"><button id="lbScopeFr" class="on" data-i18n="frT">Freunde</button><button id="lbScopeGl" data-i18n="lbGlobal">Global</button></div>
+    <div class="seg"><button id="lbCatP" class="on" data-i18n="lbCatPts">Punkte</button><button id="lbCatS" data-i18n="lbCatStreak">Streak</button><button id="lbCatF" data-i18n="lbCatFacts">Fakten</button></div>
+  </div>
+  <p class="acct-sub" id="lbHint"></p>
+  <div id="lbList"></div>
+  <div id="lbMine"></div>
+</section>
 <section class="screen" id="fbScreen">
   <div class="fb-sticky">
     <div class="fb-toprow">
@@ -1310,7 +1373,6 @@
 
     <div id="svMenu">
       <button class="menu-row" id="smAcct"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4.5 20c1.2-3.4 4-5 7.5-5s6.3 1.6 7.5 5"/></svg><span class="mr-t"><b data-i18n="acctT">Konto</b><small id="smAcctSub"></small></span><svg class="chev" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M9 6l6 6-6 6"/></svg></button>
-      <button class="menu-row" id="smFriends"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="9" cy="8" r="3.4"/><path d="M2.5 19c1-2.9 3.4-4.3 6.5-4.3s5.5 1.4 6.5 4.3"/><circle cx="17.5" cy="9" r="2.6"/><path d="M16.5 14.9c2.6.2 4.4 1.5 5 3.9"/></svg><b data-i18n="frT">Freunde</b><svg class="chev" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M9 6l6 6-6 6"/></svg></button>
       <button class="menu-row" id="smGame"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 8h10M18 8h2M4 16h2M10 16h10"/><circle cx="16" cy="8" r="2.2"/><circle cx="8" cy="16" r="2.2"/></svg><b data-i18n="smGameT">Spiel &amp; Darstellung</b><svg class="chev" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M9 6l6 6-6 6"/></svg></button>
       <button class="menu-row" id="smPriv"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 3l7 3v5c0 4.5-3 8.2-7 10-4-1.8-7-5.5-7-10V6z"/></svg><b data-i18n="smPrivT">Datenschutz &amp; Sichtbarkeit</b><svg class="chev" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M9 6l6 6-6 6"/></svg></button>
       <button class="menu-row" id="smReset" style="border-bottom:0"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 12a9 9 0 1 0 3-6.7M4 4v5h5"/></svg><b data-i18n="resetT">Zurücksetzen</b><svg class="chev" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M9 6l6 6-6 6"/></svg></button>
@@ -1372,25 +1434,6 @@
         <button class="btn ghost" id="avpPwMail" data-i18n="acctPwChange">Passwort ändern (per E-Mail)</button>
         <button class="btn ghost" id="avpLogout" data-i18n="acctLogout">Abmelden</button>
         <button class="btn ghost acct-danger" id="avpDelete" data-i18n="acctDelete" style="border-color:rgba(208,80,80,.45)">Konto löschen</button>
-      </div>
-    </div>
-
-    <div id="svFriends" style="display:none">
-      <h2 data-i18n="frT">Freunde</h2>
-      <p class="acct-sub" id="frGuestHint" data-i18n="frGuest">Freunde sind mit einem Konto verfügbar.</p>
-      <div id="frUser" style="display:none">
-        <h2 style="font-size:14px" id="frReqHead" data-i18n="frReqH">Anfragen an dich</h2>
-        <p class="acct-sub" id="frAccHint" data-i18n="frAccHint">Beim Annehmen seht ihr gegenseitig eure Statistiken.</p>
-        <div id="frReqs"></div>
-        <p class="acct-sub" style="margin-top:14px" data-i18n="frSearchSub">Suche nach einem Namen oder Namensteil:</p>
-        <div class="sa-colrow"><input class="reg-search" id="frSearch" maxlength="16" placeholder="Spielername" data-i18n-ph="acctNamePh" autocomplete="off" autocapitalize="off"><button class="btn ghost" id="frSendBtn" data-i18n="frSearchBtn">Suchen</button></div>
-        <p class="acct-err" id="frErr"></p>
-        <div id="frResults"></div>
-        <h2 style="font-size:14px" data-i18n="frFriendsH">Deine Freunde</h2>
-        <p class="acct-sub" id="frNone" data-i18n="frNone">Noch keine Freunde – such oben nach einem Namen.</p>
-        <div id="frList"></div>
-        <h2 style="font-size:14px" id="frOutHead" data-i18n="frOutH">Gesendete Anfragen</h2>
-        <div id="frOut"></div>
       </div>
     </div>
 
@@ -1562,6 +1605,11 @@ const STRINGS = {
     frRepName:'Name unangebracht', frRepSpam:'Spam', frRepFake:'Gibt sich als jemand aus', frRepOther:'Sonstiges',
     frReported:'Meldung übermittelt – danke!', frSearchBtn:'Suchen', frNoRes:'Keine Treffer.',
     frQueryBad:'2–16 Zeichen, A–Z und 0–9.', frPillS:'möchte mit dir befreundet sein', frIsFriend:'✓ Befreundet', frIsPending:'Angefragt',
+    lblCom:'COMMUNITY', frTitle:'FREUNDE', lbTitle:'LEADERBOARD', lbT:'Leaderboard', lbGlobal:'Global',
+    lbCatPts:'Punkte', lbCatStreak:'Streak', lbCatFacts:'Fakten', lbYou:'Du', lbEmpty:'Noch keine Einträge.',
+    lbPrivHint:'Privat – aktiviere deinen Eintrag unter Datenschutz & Sichtbarkeit.',
+    frInvite:'Freund einladen (Link)', frInvTxt:'Spiel mit mir KONTUR!', frInvDone:'Einladungslink geteilt bzw. kopiert.',
+    frInvBad:'Einladung ungültig oder abgelaufen.', frInvOk:(n)=>'Du bist jetzt mit '+n+' befreundet 🎉',
     shareFree:'Freies Spiel', shareTrain:'Training',
     solvedOf:(a,b)=>`${a}/${b} gelöst`, firstTryOf:(a,b)=>`${a}/${b} im 1. Versuch`,
     multiS:'Gegen Freunde – jeder auf seinem Gerät',
@@ -1726,6 +1774,11 @@ const STRINGS = {
     frRepName:'Inappropriate name', frRepSpam:'Spam', frRepFake:'Impersonation', frRepOther:'Other',
     frReported:'Report submitted – thank you!', frSearchBtn:'Search', frNoRes:'No matches.',
     frQueryBad:'2–16 characters, A–Z and 0–9.', frPillS:'wants to be friends with you', frIsFriend:'✓ Friends', frIsPending:'Requested',
+    lblCom:'COMMUNITY', frTitle:'FRIENDS', lbTitle:'LEADERBOARD', lbT:'Leaderboard', lbGlobal:'Global',
+    lbCatPts:'Points', lbCatStreak:'Streak', lbCatFacts:'Facts', lbYou:'You', lbEmpty:'No entries yet.',
+    lbPrivHint:'Private – enable your entry under Privacy & visibility.',
+    frInvite:'Invite a friend (link)', frInvTxt:'Play KONTUR with me!', frInvDone:'Invite link shared or copied.',
+    frInvBad:'Invite invalid or expired.', frInvOk:(n)=>'You are now friends with '+n+' 🎉',
     shareFree:'Free play', shareTrain:'Training',
     solvedOf:(a,b)=>`${a}/${b} solved`, firstTryOf:(a,b)=>`${a}/${b} on the 1st try`,
     multiS:'Against friends – everyone on their own device',
@@ -1926,6 +1979,7 @@ const fold = s => (s||'').toLowerCase().replaceAll('ä','a').replaceAll('ö','o'
 /* ---------- UI-Referenzen ---------- */
 const $ = id => document.getElementById(id);
 const startScreen=$('startScreen'), gameScreen=$('gameScreen');
+const frScreen=$('frScreen'), lbScreen=$('lbScreen');
 const input=$('guessInput'), suggest=$('suggest'), goBtn=$('goBtn');
 
 /* ---------- Theme ---------- */
@@ -1986,7 +2040,7 @@ function renderDiffs(){
   };
   list.appendChild(bx);
 }
-const APP_VERSION = 'v1.77 · Beta · 2026-11-18';
+const APP_VERSION = 'v1.78 · Beta · 2026-11-18';
 let qtype = store0('kontur.qtype') || 'shape';
 if(!['shape','flag','cap'].includes(qtype)) qtype='shape';
 { const qx=new URLSearchParams(location.search).get('qx');
@@ -2358,7 +2412,7 @@ function show(screen){
   screen.classList.add('active');
   $('regionChip').style.display = (screen===gameScreen||screen===trainScreen)?'':'none';
   $('homeBtn').style.display    = screen===startScreen?'none':'';
-  $('edgeStrip').style.display  = (screen===registerScreen||screen===globeScreen||screen===fbScreen||screen===dbScreen||screen===glossScreen)?'':'none';
+  $('edgeStrip').style.display  = (screen===registerScreen||screen===globeScreen||screen===fbScreen||screen===dbScreen||screen===glossScreen||screen===frScreen||screen===lbScreen)?'':'none';
   $('dbBack').style.display = (screen===dbScreen && window.dbReturnA2) ? 'flex' : 'none';
   window.scrollTo(0, screen===startScreen ? startScroll : 0);                                       // heimkehren, wo man war
 }
@@ -2422,6 +2476,7 @@ function bumpStreak(){
   s.n = (s.last===dsKey(Date.now()-86400000)) ? s.n+1 : 1;
   s.last=today;
   store.set('kontur.dstreak', s);
+  if(s.n > (store0('kontur.dsbest')||0)) store.set('kontur.dsbest', s.n);
   orbitSync();
 }
 function orbitSync(){
@@ -2761,7 +2816,9 @@ $('menuBtn').onclick = ()=>{ closeOverlay(); refreshDailyState(); show(startScre
             : globeScreen.classList.contains('active') ? globeScreen
             : fbScreen.classList.contains('active') ? fbScreen
             : dbScreen.classList.contains('active') ? dbScreen
-            : glossScreen.classList.contains('active') ? glossScreen : null;
+            : glossScreen.classList.contains('active') ? glossScreen
+            : frScreen.classList.contains('active') ? frScreen
+            : lbScreen.classList.contains('active') ? lbScreen : null;
   function clean(c, sb, cta, nx){
     [c, startScreen].forEach(el=>{ if(!el) return;
       el.style.transform=''; el.style.transition=''; el.style.opacity='';
@@ -2786,7 +2843,7 @@ $('menuBtn').onclick = ()=>{ closeOverlay(); refreshDailyState(); show(startScre
     // Schutzklauseln: Galerie, Einstellungen, Kopfzeile, Banner und Textfelder wischen nie
     if(e.target.closest && e.target.closest('#flagLb,#settingsOverlay,#acctOverlay,header,.offline-bar,input,textarea,.reg-tablewrap,.fb-detail')) return;
     const inEdge = e.clientX<=EDGE;
-    const wide = (c===registerScreen || c===fbScreen || c===dbScreen || c===glossScreen)    // Listen-Seiten: volle Fläche
+    const wide = (c===registerScreen || c===fbScreen || c===dbScreen || c===glossScreen || c===frScreen || c===lbScreen)    // Listen-Seiten: volle Fläche
               || (c===globeScreen && !(e.target.closest && e.target.closest('.globe-wrap'))); // Globus: unterhalb der Kugel
     if(!inEdge && !wide) return;
     if(inEdge) e.stopPropagation();                    // nur am Rand: Globus-Drehen fernhalten
@@ -3348,6 +3405,8 @@ document.addEventListener('click', e=>{   // Konturen-Freiblick: Tipp auf die Ka
   qn.style.opacity = qn.style.opacity==='0' ? '' : '0';
 });
 $('dbBtn').onclick = ()=>{ window.dbReturnA2=null; loadFx(); buildTableChips(); buildTableRows(); dbUnitHeads(); fxBaseSync(); fxNoteSync(); show(dbScreen); };
+$('frBtn2').onclick = ()=>{ show(frScreen); if(window.frOpen) window.frOpen(); };
+$('lbBtn').onclick  = ()=>{ show(lbScreen); if(window.lbOpen) window.lbOpen(); };
 let navAskFn=null;
 window.navAsk=(key,fn)=>{ navAskFn=fn; $('dbJumpTitle').textContent=t(key); $('dbJumpAsk').classList.add('open'); };
 window.dbJumpAskOpen=(a2,col)=>{ window.navAsk('dbJumpT', ()=>{
@@ -3922,6 +3981,17 @@ function mpSelfPlayer(name){
   if(/^#[0-9a-f]{6}$/i.test(c0||'')) pl.col=c0;
   return pl;
 }
+function mpCredit(){
+  if(!room || !roomCode) return;
+  const k=store0('kontur.mpcred')||{};
+  if(k[roomCode]) return;                               // jede Partie zählt nur einmal
+  const mine=(totals()[pid])||0;
+  k[roomCode]=Date.now();
+  const keys=Object.keys(k);
+  if(keys.length>30){ keys.sort((a,b)=>k[a]-k[b]).slice(0, keys.length-30).forEach(x=>delete k[x]); }
+  store.set('kontur.mpcred', k);
+  if(mine>0) store.set('kontur.mppts', (store0('kontur.mppts')||0) + mine);
+}
 const CODE_CHARS='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 const genCode=()=>Array.from({length:4},()=>CODE_CHARS[Math.floor(Math.random()*CODE_CHARS.length)]).join('');
 
@@ -4010,7 +4080,7 @@ function renderRoom(){
   if(!room) return;
   if(room.state==='lobby'){ mpView('mpLobby'); renderLobby(); }
   else if(room.state==='playing'){ mpView('mpPlay'); renderPlay(); }
-  else if(room.state==='done'){ mpView('mpFinal'); renderFinal(); }
+  else if(room.state==='done'){ mpView('mpFinal'); renderFinal(); mpCredit(); }
 }
 
 function renderLobby(){
@@ -4767,6 +4837,7 @@ PRIVS.forEach(([k,id])=>{
       if(myPriv.find) rdb().ref('pub/find/'+lower).set({u:u.uid,n:myName}).catch(()=>{});
       else rdb().ref('pub/find/'+lower).remove().catch(()=>{});
     }
+    if(k!=='find') lbPubSync();
     privRender();
   };
 });
@@ -4791,6 +4862,7 @@ function frBtn(lbl,cls,fn){ const b=document.createElement('button'); b.classNam
 function frRender(){
   const u=acctUser(); const logged=u && !u.isAnonymous;
   $('frGuestHint').style.display=logged?'none':'';
+  $('frLoginBtn').style.display=logged?'none':'';
   $('frUser').style.display=logged?'':'none';
   if(!logged) return;
   const me=u.uid;
@@ -4919,6 +4991,41 @@ async function frSearchRun(force, viaBtn){
 $('frSendBtn').onclick=()=>{ frSearchRun(true, true); };
 $('frSearch').oninput=()=>{ clearTimeout(frTypeT); frTypeT=setTimeout(()=>{ frSearchRun(false, false); }, 250); };
 
+$('frLoginBtn').onclick=()=>{ openAcct(); };
+window.frOpen=()=>{ frLoad(); };
+
+/* ---- Einladungslink für Externe ---- */
+$('frInvBtn').onclick=async()=>{
+  const u=acctUser(); if(!u || u.isAnonymous || !myName) return;
+  const code=Array.from({length:10},()=>'abcdefghjkmnpqrstuvwxyz23456789'[Math.floor(Math.random()*31)]).join('');
+  try{
+    await rdb().ref('invites/'+code).set({u:u.uid, n:myName, at:firebase.database.ServerValue.TIMESTAMP});
+    const url=APP_URL+'?fr='+code;
+    if(navigator.share){ navigator.share({title:'KONTUR', text:t('frInvTxt'), url:url}).catch(()=>{}); }
+    else if(navigator.clipboard){ await navigator.clipboard.writeText(url).catch(()=>{}); }
+    acctToast(t('frInvDone'));
+  }catch(e){ acctToast(errMap(e)); }
+};
+{ const inv=new URLSearchParams(location.search).get('fr');
+  if(inv && /^[a-z0-9]{6,20}$/.test(inv)) store.set('kontur.frinv', inv); }
+async function frRedeem(){
+  const code=store0('kontur.frinv');
+  const u=acctUser();
+  if(!code || !u || u.isAnonymous || !myName) return;
+  try{
+    const sn=await rdb().ref('invites/'+code).get().catch(()=>null);
+    store.set('kontur.frinv','');
+    if(!sn || !sn.exists()){ acctToast(t('frInvBad')); return; }
+    const inv=sn.val()||{};
+    if(!inv.u || inv.u===u.uid) return;
+    if(inv.at && Date.now()-inv.at > 7*86400000){ acctToast(t('frInvBad')); return; }
+    await rdb().ref('friends/'+u.uid+'/'+inv.u).set({n:inv.n||'?'});
+    await rdb().ref('friends/'+inv.u+'/'+u.uid).set({n:myName});
+    acctToast(t('frInvOk')(inv.n||'?'));
+    frLoad();
+  }catch(e){}
+}
+
 /* ---- Index-Selbstheilung + Live-Pille für eingehende Anfragen ---- */
 function ensureFindIdx(){
   const u=acctUser(); if(!u || u.isAnonymous || !myName || !myPriv.find) return;
@@ -4951,24 +5058,121 @@ async function frPillAct(ok){
 }
 $('frPillYes').onclick=()=>{ frPillAct(true); };
 $('frPillNo').onclick=()=>{ frPillAct(false); };
+function frBadge(n){
+  const b=$('frBadge'); if(!b) return;
+  b.style.display = n>0 ? 'flex' : 'none';
+  b.textContent = n>9 ? '9+' : String(n);
+}
 async function frWatch(){
   const u=acctUser(); if(!u || u.isAnonymous || frReqRef) return;
   const bl=await rdb().ref('blocks/'+u.uid).get().catch(()=>null);
   frData.bl=(bl && bl.exists()) ? (bl.val()||{}) : {};
   frReqRef=rdb().ref('freq/'+u.uid);
-  frReqRef.on('child_added', sn=>{
-    const id=sn.key, v=sn.val()||{};
-    if(frSeen[id]) return; frSeen[id]=1;
-    if(frData.bl[id]){ rdb().ref('freq/'+u.uid+'/'+id).remove().catch(()=>{}); return; }
-    frPillQ.push({id:id, n:v.n});
+  frReqRef.on('value', sn=>{
+    const all=(sn && sn.exists()) ? (sn.val()||{}) : {};
+    let cnt=0;
+    Object.entries(all).forEach(([id,v])=>{
+      if(frData.bl[id]){ rdb().ref('freq/'+u.uid+'/'+id).remove().catch(()=>{}); return; }
+      cnt++;
+      if(!frSeen[id]){ frSeen[id]=1; frPillQ.push({id:id, n:(v&&v.n)}); }
+    });
+    Object.keys(frSeen).forEach(id=>{ if(!all[id]) delete frSeen[id]; });
+    frBadge(cnt);
     frPillShow();
   });
 }
 function frUnwatch(){
   if(frReqRef){ frReqRef.off(); frReqRef=null; }
-  frPillQ=[]; frSeen={};
+  frPillQ=[]; frSeen={}; frBadge(0);
   if(frPillCur){ $('frPill').classList.remove('show'); frPillCur=null; }
 }
+
+/* ---- Leaderboard ---- */
+let lbScope='fr', lbCat='pts', lbCache={}, lbCacheAt={};
+function lbLocalVals(){
+  const fx=totalSeen();
+  return { pts: store0('kontur.mppts')||0,
+           streak: Math.max(store0('kontur.dsbest')||0, (store.get('kontur.dstreak')||{}).n||0),
+           facts: fx>=699 ? 700 : fx };
+}
+function svVals(sv){
+  sv=sv||{};
+  const fx=['l','f','c'].reduce((a,k)=>a+Object.keys((sv.fx&&sv.fx[k])||{}).length,0);
+  return { pts: sv.mp||0,
+           streak: Math.max(sv.ob||0, (sv.os&&sv.os.n)||0),
+           facts: fx>=699 ? 700 : fx };
+}
+function lbPubSync(){
+  const u=acctUser(); if(!u || u.isAnonymous || !myName) return;
+  const mine=lbLocalVals();
+  [['lbPts','pts'],['lbStreak','streak'],['lbFacts','facts']].forEach(([pk,cat])=>{
+    const ref=rdb().ref('pub/'+cat+'/'+u.uid);
+    if(myPriv[pk]) ref.set({n:myName, v:mine[cat]}).catch(()=>{});
+    else ref.remove().catch(()=>{});
+  });
+  lbCacheAt={};                                   // frische Einträge sollen sofort sichtbar sein
+}
+window.lbOpen=()=>{ lbRender(); };
+async function lbRender(){
+  $('lbScopeFr').classList.toggle('on', lbScope==='fr');
+  $('lbScopeGl').classList.toggle('on', lbScope==='gl');
+  [['pts','lbCatP'],['streak','lbCatS'],['facts','lbCatF']].forEach(([c,id])=>$(id).classList.toggle('on', lbCat===c));
+  const list=$('lbList'); list.innerHTML='';
+  $('lbMine').style.display='none';
+  $('lbHint').textContent='';
+  const u=acctUser(); const logged=u && !u.isAnonymous;
+  if(!logged){ $('lbHint').textContent=t('frGuest'); return; }
+  let rows=[];
+  if(lbScope==='fr'){
+    const frSn=await rdb().ref('friends/'+u.uid).get().catch(()=>null);
+    const fr=(frSn && frSn.exists()) ? (frSn.val()||{}) : {};
+    const mine=lbLocalVals();
+    rows.push({uid:u.uid, n:(myName||'?'), v:mine[lbCat], me:true});
+    await Promise.all(Object.entries(fr).map(async([fid,f])=>{
+      const s2=await rdb().ref('users/'+fid+'/sv').get().catch(()=>null);
+      const vals=svVals((s2 && s2.exists()) ? s2.val() : null);
+      rows.push({uid:fid, n:(f&&f.n)||'?', v:vals[lbCat]});
+    }));
+  } else {
+    if(!lbCache[lbCat] || Date.now()-(lbCacheAt[lbCat]||0)>60000){
+      const sn=await rdb().ref('pub/'+lbCat).get().catch(()=>null);
+      lbCache[lbCat]=(sn && sn.exists()) ? (sn.val()||{}) : {};
+      lbCacheAt[lbCat]=Date.now();
+    }
+    rows=Object.entries(lbCache[lbCat]).map(([uid2,e])=>({uid:uid2, n:(e&&e.n)||'?', v:(e&&e.v)||0, me:uid2===u.uid}));
+  }
+  rows.sort((a,b)=> b.v-a.v || a.n.localeCompare(b.n));
+  const top = lbScope==='gl' ? rows.slice(0,50) : rows;
+  if(!top.length){ $('lbHint').textContent=t('lbEmpty'); }
+  top.forEach((r,i)=>{
+    const row=document.createElement('div'); row.className='lb-row'+(r.me?' me':'');
+    const rk=document.createElement('span'); rk.className='lb-rk'; rk.textContent=(i+1)+'.'; row.appendChild(rk);
+    const nm=document.createElement('b'); nm.textContent=r.n+(r.me?' ('+t('lbYou')+')':''); row.appendChild(nm);
+    const vv=document.createElement('span'); vv.className='lb-v'; vv.textContent=(r.v||0).toLocaleString(t('locale')); row.appendChild(vv);
+    list.appendChild(row);
+  });
+  if(lbScope==='gl'){
+    const privKey = lbCat==='pts' ? 'lbPts' : lbCat==='streak' ? 'lbStreak' : 'lbFacts';
+    const meRow=$('lbMine');
+    const mine=lbLocalVals();
+    const meIdx=rows.findIndex(r=>r.me);
+    if(!myPriv[privKey]){
+      meRow.innerHTML=''; meRow.style.display='flex';
+      const b=document.createElement('b'); b.textContent=(myName||'?')+' ('+t('lbYou')+')'; meRow.appendChild(b);
+      const vv=document.createElement('span'); vv.className='lb-v'; vv.textContent=(mine[lbCat]||0).toLocaleString(t('locale')); meRow.appendChild(vv);
+      const h=document.createElement('small'); h.textContent=t('lbPrivHint'); meRow.appendChild(h);
+    } else if(meIdx>=50){
+      meRow.innerHTML=''; meRow.style.display='flex';
+      const b=document.createElement('b'); b.textContent=(meIdx+1)+'. '+(myName||'?')+' ('+t('lbYou')+')'; meRow.appendChild(b);
+      const vv=document.createElement('span'); vv.className='lb-v'; vv.textContent=(rows[meIdx].v||0).toLocaleString(t('locale')); meRow.appendChild(vv);
+    }
+  }
+}
+$('lbScopeFr').onclick=()=>{ lbScope='fr'; lbRender(); };
+$('lbScopeGl').onclick=()=>{ lbScope='gl'; lbRender(); };
+$('lbCatP').onclick=()=>{ lbCat='pts'; lbRender(); };
+$('lbCatS').onclick=()=>{ lbCat='streak'; lbRender(); };
+$('lbCatF').onclick=()=>{ lbCat='facts'; lbRender(); };
 /* Namenswechsel aus den Einstellungen (14-Tage-Regel) */
 $('saNameChg').onclick=()=>{
   const until = myNameAt ? myNameAt + 14*86400000 : 0;
@@ -5029,7 +5233,7 @@ $('acctGo').onclick = async ()=>{
     $('acctPw').value='';
     await loadProfile();
     svSync().catch(()=>{});
-    ensureFindIdx(); frWatch();
+    ensureFindIdx(); frWatch(); lbPubSync(); frRedeem();
     if(!myName){ view('avName'); } else { renderProfile(); view('avProfile'); }
     syncBtn();
   }catch(e){ setErr('acctErr', errMap(e)); }
@@ -5061,6 +5265,8 @@ $('acctNameGo').onclick = async ()=>{
         rdb().ref('pub/find/'+lower).set({u:uid,n:n}).catch(()=>{});
         if(old && old!==lower) rdb().ref('pub/find/'+old).remove().catch(()=>{});
       }
+      lbPubSync();
+      frRedeem();
       myName=n; myNameAt=Date.now();
       if(nameFrom==='settings'){
         nameFrom='';
@@ -5105,6 +5311,7 @@ $('avpDelete').onclick = async ()=>{
     const u=au().currentUser, uid=u.uid, lower=myName ? myName.toLowerCase() : null;
     if(lower) await rdb().ref('usernames/'+lower).remove().catch(()=>{});
     if(lower) await rdb().ref('pub/find/'+lower).remove().catch(()=>{});
+    for(const cat of ['pts','streak','facts']) await rdb().ref('pub/'+cat+'/'+uid).remove().catch(()=>{});
     const frSn=await rdb().ref('friends/'+uid).get().catch(()=>null);
     if(frSn && frSn.exists()){
       for(const fid of Object.keys(frSn.val()||{})) await rdb().ref('friends/'+fid+'/'+uid).remove().catch(()=>{});
@@ -5126,7 +5333,7 @@ $('avpDelete').onclick = async ()=>{
 
 /* ---- Spielstand-Sync (Etappe 2): Vereinigung bei Fakten, Maximum bei Bestwerten ---- */
 const SYNC_CATS=['pop','ar','dens','mt','rv','mix'];
-const SYNC_KEYS=['kontur.mastered','kontur.mastered.flag','kontur.mastered.cap','kontur.facts','kontur.stats','kontur.daily','kontur.unlockx','kontur.dstreak'];
+const SYNC_KEYS=['kontur.mastered','kontur.mastered.flag','kontur.mastered.cap','kontur.facts','kontur.stats','kontur.daily','kontur.unlockx','kontur.dstreak','kontur.mppts','kontur.dsbest'];
 let svMute=false, svPushT=0;
 
 function svCollect(){
@@ -5136,7 +5343,9 @@ function svCollect(){
     fx:seenFacts, st:stats, db:dbv,
     x: store0('kontur.unlockx')==='1' ? 1 : 0,
     dy: store.get('kontur.daily') || null,
-    os: store.get('kontur.dstreak') || null
+    os: store.get('kontur.dstreak') || null,
+    mp: store0('kontur.mppts') || 0,
+    ob: store0('kontur.dsbest') || 0
   };
 }
 function svMerge(sv,loc){
@@ -5152,7 +5361,8 @@ function svMerge(sv,loc){
   if(sv.dy && (!dy || sv.dy.date>dy.date || (sv.dy.date===dy.date && sv.dy.finished && !dy.finished))) dy=sv.dy;
   let os=loc.os||null;
   if(sv.os && (!os || sv.os.last>os.last || (sv.os.last===os.last && sv.os.n>os.n))) os=sv.os;
-  return { m:uni(sv.m,loc.m), mf:uni(sv.mf,loc.mf), mc:uni(sv.mc,loc.mc), fx:fx, st:st, db:dbv, x:(sv.x||loc.x)?1:0, dy:dy, os:os };
+  return { m:uni(sv.m,loc.m), mf:uni(sv.mf,loc.mf), mc:uni(sv.mc,loc.mc), fx:fx, st:st, db:dbv, x:(sv.x||loc.x)?1:0, dy:dy, os:os,
+           mp:Math.max(sv.mp||0, loc.mp||0), ob:Math.max(sv.ob||0, loc.ob||0) };
 }
 function svApply(v){
   svMute=true;
@@ -5166,11 +5376,14 @@ function svApply(v){
     if(v.x) store.set('kontur.unlockx','1');
     if(v.dy) store.set('kontur.daily', v.dy);
     if(v.os) store.set('kontur.dstreak', v.os);
+    if(v.mp) store.set('kontur.mppts', v.mp);
+    if(v.ob) store.set('kontur.dsbest', v.ob);
   } finally { svMute=false; }
   regBuilt=false;
   if(typeof renderDiffs==='function') renderDiffs();
   const el=$('fbMini'); if(el) el.textContent=totalSeen()+' / '+(DATA.length*3);
   if(typeof orbitSync==='function') orbitSync();
+  lbPubSync();
 }
 function svPush(){
   const u=acctUser(); if(!u || u.isAnonymous) return;
@@ -5178,6 +5391,7 @@ function svPush(){
   svPushT=setTimeout(()=>{
     const v=svCollect(); v.at=firebase.database.ServerValue.TIMESTAMP;
     rdb().ref('users/'+u.uid+'/sv').set(v).catch(()=>{});
+    lbPubSync();
   }, 800);
 }
 async function svSync(){
@@ -5261,7 +5475,7 @@ document.addEventListener('touchend', async ()=>{
 if(store0('kontur.acct')){
   window.fbEnsure().then(async ()=>{
     const u=au().currentUser;
-    if(u && !u.isAnonymous){ await loadProfile(); svSync().catch(()=>{}); ensureFindIdx(); frWatch(); }
+    if(u && !u.isAnonymous){ await loadProfile(); svSync().catch(()=>{}); ensureFindIdx(); frWatch(); lbPubSync(); frRedeem(); }
     syncBtn();
   }).catch(()=>{});
 }
