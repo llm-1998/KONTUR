@@ -378,11 +378,14 @@
     overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;
     padding-bottom:calc(30px + var(--sab))}
   .news-e{margin-top:12px}
+  .news-e + .news-e{margin-top:18px}
+  .news-e + .news-e::before{content:'';display:block;height:3px;border-radius:2px;background:var(--line);margin:0 0 16px}
   .news-ht{font-size:16.5px;font-weight:800;margin:2px 0 1px}
+  .news-e:first-child .news-ht::before{content:'';display:inline-block;width:8px;height:8px;border-radius:50%;
+    background:var(--accent);margin-right:8px;vertical-align:1px}
   .news-meta{font-size:12px;color:var(--ink-soft);font-weight:700}
   .news-ul{list-style:none;margin:10px 0 2px;padding:0}
-  .news-ul li{position:relative;padding-left:14px;font-size:13.5px;line-height:1.45;margin-bottom:9px}
-  .news-ul li::before{content:'';position:absolute;left:0;top:7px;width:5px;height:5px;border-radius:50%;background:var(--accent)}
+  .news-ul li{font-size:13.5px;line-height:1.45;margin-bottom:9px}
   /* Konto */
   #acctOverlay .btn{padding:11px;font-size:13.5px}
   #acctOverlay .reg-search{width:100%;margin:5px 0}
@@ -482,14 +485,17 @@
   body.lock{overflow:hidden}
   .fr-ok{color:#2fa05c !important;border-color:rgba(47,160,92,.55) !important}
   .acct-danger.fr-mini{border-color:rgba(208,80,80,.5) !important}
-  #frPill{position:fixed;top:calc(8px + var(--sat));left:50%;
+  #frPill,#mpPill{position:fixed;top:calc(8px + var(--sat));left:50%;
     transform:translateX(-50%) translateY(calc(-100% - var(--sat) - 40px));opacity:0;pointer-events:none;z-index:45;
     display:flex;align-items:center;gap:9px;max-width:94vw;background:var(--card);border:1px solid var(--line);
     border-radius:16px;padding:10px 12px;box-shadow:0 8px 26px var(--shadow);transition:transform .35s ease, opacity .3s}
-  #frPill.show{transform:translateX(-50%) translateY(0);opacity:1;pointer-events:auto}
-  #frPill .frp-t{min-width:0}
-  #frPill b{display:block;font-size:13.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-  #frPill small{font-size:11px;color:var(--ink-soft);white-space:nowrap}
+  #frPill.show,#mpPill.show{transform:translateX(-50%) translateY(0);opacity:1;pointer-events:auto}
+  #mpPill.show.pill2{transform:translateX(-50%) translateY(58px)}
+  #frPill .frp-t,#mpPill .frp-t{min-width:0}
+  #frPill b,#mpPill b{display:block;font-size:13.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  #frPill small,#mpPill small{font-size:11px;color:var(--ink-soft);white-space:nowrap}
+  #mpInvList{margin-top:10px}
+  #mpInvList .fr-row b{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1}
   .lblrow{display:flex;align-items:center;justify-content:space-between}
   #orbitBadge{display:flex;align-items:center;gap:5px;color:var(--accent);font-weight:800;font-size:12.5px}
   .btn.ghost.arm{border-color:var(--red);color:var(--red)}
@@ -1061,6 +1067,8 @@
           <span data-i18n="mpCopy">Kopieren</span>
         </button>
       </div>
+      <button class="btn ghost" id="mpInvFrBtn" style="width:100%;margin-top:10px;display:none" data-i18n="mpInvFr">Freunde einladen</button>
+      <div id="mpInvList" style="display:none"></div>
       <div class="label" style="margin-top:22px" data-i18n="mpPlayers">SPIELER</div>
       <div id="mpPlayerList"></div>
       <div class="mp-colconfirm" id="mpColConfirm" style="display:none">
@@ -1566,6 +1574,12 @@
   <button class="btn ghost fr-mini fr-ok" id="frPillYes" data-i18n="frAccept">Annehmen</button>
   <button class="btn ghost fr-mini acct-danger" id="frPillNo" data-i18n="frDecline">Ablehnen</button>
 </div>
+<div id="mpPill">
+  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex:none;color:var(--accent)"><rect x="2.5" y="6" width="19" height="12" rx="5"/><path d="M7 10v4M5 12h4"/><circle cx="16" cy="11" r=".6"/><circle cx="18.5" cy="13" r=".6"/></svg>
+  <span class="frp-t"><b id="mpPillName"></b><small data-i18n="mpPillS">lädt dich zum Mehrspieler ein</small></span>
+  <button class="btn ghost fr-mini fr-ok" id="mpPillYes" data-i18n="frAccept">Annehmen</button>
+  <button class="btn ghost fr-mini acct-danger" id="mpPillNo" data-i18n="frDecline">Ablehnen</button>
+</div>
 <div id="ptrPill">
   <svg class="ptr-ring" width="46" height="46" viewBox="0 0 46 46">
     <circle class="ptr-track" cx="23" cy="23" r="19"/>
@@ -1687,7 +1701,7 @@ const STRINGS = {
     mpIntro:'Spielt gleichzeitig auf euren eigenen Geräten: gleiche Länder, heimliche Tipps, Punkte nach Nähe. Region, Schwierigkeit und Rundenzahl legt der Host in der Lobby fest.',
     mpNameLbl:'DEIN NAME', mpNamePh:'Name eingeben …', mpCreate:'Runde erstellen',
     mpJoinLbl:'ODER MIT CODE BEITRETEN', mpJoin:'Beitreten', mpCodeLbl:'RAUM-CODE',
-    mpShare:'Teilen', mpCopy:'Link kopieren', mpCopyFail:'Kopieren nicht möglich – Code oben nutzen', mpPlayers:'SPIELER', mpRounds:'LÄNDER PRO PARTIE', mpTimerT:'TIMER PRO RUNDE', mpTimerOff:'Aus', mpNoTip:'Kein Tipp', fbLbl:'SAMMLUNG', fbOpen:'Faktenbuch', fbT:'FAKTENBUCH', fbSearchPh:'Faktenbuch durchsuchen …', fbLocked:'Noch nicht freigeschaltet', dbOpen:'Datenbank', dbT:'DATENBANK', dbSearchPh:'Datenbank durchsuchen …', dbArea:'Fläche (km²)', dbDens:'Einw./km²', dbGov:'Regierungsform', dbMt:'Höchster Berg', dbMtH:'Höhe (m)', dbRv:'Längster Fluss', dbRvL:'Länge (km)', dbLang:'Amtssprache(n)', dbCur:'Währung', dbCode:'Währungscode', fxNote:'Wechselkurse: Tageswerte vom {d}, geladen bei Internetverbindung · Fluss: Gesamtlänge des prägenden Hauptstroms', fxNoteOff:'Wechselkurse: noch keine geladen (Internet nötig)', betaNote:'Beta-Version: Fehler können auftreten.', newsT:'NEUIGKEITEN', newsOk:'Alles klar', newsList:[{v:'v1.94', d:'21.11.2026', t:'🌍 KONTUR wird sozial', it:[['Online-Konto:','Registriere dich mit E-Mail und spiele auf allen Geräten weiter – dein Lernstand synchronisiert automatisch.'],['Freunde:','Suche Spieler, sende Anfragen oder lade Freunde per Einladungslink ein.'],['Leaderboard:','Vergleiche Punkte, Erdumrundungen und Fakten – mit Freunden oder global.'],['Erdumrundungen:','Schließe täglich die Tages-Challenge ab und baue deine Serie aus. 🛰️'],['Neues Einstellungs-Menü:','Profil mit Spielername und Farbe, dazu volle Kontrolle über deine Sichtbarkeit.'],['Feinschliff:','Seite nach unten ziehen zum Aktualisieren, neuer Orbit-Ladeglobus mit Sprüchen.']]}], glossOpen:'Wusstest du?', glossT:'WUSSTEST DU?',
+    mpShare:'Teilen', mpCopy:'Link kopieren', mpCopyFail:'Kopieren nicht möglich – Code oben nutzen', mpPlayers:'SPIELER', mpRounds:'LÄNDER PRO PARTIE', mpTimerT:'TIMER PRO RUNDE', mpTimerOff:'Aus', mpNoTip:'Kein Tipp', mpInvFr:'Freunde einladen', mpInvSend:'Einladen', mpInvSent:'Gesendet', mpInvFail:'Fehler – nochmal', mpPillS:'lädt dich zum Mehrspieler ein', fbLbl:'SAMMLUNG', fbOpen:'Faktenbuch', fbT:'FAKTENBUCH', fbSearchPh:'Faktenbuch durchsuchen …', fbLocked:'Noch nicht freigeschaltet', dbOpen:'Datenbank', dbT:'DATENBANK', dbSearchPh:'Datenbank durchsuchen …', dbArea:'Fläche (km²)', dbDens:'Einw./km²', dbGov:'Regierungsform', dbMt:'Höchster Berg', dbMtH:'Höhe (m)', dbRv:'Längster Fluss', dbRvL:'Länge (km)', dbLang:'Amtssprache(n)', dbCur:'Währung', dbCode:'Währungscode', fxNote:'Wechselkurse: Tageswerte vom {d}, geladen bei Internetverbindung · Fluss: Gesamtlänge des prägenden Hauptstroms', fxNoteOff:'Wechselkurse: noch keine geladen (Internet nötig)', betaNote:'Beta-Version: Fehler können auftreten.', newsT:'NEUIGKEITEN', newsOk:'Alles klar', newsList:[{v:'v1.94', d:'21.11.2026', t:'KONTUR wird sozial', it:[['Online-Konto:','Registriere dich mit E-Mail und spiele auf allen Geräten weiter – dein Lernstand synchronisiert automatisch.'],['Freunde:','Suche Spieler, sende Anfragen oder lade Freunde per Einladungslink ein.'],['Leaderboard:','Vergleiche Punkte, Erdumrundungen und Fakten – mit Freunden oder global.'],['Erdumrundungen:','Schließe täglich die Tages-Challenge ab und baue deine Serie aus.'],['Neues Einstellungs-Menü:','Profil mit Spielername und Farbe, dazu volle Kontrolle über deine Sichtbarkeit.'],['Feinschliff:','Seite nach unten ziehen zum Aktualisieren, neuer Orbit-Ladeglobus mit Sprüchen.']]},{d:'November 2026', t:'Mehr oder weniger?', it:[['Duell-Modus:','Länder im Höher-Tiefer-Vergleich – Einwohner, Fläche, Dichte, Berge, Flüsse.'],['Serie oder feste Runden:','Endlos auf Bestwert spielen oder kompakt vergleichen.']]},{d:'05.11.2026', t:'Ein eigenes Zuhause', it:[['Umzug:','KONTUR läuft jetzt unter kontur-app.com – mit eigener Domain und Kontaktadresse.']]},{v:'v1.38', d:'13.10.2026', t:'Der Länder-Almanach', it:[['Datenbank-Ausbau:','15 Spalten von Amtssprachen bis Währung, sortierbar und durchsuchbar.'],['CSV-Export:','Was du siehst, bekommst du – Filter und Einheiten inklusive.']]},{d:'Oktober 2026', t:'Die Generalvermessung', it:[['212 Umrisse neu vermessen:','Jedes Land im echten Weltraumblick.'],['Hauptstadt-Punkte:','208 Länder mit exakt gesetztem Punkt im Hauptstadt-Modus.']]},{d:'Herbst 2026', t:'Das Faktenbuch', it:[['Fakten sammeln:','Zu jedem Land, jeder Flagge und jeder Hauptstadt wartet ein Fakt – freischalten durch Spielen.']]}], glossOpen:'Wusstest du?', glossT:'WUSSTEST DU?',
     duelT:'Duell', duelS:'Mehr oder weniger? Länder im Vergleich', lblDuelCat:'KATEGORIE', lblDuelMode:'SPIELART',
     catPop:'Einwohner', catAr:'Fläche', catDens:'Dichte', catMt:'Berg', catRv:'Fluss', catMix:'Gemischt',
     duelSerie:'Serie ∞', duelR10:'10 Runden', duelR20:'20 Runden',
@@ -1858,7 +1872,7 @@ const STRINGS = {
     mpIntro:'Play simultaneously on your own devices: same countries, secret guesses, points for proximity. The host sets region, difficulty and round count in the lobby.',
     mpNameLbl:'YOUR NAME', mpNamePh:'Enter a name …', mpCreate:'Create a room',
     mpJoinLbl:'OR JOIN WITH A CODE', mpJoin:'Join', mpCodeLbl:'ROOM CODE',
-    mpShare:'Share', mpCopy:'Copy link', mpCopyFail:'Copy failed – use the code above', mpPlayers:'PLAYERS', mpRounds:'COUNTRIES PER MATCH', mpTimerT:'TIMER PER ROUND', mpTimerOff:'Off', mpNoTip:'No guess', fbLbl:'COLLECTION', fbOpen:'Fact book', fbT:'FACT BOOK', fbSearchPh:'Search the fact book …', fbLocked:'Not unlocked yet', dbOpen:'Database', dbT:'DATABASE', dbSearchPh:'Search the database …', dbArea:'Area (km²)', dbDens:'Pop./km²', dbGov:'Government', dbMt:'Highest peak', dbMtH:'Height (m)', dbRv:'Longest river', dbRvL:'Length (km)', dbLang:'Official language(s)', dbCur:'Currency', dbCode:'Currency code', fxNote:'Exchange rates: daily values from {d}, fetched when online · River: total length of the main stream', fxNoteOff:'Exchange rates: none loaded yet (requires internet)', betaNote:'Beta version: errors may occur.', newsT:'WHAT’S NEW', newsOk:'Got it', newsList:[{v:'v1.94', d:'2026-11-21', t:'🌍 KONTUR goes social', it:[['Online account:','Sign up with your email and continue on any device – your progress syncs automatically.'],['Friends:','Search for players, send requests, or invite friends via invite link.'],['Leaderboard:','Compare points, Earth orbits and facts – with friends or globally.'],['Earth orbits:','Complete the daily challenge each day to grow your streak. 🛰️'],['New settings menu:','Profile with player name and color, plus full control over your visibility.'],['Polish:','Pull down to refresh, plus a new orbiting loading globe with rotating quips.']]}], glossOpen:'Did you know?', glossT:'DID YOU KNOW?',
+    mpShare:'Share', mpCopy:'Copy link', mpCopyFail:'Copy failed – use the code above', mpPlayers:'PLAYERS', mpRounds:'COUNTRIES PER MATCH', mpTimerT:'TIMER PER ROUND', mpTimerOff:'Off', mpNoTip:'No guess', mpInvFr:'Invite friends', mpInvSend:'Invite', mpInvSent:'Sent', mpInvFail:'Error – retry', mpPillS:'invites you to a multiplayer match', fbLbl:'COLLECTION', fbOpen:'Fact book', fbT:'FACT BOOK', fbSearchPh:'Search the fact book …', fbLocked:'Not unlocked yet', dbOpen:'Database', dbT:'DATABASE', dbSearchPh:'Search the database …', dbArea:'Area (km²)', dbDens:'Pop./km²', dbGov:'Government', dbMt:'Highest peak', dbMtH:'Height (m)', dbRv:'Longest river', dbRvL:'Length (km)', dbLang:'Official language(s)', dbCur:'Currency', dbCode:'Currency code', fxNote:'Exchange rates: daily values from {d}, fetched when online · River: total length of the main stream', fxNoteOff:'Exchange rates: none loaded yet (requires internet)', betaNote:'Beta version: errors may occur.', newsT:'WHAT’S NEW', newsOk:'Got it', newsList:[{v:'v1.94', d:'2026-11-21', t:'KONTUR goes social', it:[['Online account:','Sign up with your email and continue on any device – your progress syncs automatically.'],['Friends:','Search for players, send requests, or invite friends via invite link.'],['Leaderboard:','Compare points, Earth orbits and facts – with friends or globally.'],['Earth orbits:','Complete the daily challenge each day to grow your streak.'],['New settings menu:','Profile with player name and color, plus full control over your visibility.'],['Polish:','Pull down to refresh, plus a new orbiting loading globe with rotating quips.']]},{d:'November 2026', t:'More or less?', it:[['Duel mode:','Compare countries higher-or-lower – population, area, density, mountains, rivers.'],['Streak or fixed rounds:','Chase your best endlessly or keep it short and sharp.']]},{d:'2026-11-05', t:'A home of its own', it:[['The move:','KONTUR now lives at kontur-app.com – with its own domain and contact address.']]},{v:'v1.38', d:'2026-10-13', t:'The country almanac', it:[['Database expansion:','15 columns from official languages to currency, sortable and searchable.'],['CSV export:','What you see is what you get – filters and units included.']]},{d:'October 2026', t:'The great survey', it:[['212 outlines resurveyed:','Every country in its true view from space.'],['Capital markers:','208 countries with a precisely placed dot in capital mode.']]},{d:'Autumn 2026', t:'The fact book', it:[['Collect facts:','A fact awaits for every country, flag and capital – unlock them by playing.']]}], glossOpen:'Did you know?', glossT:'DID YOU KNOW?',
     duelT:'Duel', duelS:'More or less? Countries head-to-head', lblDuelCat:'CATEGORY', lblDuelMode:'MODE',
     catPop:'Population', catAr:'Area', catDens:'Density', catMt:'Peak', catRv:'River', catMix:'Mixed',
     duelSerie:'Streak ∞', duelR10:'10 rounds', duelR20:'20 rounds',
@@ -2105,7 +2119,7 @@ function renderDiffs(){
   };
   list.appendChild(bx);
 }
-const APP_VERSION = 'v1.94 · Beta · 2026-11-21';
+const APP_VERSION = 'v1.95 · Beta · 2026-11-21';
 let qtype = store0('kontur.qtype') || 'shape';
 if(!['shape','flag','cap'].includes(qtype)) qtype='shape';
 { const qx=new URLSearchParams(location.search).get('qx');
@@ -3978,7 +3992,7 @@ function newsDotSync(){
 function newsRender(){
   const list = t('newsList')||[];
   $('newsBody').innerHTML = list.map(n =>
-    '<div class="news-e"><div class="news-ht">'+escH(n.t)+'</div><div class="news-meta">'+escH(n.v)+' · '+escH(n.d)+'</div><ul class="news-ul">'+
+    '<div class="news-e"><div class="news-ht">'+escH(n.t)+'</div><div class="news-meta">'+escH([n.v,n.d].filter(Boolean).join(' · '))+'</div><ul class="news-ul">'+
     n.it.map(i=>'<li><b>'+escH(i[0])+'</b> '+escH(i[1])+'</li>').join('')+'</ul></div>').join('');
 }
 $('newsBtn').onclick = ()=>{
@@ -4148,6 +4162,10 @@ $('mpJoinBtn').onclick = async ()=>{
 let odArmed=true;
 function attach(code){
   roomCode=code; roomRef=db.ref('rooms/'+code); leftHere=false; odArmed=true;
+  { const ib=$('mpInvFrBtn');
+    if(ib){ const fr=(window.mpInvFriends ? mpInvFriends() : []);
+      ib.style.display = fr.length ? '' : 'none';
+      $('mpInvList').style.display='none'; $('mpInvList').innerHTML=''; } }
   roomRef.on('value', snap=>{
     const v=snap.val();
     if(v===null){
@@ -4822,6 +4840,35 @@ if(joinParam){
   $('mpNameInput').value=store0('kontur.mp.name')||'';
   $('mpCodeInput').value=joinParam.toUpperCase().slice(0,4);
 }
+
+/* ---- In-Game-Einladungen: Bruecken und Lobby-Liste ---- */
+window.svNow = ()=> Date.now() + (svOff||0);
+window.mpJoinByInvite = (code, fallbackName)=>{
+  selectMode('multi');
+  show(mpScreen); mpView('mpSetup');
+  if(!$('mpNameInput').value.trim()) $('mpNameInput').value = store0('kontur.mp.name') || fallbackName || '';
+  $('mpCodeInput').value = String(code||'').toUpperCase().slice(0,4);
+  if($('mpNameInput').value.trim()) $('mpJoinBtn').onclick();
+};
+$('mpInvFrBtn').onclick = ()=>{
+  const list=$('mpInvList');
+  if(list.style.display!=='none'){ list.style.display='none'; return; }
+  const fr=(window.mpInvFriends ? mpInvFriends() : []);
+  list.innerHTML='';
+  fr.forEach(f=>{
+    const row=document.createElement('div'); row.className='fr-row';
+    const nm=document.createElement('b'); nm.textContent=f.n; row.appendChild(nm);
+    const btn=document.createElement('button'); btn.className='btn ghost fr-mini'; btn.textContent=t('mpInvSend');
+    btn.onclick=async ()=>{
+      btn.disabled=true;
+      const ok = window.mpInvSend ? await mpInvSend(f.id, roomCode) : false;
+      btn.textContent = ok ? t('mpInvSent') : t('mpInvFail');
+      if(!ok) btn.disabled=false;
+    };
+    row.appendChild(btn); list.appendChild(row);
+  });
+  list.style.display='';
+};
 })();
 
 /* ==================== KONTO (Etappe 1) ==================== */
@@ -5198,11 +5245,88 @@ async function frWatch(){
     frBadge(cnt);
     frPillShow();
   });
+  frLoad();
+  mpInvWatch();
 }
 function frUnwatch(){
   if(frReqRef){ frReqRef.off(); frReqRef=null; }
   frPillQ=[]; frSeen={}; frBadge(0);
   if(frPillCur){ $('frPill').classList.remove('show'); frPillCur=null; }
+  mpInvUnwatch();
+}
+
+/* ---- Mehrspieler-Einladungen (Senden + Empfang) ---- */
+window.mpInvFriends = ()=>{
+  const u=acctUser(); if(!u || u.isAnonymous) return [];
+  return Object.entries(frData.fr||{}).map(([id,f])=>({id:id, n:(f&&f.n)||'?'}));
+};
+window.mpInvSend = async (fuid, code)=>{
+  const u=acctUser(); if(!u || u.isAnonymous || !code) return false;
+  try{
+    await rdb().ref('mpinv/'+fuid+'/'+u.uid).set({n:myName||'?', code:code, at:firebase.database.ServerValue.TIMESTAMP});
+    return true;
+  }catch(e){ return false; }
+};
+const mpNowF = ()=> (window.svNow ? svNow() : Date.now());
+let mpPillQ=[], mpPillCur=null, mpPillT=0, mpInvRef=null, mpInvSeen={};
+function mpPillShow(){
+  if(mpPillCur || !mpPillQ.length) return;
+  const c=mpPillQ.shift();
+  const left = 30000 - (mpNowF()-(c.at||0));
+  if(left<=1000){ mpPillShow(); return; }
+  mpPillCur=c;
+  $('mpPillName').textContent=c.n||'?';
+  $('mpPill').classList.toggle('pill2', $('frPill').classList.contains('show'));
+  $('mpPill').classList.add('show');
+  clearTimeout(mpPillT);
+  mpPillT=setTimeout(()=>{ mpPillHide(); }, Math.min(left, 30000));
+}
+function mpPillHide(){
+  clearTimeout(mpPillT);
+  $('mpPill').classList.remove('show');
+  mpPillCur=null;
+  setTimeout(mpPillShow, 420);
+}
+async function mpPillAct(ok){
+  const c=mpPillCur; if(!c) return;
+  const u=acctUser();
+  try{ if(u && !u.isAnonymous) await rdb().ref('mpinv/'+u.uid+'/'+c.id).remove(); }catch(e){}
+  const code=c.code;
+  mpPillHide();
+  if(ok && window.mpJoinByInvite) mpJoinByInvite(code, myName||'');
+}
+$('mpPillYes').onclick=()=>{ mpPillAct(true); };
+$('mpPillNo').onclick=()=>{ mpPillAct(false); };
+{ let mpY0=null;
+  $('mpPill').addEventListener('touchstart', e=>{ mpY0=e.touches[0].clientY; }, {passive:true});
+  $('mpPill').addEventListener('touchend', e=>{
+    if(mpY0===null) return;
+    const dy=e.changedTouches[0].clientY - mpY0; mpY0=null;
+    if(dy<-28) mpPillHide();                     /* hochwischen: stumm, Einladung verfaellt von selbst */
+  }, {passive:true});
+}
+function mpInvWatch(){
+  const u=acctUser(); if(!u || u.isAnonymous || mpInvRef) return;
+  mpInvRef=rdb().ref('mpinv/'+u.uid);
+  mpInvRef.on('value', sn=>{
+    const all=(sn && sn.exists()) ? (sn.val()||{}) : {};
+    Object.entries(all).forEach(([id,v])=>{
+      const at=(v&&v.at)||0;
+      if(mpNowF()-at>30000){ rdb().ref('mpinv/'+u.uid+'/'+id).remove().catch(()=>{}); delete mpInvSeen[id]; return; }
+      const key=id+':'+at;
+      if(mpInvSeen[id]!==key){
+        mpInvSeen[id]=key;
+        mpPillQ.push({id:id, n:(v&&v.n), code:(v&&v.code), at:at});
+      }
+    });
+    Object.keys(mpInvSeen).forEach(id=>{ if(!all[id]) delete mpInvSeen[id]; });
+    mpPillShow();
+  });
+}
+function mpInvUnwatch(){
+  if(mpInvRef){ mpInvRef.off(); mpInvRef=null; }
+  mpPillQ=[]; mpInvSeen={};
+  if(mpPillCur){ clearTimeout(mpPillT); $('mpPill').classList.remove('show'); mpPillCur=null; }
 }
 
 /* ---- Leaderboard ---- */
