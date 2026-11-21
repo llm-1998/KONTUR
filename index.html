@@ -24,19 +24,6 @@
   :root{
     --sab: env(safe-area-inset-bottom, 0px);
     --sat: env(safe-area-inset-top, 0px);
-    --bg:#F2F4F1;
-    --card:#FFFFFF;
-    --ink:#1E2A32;
-    --ink-soft:#5B6B74;
-    --line:#DDE3E0;
-    --accent:#2456E6;
-    --green:#2FA36B;
-    --red:#E8503A;
-    --shadow:rgba(30,42,50,.12);
-    --scrim:rgba(30,42,50,.35);
-    --radius:18px;
-  }
-  html[data-theme="dark"]{
     --bg:#12181C;
     --card:#1A2229;
     --ink:#E9EEF0;
@@ -47,6 +34,7 @@
     --red:#F0664F;
     --shadow:rgba(0,0,0,.4);
     --scrim:rgba(0,0,0,.55);
+    --radius:18px;
   }
   *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
   @media (prefers-reduced-motion: reduce){
@@ -84,9 +72,9 @@
     display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--ink-soft);
     transition:background .3s ease}
   .iconbtn:active{transform:scale(.94)}
-  #themeBtn .sun{display:none}
-  html[data-theme="dark"] #themeBtn .sun{display:block}
-  html[data-theme="dark"] #themeBtn .moon{display:none}
+  #newsBtn{position:relative}
+  .news-dot{position:absolute;top:-1px;right:-1px;width:9px;height:9px;border-radius:50%;
+    background:var(--accent);border:2px solid var(--bg)}
 
   /* ---------- Screens ---------- */
   .screen{display:none;flex-direction:column;flex:1}
@@ -310,8 +298,7 @@
   .guesses{margin-top:14px;display:flex;flex-direction:column;gap:8px}
   .guess{height:46px;border-radius:13px;border:1.5px dashed var(--line);position:relative;overflow:hidden}
   .guess.filled{border-style:solid;border-color:var(--line);background:var(--card)}
-  .guess .fill{position:absolute;inset:0;width:0;border-radius:11px;opacity:.18;transition:width .8s cubic-bezier(.2,.8,.2,1)}
-  html[data-theme="dark"] .guess .fill{opacity:.28}
+  .guess .fill{position:absolute;inset:0;width:0;border-radius:11px;opacity:.28;transition:width .8s cubic-bezier(.2,.8,.2,1)}
   .guess .row{position:absolute;inset:0;display:flex;align-items:center;gap:8px;padding:0 13px;font-size:14px}
   .guess .n{font-weight:700;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .guess .km{font-weight:600;color:var(--ink-soft);font-variant-numeric:tabular-nums;font-size:13px}
@@ -387,9 +374,26 @@
   #settingsOverlay h2{font-size:16.5px;margin:13px 0 2px}
   #settingsOverlay .sheet>p{font-size:12.5px;margin:2px 0 8px;color:var(--ink-soft)}
   #settingsOverlay .btn{padding:11px;font-size:13.5px}
+  #newsOverlay .sheet{max-height:calc(100dvh - 34px - var(--sat));
+    overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;
+    padding-bottom:calc(30px + var(--sab))}
+  .news-e{margin-top:12px}
+  .news-ht{font-size:16.5px;font-weight:800;margin:2px 0 1px}
+  .news-meta{font-size:12px;color:var(--ink-soft);font-weight:700}
+  .news-ul{list-style:none;margin:10px 0 2px;padding:0}
+  .news-ul li{position:relative;padding-left:14px;font-size:13.5px;line-height:1.45;margin-bottom:9px}
+  .news-ul li::before{content:'';position:absolute;left:0;top:7px;width:5px;height:5px;border-radius:50%;background:var(--accent)}
   /* Konto */
   #acctOverlay .btn{padding:11px;font-size:13.5px}
   #acctOverlay .reg-search{width:100%;margin:5px 0}
+  .pw-wrap{position:relative}
+  .pw-wrap .reg-search{padding-right:46px}
+  .pw-eye{position:absolute;right:5px;top:50%;transform:translateY(-50%);width:36px;height:36px;
+    display:flex;align-items:center;justify-content:center;background:none;border:0;cursor:pointer;
+    color:var(--ink-soft);border-radius:50%}
+  .pw-eye:active{transform:translateY(-50%) scale(.92)}
+  #acctOverlay .reg-search.pw-ok{border-color:var(--green)}
+  #acctOverlay .reg-search.pw-bad{border-color:#d05050}
   #acctOverlay h2{font-size:16.5px;margin:13px 0 2px}
   .acct-sub{font-size:12.5px;margin:2px 0 10px;color:var(--ink-soft)}
   .acct-err{color:#d05050;font-size:13px;min-height:18px;margin:6px 0 2px}
@@ -853,12 +857,12 @@
     <div class="wordmark">KON<span>TUR</span></div>
     <div class="meta">
       <div class="chip" id="regionChip" style="display:none"></div>
+      <button class="iconbtn" id="newsBtn" aria-label="Neuigkeiten">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5.5" width="18" height="13" rx="2.5"/><path d="M4.2 7.4l7.8 5.8 7.8-5.8"/></svg>
+        <span class="news-dot" id="newsDot" style="display:none"></span>
+      </button>
       <button class="iconbtn" id="settingsBtn" aria-label="Einstellungen">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33h.01a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51h.01a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82v.01a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-      </button>
-      <button class="iconbtn" id="themeBtn" aria-label="Design wechseln">
-        <svg class="moon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
-        <svg class="sun" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
       </button>
       <button class="iconbtn" id="homeBtn" style="display:none" aria-label="Zum Start">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h5v-6h4v6h5V10"/></svg>
@@ -873,7 +877,7 @@
       <p data-i18n="heroSub">Sechs Versuche. Nach jedem Tipp verrät dir die Entfernung und Richtung, wo du suchen musst.</p>
     </div>
 
-    <div class="label lblrow"><span data-i18n="lblDaily">TAGES-CHALLENGE</span><span id="orbitBadge" style="display:none" title="Erdumrundungen"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="5.5"/><ellipse cx="12" cy="12" rx="10.5" ry="4" transform="rotate(-18 12 12)"/></svg><b id="orbitN"></b></span></div>
+    <div class="label lblrow"><span data-i18n="lblDaily">TAGES-CHALLENGE</span><span id="orbitBadge" style="display:none" title="Erdumrundungen"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><g transform="rotate(-18 12 12)"><path d="M1.5 12a10.5 4 0 0 1 21 0"/></g><circle cx="12" cy="12" r="5.5" fill="var(--bg)"/><g transform="rotate(-18 12 12)"><path d="M1.5 12a10.5 4 0 0 0 21 0"/></g></svg><b id="orbitN"></b></span></div>
     <button class="daily" id="dailyBtn">
       <div class="cal"><div class="d" id="calDay"></div><div class="m" id="calMonth"></div></div>
       <div>
@@ -1405,6 +1409,15 @@
   </div>
 </div>
 
+<!-- NEWS -->
+<div class="overlay" id="newsOverlay">
+  <div class="sheet">
+    <div class="badge" style="color:var(--accent)" data-i18n="newsT">NEUIGKEITEN</div>
+    <div id="newsBody"></div>
+    <button class="btn" id="newsClose" style="margin-top:16px" data-i18n="newsOk">Alles klar</button>
+  </div>
+</div>
+
 <!-- SETTINGS -->
 <div class="overlay" id="settingsOverlay">
   <div class="sheet">
@@ -1472,7 +1485,6 @@
         <p class="acct-err" id="saErr"></p>
         <button class="btn ghost" id="avpPwMail" data-i18n="acctPwChange">Passwort ändern (per E-Mail)</button>
         <button class="btn ghost" id="avpLogout" data-i18n="acctLogout">Abmelden</button>
-        <button class="btn ghost acct-danger" id="avpDelete" data-i18n="acctDelete" style="border-color:rgba(208,80,80,.45)">Konto löschen</button>
       </div>
     </div>
 
@@ -1481,6 +1493,10 @@
       <p data-i18n="resetSub">Zweimal tippen zum Bestätigen</p>
       <button class="btn ghost" id="resetMasteryBtn" data-i18n="resetMastery">Lernstand (Sicher-Status)</button>
       <button class="btn ghost" id="resetStatsBtn" data-i18n="resetStats">Spiel-Statistiken</button>
+      <div id="svDelWrap" style="display:none;margin-top:22px;padding-top:14px;border-top:1px solid var(--line)">
+        <p class="acct-sub" data-i18n="resetAcctSub">Dauerhaft und unwiderruflich – löscht dein Konto samt Serverdaten.</p>
+        <button class="btn ghost acct-danger" id="avpDelete" data-i18n="acctDelete" style="border-color:rgba(208,80,80,.45)">Konto löschen</button>
+      </div>
     </div>
 
     <button class="btn ghost" id="svBack" style="display:none;margin-top:16px" data-i18n="svBack">← Zurück</button>
@@ -1497,7 +1513,20 @@
         <button id="acctTabUp" data-i18n="acctRegister">Registrieren</button>
       </div>
       <input class="reg-search" id="acctEmail" type="email" placeholder="E-Mail" data-i18n-ph="acctEmailPh" autocomplete="email" autocapitalize="off">
-      <input class="reg-search" id="acctPw" type="password" placeholder="Passwort (mind. 6 Zeichen)" data-i18n-ph="acctPwPh" autocomplete="current-password">
+      <div class="pw-wrap">
+        <input class="reg-search" id="acctPw" type="password" placeholder="Passwort (mind. 6 Zeichen)" data-i18n-ph="acctPwPh" autocomplete="current-password">
+        <button type="button" class="pw-eye" id="acctPwEye" aria-label="Passwort anzeigen · Show password">
+          <svg class="eye-on" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 12S6 5.8 12 5.8 21.5 12 21.5 12 18 18.2 12 18.2 2.5 12 2.5 12z"/><circle cx="12" cy="12" r="2.8"/></svg>
+          <svg class="eye-off" style="display:none" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 12S6 5.8 12 5.8c1.6 0 3 .4 4.3 1M21.5 12s-3.5 6.2-9.5 6.2c-1.6 0-3-.4-4.3-1"/><path d="M9.5 9.7a2.8 2.8 0 1 0 5 2.6"/><path d="M4 20 20 4"/></svg>
+        </button>
+      </div>
+      <div class="pw-wrap" id="acctPw2Wrap" style="display:none">
+        <input class="reg-search" id="acctPw2" type="password" placeholder="Passwort wiederholen" data-i18n-ph="acctPw2Ph" autocomplete="new-password">
+        <button type="button" class="pw-eye" id="acctPw2Eye" aria-label="Passwort anzeigen · Show password">
+          <svg class="eye-on" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 12S6 5.8 12 5.8 21.5 12 21.5 12 18 18.2 12 18.2 2.5 12 2.5 12z"/><circle cx="12" cy="12" r="2.8"/></svg>
+          <svg class="eye-off" style="display:none" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 12S6 5.8 12 5.8c1.6 0 3 .4 4.3 1M21.5 12s-3.5 6.2-9.5 6.2c-1.6 0-3-.4-4.3-1"/><path d="M9.5 9.7a2.8 2.8 0 1 0 5 2.6"/><path d="M4 20 20 4"/></svg>
+        </button>
+      </div>
       <p class="acct-err" id="acctErr"></p>
       <button class="btn" id="acctGo" data-i18n="acctLogin">Anmelden</button>
       <button class="btn ghost" id="acctForgot" data-i18n="acctForgot" style="margin-top:8px">Passwort vergessen?</button>
@@ -1515,6 +1544,7 @@
       <div class="acct-row"><span class="acct-lbl" data-i18n="acctVerifLbl">E-Mail bestätigt</span><span class="acct-val" id="avpVerif">–</span></div>
       <p class="acct-err" id="acctProfErr"></p>
       <button class="btn ghost" id="avpResend" data-i18n="acctResend" style="display:none">Bestätigungs-Mail erneut senden</button>
+      <p class="acct-sub" id="avpSpamHint" style="display:none" data-i18n="acctSpamHint">Keine Mail bekommen? Schau auch im Spam-Ordner nach.</p>
       <p class="acct-sub" data-i18n="saMore">Namen, Farbe und weitere Optionen findest du in den Einstellungen.</p>
     </div>
     <button class="btn" id="acctClose" data-i18n="close" style="margin-top:16px">Schließen</button>
@@ -1610,13 +1640,13 @@ const STRINGS = {
     resetConfirm:'Wirklich zurücksetzen?', resetDone:'Zurückgesetzt ✓',
     ghLink:'Open Source auf GitHub', appLink:'App im Browser öffnen', dsLink:'Datenschutz', imLink:'Impressum',
     acctT:'Konto', acctSub:'Lernstand sichern und Geräte synchronisieren', acctOpenGuest:'Anmelden / Registrieren',
-    acctLogin:'Anmelden', acctRegister:'Registrieren', acctEmailPh:'E-Mail', acctPwPh:'Passwort (mind. 6 Zeichen)',
+    acctLogin:'Anmelden', acctRegister:'Registrieren', acctEmailPh:'E-Mail', acctPwPh:'Passwort (mind. 6 Zeichen)', acctPw2Ph:'Passwort wiederholen', acctErrPw2:'Die Passwörter stimmen nicht überein.', acctSpamHint:'Keine Mail bekommen? Schau auch im Spam-Ordner nach.',
     acctForgot:'Passwort vergessen?', acctForgotSent:'E-Mail zum Zurücksetzen ist unterwegs.',
-    acctVerifSent:'Bestätigungs-Mail ist unterwegs – bitte Postfach prüfen.',
+    acctVerifSent:'Bestätigungs-Mail ist unterwegs – bitte auch im Spam-Ordner nachschauen.',
     acctNameT:'Spielername wählen', acctNameSub:'3–16 Zeichen, nur Buchstaben und Ziffern. Dein Name ist einmalig in KONTUR und alle 14 Tage änderbar.',
     acctNamePh:'Spielername', acctNameGo:'Namen festlegen', acctNameLbl:'Spielername', acctVerifLbl:'E-Mail bestätigt',
     acctResend:'Bestätigungs-Mail erneut senden', acctPwChange:'Passwort ändern (per E-Mail)', acctLogout:'Abmelden',
-    acctDelete:'Konto löschen', acctDelete2:'Wirklich? Nochmal tippen zum Löschen',
+    acctDelete:'Konto löschen', acctDelete2:'Wirklich? Nochmal tippen zum Löschen', resetAcctSub:'Dauerhaft und unwiderruflich – löscht dein Konto samt Serverdaten.',
     acctErrMail:'Bitte eine gültige E-Mail-Adresse eingeben.', acctErrPw:'Das Passwort braucht mindestens 6 Zeichen.',
     acctErrInUse:'Für diese E-Mail existiert schon ein Konto.', acctErrLogin:'E-Mail oder Passwort falsch.',
     acctErrMany:'Zu viele Versuche – bitte kurz warten.', acctErrNet:'Keine Verbindung – bitte später erneut versuchen.',
@@ -1657,7 +1687,7 @@ const STRINGS = {
     mpIntro:'Spielt gleichzeitig auf euren eigenen Geräten: gleiche Länder, heimliche Tipps, Punkte nach Nähe. Region, Schwierigkeit und Rundenzahl legt der Host in der Lobby fest.',
     mpNameLbl:'DEIN NAME', mpNamePh:'Name eingeben …', mpCreate:'Runde erstellen',
     mpJoinLbl:'ODER MIT CODE BEITRETEN', mpJoin:'Beitreten', mpCodeLbl:'RAUM-CODE',
-    mpShare:'Teilen', mpCopy:'Link kopieren', mpCopyFail:'Kopieren nicht möglich – Code oben nutzen', mpPlayers:'SPIELER', mpRounds:'LÄNDER PRO PARTIE', mpTimerT:'TIMER PRO RUNDE', mpTimerOff:'Aus', mpNoTip:'Kein Tipp', fbLbl:'SAMMLUNG', fbOpen:'Faktenbuch', fbT:'FAKTENBUCH', fbSearchPh:'Faktenbuch durchsuchen …', fbLocked:'Noch nicht freigeschaltet', dbOpen:'Datenbank', dbT:'DATENBANK', dbSearchPh:'Datenbank durchsuchen …', dbArea:'Fläche (km²)', dbDens:'Einw./km²', dbGov:'Regierungsform', dbMt:'Höchster Berg', dbMtH:'Höhe (m)', dbRv:'Längster Fluss', dbRvL:'Länge (km)', dbLang:'Amtssprache(n)', dbCur:'Währung', dbCode:'Währungscode', fxNote:'Wechselkurse: Tageswerte vom {d}, geladen bei Internetverbindung · Fluss: Gesamtlänge des prägenden Hauptstroms', fxNoteOff:'Wechselkurse: noch keine geladen (Internet nötig)', betaNote:'Beta-Version: Fehler können auftreten.', glossOpen:'Wusstest du?', glossT:'WUSSTEST DU?',
+    mpShare:'Teilen', mpCopy:'Link kopieren', mpCopyFail:'Kopieren nicht möglich – Code oben nutzen', mpPlayers:'SPIELER', mpRounds:'LÄNDER PRO PARTIE', mpTimerT:'TIMER PRO RUNDE', mpTimerOff:'Aus', mpNoTip:'Kein Tipp', fbLbl:'SAMMLUNG', fbOpen:'Faktenbuch', fbT:'FAKTENBUCH', fbSearchPh:'Faktenbuch durchsuchen …', fbLocked:'Noch nicht freigeschaltet', dbOpen:'Datenbank', dbT:'DATENBANK', dbSearchPh:'Datenbank durchsuchen …', dbArea:'Fläche (km²)', dbDens:'Einw./km²', dbGov:'Regierungsform', dbMt:'Höchster Berg', dbMtH:'Höhe (m)', dbRv:'Längster Fluss', dbRvL:'Länge (km)', dbLang:'Amtssprache(n)', dbCur:'Währung', dbCode:'Währungscode', fxNote:'Wechselkurse: Tageswerte vom {d}, geladen bei Internetverbindung · Fluss: Gesamtlänge des prägenden Hauptstroms', fxNoteOff:'Wechselkurse: noch keine geladen (Internet nötig)', betaNote:'Beta-Version: Fehler können auftreten.', newsT:'NEUIGKEITEN', newsOk:'Alles klar', newsList:[{v:'v1.94', d:'21.11.2026', t:'🌍 KONTUR wird sozial', it:[['Online-Konto:','Registriere dich mit E-Mail und spiele auf allen Geräten weiter – dein Lernstand synchronisiert automatisch.'],['Freunde:','Suche Spieler, sende Anfragen oder lade Freunde per Einladungslink ein.'],['Leaderboard:','Vergleiche Punkte, Erdumrundungen und Fakten – mit Freunden oder global.'],['Erdumrundungen:','Schließe täglich die Tages-Challenge ab und baue deine Serie aus. 🛰️'],['Neues Einstellungs-Menü:','Profil mit Spielername und Farbe, dazu volle Kontrolle über deine Sichtbarkeit.'],['Feinschliff:','Seite nach unten ziehen zum Aktualisieren, neuer Orbit-Ladeglobus mit Sprüchen.']]}], glossOpen:'Wusstest du?', glossT:'WUSSTEST DU?',
     duelT:'Duell', duelS:'Mehr oder weniger? Länder im Vergleich', lblDuelCat:'KATEGORIE', lblDuelMode:'SPIELART',
     catPop:'Einwohner', catAr:'Fläche', catDens:'Dichte', catMt:'Berg', catRv:'Fluss', catMix:'Gemischt',
     duelSerie:'Serie ∞', duelR10:'10 Runden', duelR20:'20 Runden',
@@ -1781,13 +1811,13 @@ const STRINGS = {
     resetConfirm:'Really reset?', resetDone:'Reset done ✓',
     ghLink:'Open source on GitHub', appLink:'Open app in browser', dsLink:'Privacy policy', imLink:'Legal notice',
     acctT:'Account', acctSub:'Back up your progress and sync devices', acctOpenGuest:'Sign in / Register',
-    acctLogin:'Sign in', acctRegister:'Register', acctEmailPh:'Email', acctPwPh:'Password (min. 6 characters)',
+    acctLogin:'Sign in', acctRegister:'Register', acctEmailPh:'Email', acctPwPh:'Password (min. 6 characters)', acctPw2Ph:'Repeat password', acctErrPw2:'The passwords do not match.', acctSpamHint:'No email? Check your spam folder too.',
     acctForgot:'Forgot password?', acctForgotSent:'Reset email is on its way.',
-    acctVerifSent:'Verification email sent – please check your inbox.',
+    acctVerifSent:'Verification email sent – please also check your spam folder.',
     acctNameT:'Choose a player name', acctNameSub:'3–16 characters, letters and digits only. Your name is unique across KONTUR and can be changed every 14 days.',
     acctNamePh:'Player name', acctNameGo:'Set name', acctNameLbl:'Player name', acctVerifLbl:'Email verified',
     acctResend:'Resend verification email', acctPwChange:'Change password (via email)', acctLogout:'Sign out',
-    acctDelete:'Delete account', acctDelete2:'Really? Tap again to delete',
+    acctDelete:'Delete account', acctDelete2:'Really? Tap again to delete', resetAcctSub:'Permanent and irreversible – deletes your account and its server data.',
     acctErrMail:'Please enter a valid email address.', acctErrPw:'The password needs at least 6 characters.',
     acctErrInUse:'An account already exists for this email.', acctErrLogin:'Wrong email or password.',
     acctErrMany:'Too many attempts – please wait a moment.', acctErrNet:'No connection – please try again later.',
@@ -1828,7 +1858,7 @@ const STRINGS = {
     mpIntro:'Play simultaneously on your own devices: same countries, secret guesses, points for proximity. The host sets region, difficulty and round count in the lobby.',
     mpNameLbl:'YOUR NAME', mpNamePh:'Enter a name …', mpCreate:'Create a room',
     mpJoinLbl:'OR JOIN WITH A CODE', mpJoin:'Join', mpCodeLbl:'ROOM CODE',
-    mpShare:'Share', mpCopy:'Copy link', mpCopyFail:'Copy failed – use the code above', mpPlayers:'PLAYERS', mpRounds:'COUNTRIES PER MATCH', mpTimerT:'TIMER PER ROUND', mpTimerOff:'Off', mpNoTip:'No guess', fbLbl:'COLLECTION', fbOpen:'Fact book', fbT:'FACT BOOK', fbSearchPh:'Search the fact book …', fbLocked:'Not unlocked yet', dbOpen:'Database', dbT:'DATABASE', dbSearchPh:'Search the database …', dbArea:'Area (km²)', dbDens:'Pop./km²', dbGov:'Government', dbMt:'Highest peak', dbMtH:'Height (m)', dbRv:'Longest river', dbRvL:'Length (km)', dbLang:'Official language(s)', dbCur:'Currency', dbCode:'Currency code', fxNote:'Exchange rates: daily values from {d}, fetched when online · River: total length of the main stream', fxNoteOff:'Exchange rates: none loaded yet (requires internet)', betaNote:'Beta version: errors may occur.', glossOpen:'Did you know?', glossT:'DID YOU KNOW?',
+    mpShare:'Share', mpCopy:'Copy link', mpCopyFail:'Copy failed – use the code above', mpPlayers:'PLAYERS', mpRounds:'COUNTRIES PER MATCH', mpTimerT:'TIMER PER ROUND', mpTimerOff:'Off', mpNoTip:'No guess', fbLbl:'COLLECTION', fbOpen:'Fact book', fbT:'FACT BOOK', fbSearchPh:'Search the fact book …', fbLocked:'Not unlocked yet', dbOpen:'Database', dbT:'DATABASE', dbSearchPh:'Search the database …', dbArea:'Area (km²)', dbDens:'Pop./km²', dbGov:'Government', dbMt:'Highest peak', dbMtH:'Height (m)', dbRv:'Longest river', dbRvL:'Length (km)', dbLang:'Official language(s)', dbCur:'Currency', dbCode:'Currency code', fxNote:'Exchange rates: daily values from {d}, fetched when online · River: total length of the main stream', fxNoteOff:'Exchange rates: none loaded yet (requires internet)', betaNote:'Beta version: errors may occur.', newsT:'WHAT’S NEW', newsOk:'Got it', newsList:[{v:'v1.94', d:'2026-11-21', t:'🌍 KONTUR goes social', it:[['Online account:','Sign up with your email and continue on any device – your progress syncs automatically.'],['Friends:','Search for players, send requests, or invite friends via invite link.'],['Leaderboard:','Compare points, Earth orbits and facts – with friends or globally.'],['Earth orbits:','Complete the daily challenge each day to grow your streak. 🛰️'],['New settings menu:','Profile with player name and color, plus full control over your visibility.'],['Polish:','Pull down to refresh, plus a new orbiting loading globe with rotating quips.']]}], glossOpen:'Did you know?', glossT:'DID YOU KNOW?',
     duelT:'Duel', duelS:'More or less? Countries head-to-head', lblDuelCat:'CATEGORY', lblDuelMode:'MODE',
     catPop:'Population', catAr:'Area', catDens:'Density', catMt:'Peak', catRv:'River', catMix:'Mixed',
     duelSerie:'Streak ∞', duelR10:'10 rounds', duelR20:'20 rounds',
@@ -2025,16 +2055,8 @@ const startScreen=$('startScreen'), gameScreen=$('gameScreen');
 const frScreen=$('frScreen'), lbScreen=$('lbScreen');
 const input=$('guessInput'), suggest=$('suggest'), goBtn=$('goBtn');
 
-/* ---------- Theme ---------- */
-function applyTheme(t){
-  document.documentElement.dataset.theme = t;
-  store.set('kontur.theme', t);
-  document.querySelector('meta[name="theme-color"]').setAttribute('content', t==='dark' ? '#12181C' : '#F2F4F1');
-}
-applyTheme(store.get('kontur.theme') ||
-  (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'));
-$('themeBtn').onclick = () =>
-  applyTheme(document.documentElement.dataset.theme==='dark' ? 'light' : 'dark');
+/* ---------- Theme: KONTUR traegt immer Nachthimmel ---------- */
+try{ localStorage.removeItem('kontur.theme'); }catch(e){}
 
 /* ---------- Startbildschirm ---------- */
 const now = new Date();
@@ -2083,7 +2105,7 @@ function renderDiffs(){
   };
   list.appendChild(bx);
 }
-const APP_VERSION = 'v1.93 · Beta · 2026-11-18';
+const APP_VERSION = 'v1.94 · Beta · 2026-11-21';
 let qtype = store0('kontur.qtype') || 'shape';
 if(!['shape','flag','cap'].includes(qtype)) qtype='shape';
 { const qx=new URLSearchParams(location.search).get('qx');
@@ -2906,7 +2928,7 @@ $('menuBtn').onclick = ()=>{ closeOverlay(); refreshDailyState(); show(startScre
     const c=cur();
     if(!c) return;
     // Schutzklauseln: Galerie, Einstellungen, Kopfzeile, Banner und Textfelder wischen nie
-    if(e.target.closest && e.target.closest('#flagLb,#settingsOverlay,#acctOverlay,header,.offline-bar,input,textarea,.reg-tablewrap,.fb-detail')) return;
+    if(e.target.closest && e.target.closest('#flagLb,#settingsOverlay,#acctOverlay,#newsOverlay,header,.offline-bar,input,textarea,.reg-tablewrap,.fb-detail')) return;
     const inEdge = e.clientX<=EDGE;
     const wide = (c===registerScreen || c===fbScreen || c===dbScreen || c===glossScreen || c===frScreen || c===lbScreen)    // Listen-Seiten: volle Fläche
               || (c===globeScreen && !(e.target.closest && e.target.closest('.globe-wrap'))); // Globus: unterhalb der Kugel
@@ -3947,6 +3969,28 @@ applyLang(lang);
 if(!store0('kontur.movenote')) $('moveNote').classList.add('open');
 $('moveNoteBtn').onclick=()=>{ store.set('kontur.movenote',1); $('moveNote').classList.remove('open'); };
 
+/* ---------- News ---------- */
+const NEWS_LATEST = 'v1.94';
+function newsDotSync(){
+  const el=$('newsDot'); if(!el) return;
+  el.style.display = (store.get('kontur.newsSeen')===NEWS_LATEST) ? 'none' : 'block';
+}
+function newsRender(){
+  const list = t('newsList')||[];
+  $('newsBody').innerHTML = list.map(n =>
+    '<div class="news-e"><div class="news-ht">'+escH(n.t)+'</div><div class="news-meta">'+escH(n.v)+' · '+escH(n.d)+'</div><ul class="news-ul">'+
+    n.it.map(i=>'<li><b>'+escH(i[0])+'</b> '+escH(i[1])+'</li>').join('')+'</ul></div>').join('');
+}
+$('newsBtn').onclick = ()=>{
+  newsRender();
+  $('newsOverlay').classList.add('open');
+  store.set('kontur.newsSeen', NEWS_LATEST);
+  newsDotSync();
+  if(window.bodyLock) window.bodyLock();
+};
+$('newsClose').onclick = ()=>{ $('newsOverlay').classList.remove('open'); if(window.bodyLock) window.bodyLock(); };
+newsDotSync();
+
 $('shareBtn').onclick = async ()=>{
   const text = shareText();
   if(navigator.share){
@@ -4824,6 +4868,7 @@ function renderProfile(){
   $('avpVerif').textContent = u.emailVerified ? t('acctYes') : t('acctNo');
   $('avpVerif').classList.toggle('acct-ok', !!u.emailVerified);
   $('avpResend').style.display = u.emailVerified ? 'none' : '';
+  $('avpSpamHint').style.display = u.emailVerified ? 'none' : '';
 }
 function syncBtn(){
   const u=acctUser();
@@ -4878,7 +4923,7 @@ function svView(v){
   $('svBack').style.display = v==='svMenu' ? 'none' : '';
 }
 function bodyLock(){
-  const any=['settingsOverlay','acctOverlay','welcomeGate'].some(id=>{ const el=$(id); return el && el.classList.contains('open'); });
+  const any=['settingsOverlay','acctOverlay','welcomeGate','newsOverlay'].some(id=>{ const el=$(id); return el && el.classList.contains('open'); });
   document.body.classList.toggle('lock', any);
 }
 window.bodyLock=bodyLock;
@@ -4886,7 +4931,7 @@ window.svMenuOpen = ()=>{ svView('svMenu'); syncBtn(); };
 $('smAcct').onclick = ()=>{ svView('svAcct'); syncBtn(); };
 $('smGame').onclick = ()=>{ svView('svGame'); };
 $('smPriv').onclick = ()=>{ svView('svPriv'); privRender(); };
-$('smReset').onclick = ()=>{ svView('svReset'); };
+$('smReset').onclick = ()=>{ svView('svReset'); const u=acctUser(); $('svDelWrap').style.display = (u && !u.isAnonymous) ? '' : 'none'; };
 $('svBack').onclick = ()=>{ svView('svMenu'); };
 /* Sichtbarkeits-Regler */
 const PRIVS=[['find','pswFind'],['lbPts','pswPts'],['lbStreak','pswStreak'],['lbFacts','pswFacts']];
@@ -5337,13 +5382,39 @@ async function openAcct(){
 $('acctOpenBtn').onclick = ()=>{ openAcct(); };
 $('acctClose').onclick = ()=>{ $('acctOverlay').classList.remove('open'); bodyLock(); };
 
-$('acctTabIn').onclick = ()=>{ mode='in'; $('acctTabIn').classList.add('on'); $('acctTabUp').classList.remove('on'); $('acctGo').textContent=t('acctLogin'); $('acctForgot').style.display=''; $('acctPw').setAttribute('autocomplete','current-password'); setErr('acctErr'); };
-$('acctTabUp').onclick = ()=>{ mode='up'; $('acctTabUp').classList.add('on'); $('acctTabIn').classList.remove('on'); $('acctGo').textContent=t('acctRegister'); $('acctForgot').style.display='none'; $('acctPw').setAttribute('autocomplete','new-password'); setErr('acctErr'); };
+$('acctPwEye').onclick = ()=>{
+  const pw=$('acctPw'), show = pw.type==='password';
+  pw.type = show ? 'text' : 'password';
+  $('acctPwEye').querySelector('.eye-on').style.display = show ? 'none' : '';
+  $('acctPwEye').querySelector('.eye-off').style.display = show ? '' : 'none';
+  pw.focus();
+};
+$('acctPw2Eye').onclick = ()=>{
+  const pw=$('acctPw2'), show = pw.type==='password';
+  pw.type = show ? 'text' : 'password';
+  $('acctPw2Eye').querySelector('.eye-on').style.display = show ? 'none' : '';
+  $('acctPw2Eye').querySelector('.eye-off').style.display = show ? '' : 'none';
+  pw.focus();
+};
+function pwMatchSync(){
+  const a=$('acctPw'), b=$('acctPw2');
+  const active = mode==='up' && b.value.length>0;
+  const ok = active && a.value===b.value;
+  [a,b].forEach(el=>{
+    el.classList.toggle('pw-ok', active && ok);
+    el.classList.toggle('pw-bad', active && !ok);
+  });
+}
+$('acctPw').oninput = pwMatchSync;
+$('acctPw2').oninput = pwMatchSync;
+$('acctTabIn').onclick = ()=>{ mode='in'; $('acctTabIn').classList.add('on'); $('acctTabUp').classList.remove('on'); $('acctGo').textContent=t('acctLogin'); $('acctForgot').style.display=''; $('acctPw').setAttribute('autocomplete','current-password'); $('acctPw2Wrap').style.display='none'; $('acctPw2').value=''; pwMatchSync(); setErr('acctErr'); };
+$('acctTabUp').onclick = ()=>{ mode='up'; $('acctTabUp').classList.add('on'); $('acctTabIn').classList.remove('on'); $('acctGo').textContent=t('acctRegister'); $('acctForgot').style.display='none'; $('acctPw').setAttribute('autocomplete','new-password'); $('acctPw2Wrap').style.display=''; pwMatchSync(); setErr('acctErr'); };
 
 $('acctGo').onclick = async ()=>{
   const em=$('acctEmail').value.trim(), pw=$('acctPw').value;
   if(!/^\S+@\S+\.\S+$/.test(em)){ setErr('acctErr', t('acctErrMail')); return; }
   if(pw.length<6){ setErr('acctErr', t('acctErrPw')); return; }
+  if(mode==='up' && pw!==$('acctPw2').value){ setErr('acctErr', t('acctErrPw2')); return; }
   setErr('acctErr'); $('acctGo').disabled=true;
   try{
     await window.fbEnsure();
@@ -5357,7 +5428,7 @@ $('acctGo').onclick = async ()=>{
     }
     store.set('kontur.acct','1');
     $('welcomeGate').classList.remove('open');
-    $('acctPw').value='';
+    $('acctPw').value=''; $('acctPw2').value=''; pwMatchSync();
     await loadProfile();
     svSync().catch(()=>{});
     ensureFindIdx(); frWatch(); lbPubSync(); frRedeem();
