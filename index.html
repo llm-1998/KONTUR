@@ -380,6 +380,9 @@
     padding-bottom:calc(26px + env(safe-area-inset-bottom))}
   #newsOverlay .badge{margin-bottom:8px}
   body.newsopen{background:var(--card)}
+  #newsOverlay .sheet{animation-name:upn}
+  @keyframes upn{from{transform:translateY(calc(40px + var(--nsnap,0px)));opacity:0}
+                 to{transform:translateY(var(--nsnap,0px));opacity:1}}
   #moveNote .sheet{padding-bottom:calc(26px + var(--sab))}
   #newsBody{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;
     overscroll-behavior:contain;padding-bottom:6px}
@@ -1711,7 +1714,7 @@ const STRINGS = {
     mpIntro:'Spielt gleichzeitig auf euren eigenen Geräten: gleiche Länder, heimliche Tipps, Punkte nach Nähe. Region, Schwierigkeit und Rundenzahl legt der Host in der Lobby fest.',
     mpNameLbl:'DEIN NAME', mpNamePh:'Name eingeben …', mpCreate:'Runde erstellen',
     mpJoinLbl:'ODER MIT CODE BEITRETEN', mpJoin:'Beitreten', mpCodeLbl:'RAUM-CODE',
-    mpShare:'Teilen', mpCopy:'Link kopieren', mpCopyFail:'Kopieren nicht möglich – Code oben nutzen', mpPlayers:'SPIELER', mpRounds:'LÄNDER PRO PARTIE', mpTimerT:'TIMER PRO RUNDE', mpTimerOff:'Aus', mpNoTip:'Kein Tipp', mpInvFr:'Freunde einladen', mpInvSend:'Einladen', mpInvSent:'Gesendet', mpInvFail:'Fehler – nochmal', mpPillS:'lädt dich zum Mehrspieler ein', fbLbl:'SAMMLUNG', fbOpen:'Faktenbuch', fbT:'FAKTENBUCH', fbSearchPh:'Faktenbuch durchsuchen …', fbLocked:'Noch nicht freigeschaltet', dbOpen:'Datenbank', dbT:'DATENBANK', dbSearchPh:'Datenbank durchsuchen …', dbArea:'Fläche (km²)', dbDens:'Einw./km²', dbGov:'Regierungsform', dbMt:'Höchster Berg', dbMtH:'Höhe (m)', dbRv:'Längster Fluss', dbRvL:'Länge (km)', dbLang:'Amtssprache(n)', dbCur:'Währung', dbCode:'Währungscode', fxNote:'Wechselkurse: Tageswerte vom {d}, geladen bei Internetverbindung · Fluss: Gesamtlänge des prägenden Hauptstroms', fxNoteOff:'Wechselkurse: noch keine geladen (Internet nötig)', betaNote:'Beta-Version: Fehler können auftreten.', newsT:'NEUIGKEITEN', newsOk:'Alles klar', newsList:[{v:'v1.98', d:'22.11.2026', t:'KONTUR wird sozial', it:[['Online-Konto:','Registriere dich mit E-Mail und spiele auf allen Geräten weiter – dein Lernstand synchronisiert automatisch.'],['Freunde:','Suche Spieler, sende Anfragen oder lade Freunde per Einladungslink ein.'],['Mehrspieler-Einladungen:','Hole Freunde direkt in deinen Raum – die Einladung landet als Pille am oberen Bildschirmrand.'],['Leaderboard:','Vergleiche Punkte, Erdumrundungen und Fakten – mit Freunden oder global.'],['Erdumrundungen:','Schließe täglich die Tages-Challenge ab und baue deine Serie aus.'],['Neues Einstellungs-Menü:','Profil mit Spielername und Farbe, dazu volle Kontrolle über deine Sichtbarkeit.'],['Feinschliff:','Seite nach unten ziehen zum Aktualisieren, neuer Orbit-Ladeglobus mit Sprüchen.']]},{d:'November 2026', t:'Mehr oder weniger?', it:[['Duell-Modus:','Länder im Höher-Tiefer-Vergleich – Einwohner, Fläche, Dichte, Berge, Flüsse.'],['Serie oder feste Runden:','Endlos auf Bestwert spielen oder kompakt vergleichen.']]},{d:'05.11.2026', t:'Ein eigenes Zuhause', it:[['Umzug:','KONTUR läuft jetzt unter kontur-app.com – mit eigener Domain und Kontaktadresse.']]},{v:'v1.38', d:'13.10.2026', t:'Der Länder-Almanach', it:[['Datenbank-Ausbau:','15 Spalten von Amtssprachen bis Währung, sortierbar und durchsuchbar.'],['CSV-Export:','Was du siehst, bekommst du – Filter und Einheiten inklusive.']]},{d:'Oktober 2026', t:'Die Generalvermessung', it:[['212 Umrisse neu vermessen:','Jedes Land im echten Weltraumblick.'],['Hauptstadt-Punkte:','208 Länder mit exakt gesetztem Punkt im Hauptstadt-Modus.']]},{d:'Herbst 2026', t:'Das Faktenbuch', it:[['Fakten sammeln:','Zu jedem Land, jeder Flagge und jeder Hauptstadt wartet ein Fakt – freischalten durch Spielen.']]}], glossOpen:'Wusstest du?', glossT:'WUSSTEST DU?',
+    mpShare:'Teilen', mpCopy:'Link kopieren', mpCopyFail:'Kopieren nicht möglich – Code oben nutzen', mpPlayers:'SPIELER', mpRounds:'LÄNDER PRO PARTIE', mpTimerT:'TIMER PRO RUNDE', mpTimerOff:'Aus', mpNoTip:'Kein Tipp', mpInvFr:'Freunde einladen', mpInvSend:'Einladen', mpInvSent:'Gesendet', mpInvFail:'Fehler – nochmal', mpPillS:'lädt dich zum Mehrspieler ein', fbLbl:'SAMMLUNG', fbOpen:'Faktenbuch', fbT:'FAKTENBUCH', fbSearchPh:'Faktenbuch durchsuchen …', fbLocked:'Noch nicht freigeschaltet', dbOpen:'Datenbank', dbT:'DATENBANK', dbSearchPh:'Datenbank durchsuchen …', dbArea:'Fläche (km²)', dbDens:'Einw./km²', dbGov:'Regierungsform', dbMt:'Höchster Berg', dbMtH:'Höhe (m)', dbRv:'Längster Fluss', dbRvL:'Länge (km)', dbLang:'Amtssprache(n)', dbCur:'Währung', dbCode:'Währungscode', fxNote:'Wechselkurse: Tageswerte vom {d}, geladen bei Internetverbindung · Fluss: Gesamtlänge des prägenden Hauptstroms', fxNoteOff:'Wechselkurse: noch keine geladen (Internet nötig)', betaNote:'Beta-Version: Fehler können auftreten.', newsT:'NEUIGKEITEN', newsOk:'Alles klar', newsList:[{v:'v2.00', d:'22.11.2026', t:'KONTUR wird sozial', it:[['Online-Konto:','Registriere dich mit E-Mail und spiele auf allen Geräten weiter – dein Lernstand synchronisiert automatisch.'],['Freunde:','Suche Spieler, sende Anfragen oder lade Freunde per Einladungslink ein.'],['Mehrspieler-Einladungen:','Hole Freunde direkt in deinen Raum – die Einladung landet als Pille am oberen Bildschirmrand.'],['Leaderboard:','Vergleiche Punkte, Erdumrundungen und Fakten – mit Freunden oder global.'],['Erdumrundungen:','Schließe täglich die Tages-Challenge ab und baue deine Serie aus.'],['Neues Einstellungs-Menü:','Profil mit Spielername und Farbe, dazu volle Kontrolle über deine Sichtbarkeit.'],['Feinschliff:','Seite nach unten ziehen zum Aktualisieren, neuer Orbit-Ladeglobus mit Sprüchen.']]},{d:'November 2026', t:'Mehr oder weniger?', it:[['Duell-Modus:','Länder im Höher-Tiefer-Vergleich – Einwohner, Fläche, Dichte, Berge, Flüsse.'],['Serie oder feste Runden:','Endlos auf Bestwert spielen oder kompakt vergleichen.']]},{d:'05.11.2026', t:'Ein eigenes Zuhause', it:[['Umzug:','KONTUR läuft jetzt unter kontur-app.com – mit eigener Domain und Kontaktadresse.']]},{v:'v1.38', d:'13.10.2026', t:'Der Länder-Almanach', it:[['Datenbank-Ausbau:','15 Spalten von Amtssprachen bis Währung, sortierbar und durchsuchbar.'],['CSV-Export:','Was du siehst, bekommst du – Filter und Einheiten inklusive.']]},{d:'Oktober 2026', t:'Die Generalvermessung', it:[['212 Umrisse neu vermessen:','Jedes Land im echten Weltraumblick.'],['Hauptstadt-Punkte:','208 Länder mit exakt gesetztem Punkt im Hauptstadt-Modus.']]},{d:'Herbst 2026', t:'Das Faktenbuch', it:[['Fakten sammeln:','Zu jedem Land, jeder Flagge und jeder Hauptstadt wartet ein Fakt – freischalten durch Spielen.']]}], glossOpen:'Wusstest du?', glossT:'WUSSTEST DU?',
     duelT:'Duell', duelS:'Mehr oder weniger? Länder im Vergleich', lblDuelCat:'KATEGORIE', lblDuelMode:'SPIELART',
     catPop:'Einwohner', catAr:'Fläche', catDens:'Dichte', catMt:'Berg', catRv:'Fluss', catMix:'Gemischt',
     duelSerie:'Serie ∞', duelR10:'10 Runden', duelR20:'20 Runden',
@@ -1882,7 +1885,7 @@ const STRINGS = {
     mpIntro:'Play simultaneously on your own devices: same countries, secret guesses, points for proximity. The host sets region, difficulty and round count in the lobby.',
     mpNameLbl:'YOUR NAME', mpNamePh:'Enter a name …', mpCreate:'Create a room',
     mpJoinLbl:'OR JOIN WITH A CODE', mpJoin:'Join', mpCodeLbl:'ROOM CODE',
-    mpShare:'Share', mpCopy:'Copy link', mpCopyFail:'Copy failed – use the code above', mpPlayers:'PLAYERS', mpRounds:'COUNTRIES PER MATCH', mpTimerT:'TIMER PER ROUND', mpTimerOff:'Off', mpNoTip:'No guess', mpInvFr:'Invite friends', mpInvSend:'Invite', mpInvSent:'Sent', mpInvFail:'Error – retry', mpPillS:'invites you to a multiplayer match', fbLbl:'COLLECTION', fbOpen:'Fact book', fbT:'FACT BOOK', fbSearchPh:'Search the fact book …', fbLocked:'Not unlocked yet', dbOpen:'Database', dbT:'DATABASE', dbSearchPh:'Search the database …', dbArea:'Area (km²)', dbDens:'Pop./km²', dbGov:'Government', dbMt:'Highest peak', dbMtH:'Height (m)', dbRv:'Longest river', dbRvL:'Length (km)', dbLang:'Official language(s)', dbCur:'Currency', dbCode:'Currency code', fxNote:'Exchange rates: daily values from {d}, fetched when online · River: total length of the main stream', fxNoteOff:'Exchange rates: none loaded yet (requires internet)', betaNote:'Beta version: errors may occur.', newsT:'WHAT’S NEW', newsOk:'Got it', newsList:[{v:'v1.98', d:'2026-11-22', t:'KONTUR goes social', it:[['Online account:','Sign up with your email and continue on any device – your progress syncs automatically.'],['Friends:','Search for players, send requests, or invite friends via invite link.'],['Multiplayer invites:','Bring friends straight into your room – the invite arrives as a pill at the top of the screen.'],['Leaderboard:','Compare points, Earth orbits and facts – with friends or globally.'],['Earth orbits:','Complete the daily challenge each day to grow your streak.'],['New settings menu:','Profile with player name and color, plus full control over your visibility.'],['Polish:','Pull down to refresh, plus a new orbiting loading globe with rotating quips.']]},{d:'November 2026', t:'More or less?', it:[['Duel mode:','Compare countries higher-or-lower – population, area, density, mountains, rivers.'],['Streak or fixed rounds:','Chase your best endlessly or keep it short and sharp.']]},{d:'2026-11-05', t:'A home of its own', it:[['The move:','KONTUR now lives at kontur-app.com – with its own domain and contact address.']]},{v:'v1.38', d:'2026-10-13', t:'The country almanac', it:[['Database expansion:','15 columns from official languages to currency, sortable and searchable.'],['CSV export:','What you see is what you get – filters and units included.']]},{d:'October 2026', t:'The great survey', it:[['212 outlines resurveyed:','Every country in its true view from space.'],['Capital markers:','208 countries with a precisely placed dot in capital mode.']]},{d:'Autumn 2026', t:'The fact book', it:[['Collect facts:','A fact awaits for every country, flag and capital – unlock them by playing.']]}], glossOpen:'Did you know?', glossT:'DID YOU KNOW?',
+    mpShare:'Share', mpCopy:'Copy link', mpCopyFail:'Copy failed – use the code above', mpPlayers:'PLAYERS', mpRounds:'COUNTRIES PER MATCH', mpTimerT:'TIMER PER ROUND', mpTimerOff:'Off', mpNoTip:'No guess', mpInvFr:'Invite friends', mpInvSend:'Invite', mpInvSent:'Sent', mpInvFail:'Error – retry', mpPillS:'invites you to a multiplayer match', fbLbl:'COLLECTION', fbOpen:'Fact book', fbT:'FACT BOOK', fbSearchPh:'Search the fact book …', fbLocked:'Not unlocked yet', dbOpen:'Database', dbT:'DATABASE', dbSearchPh:'Search the database …', dbArea:'Area (km²)', dbDens:'Pop./km²', dbGov:'Government', dbMt:'Highest peak', dbMtH:'Height (m)', dbRv:'Longest river', dbRvL:'Length (km)', dbLang:'Official language(s)', dbCur:'Currency', dbCode:'Currency code', fxNote:'Exchange rates: daily values from {d}, fetched when online · River: total length of the main stream', fxNoteOff:'Exchange rates: none loaded yet (requires internet)', betaNote:'Beta version: errors may occur.', newsT:'WHAT’S NEW', newsOk:'Got it', newsList:[{v:'v2.00', d:'2026-11-22', t:'KONTUR goes social', it:[['Online account:','Sign up with your email and continue on any device – your progress syncs automatically.'],['Friends:','Search for players, send requests, or invite friends via invite link.'],['Multiplayer invites:','Bring friends straight into your room – the invite arrives as a pill at the top of the screen.'],['Leaderboard:','Compare points, Earth orbits and facts – with friends or globally.'],['Earth orbits:','Complete the daily challenge each day to grow your streak.'],['New settings menu:','Profile with player name and color, plus full control over your visibility.'],['Polish:','Pull down to refresh, plus a new orbiting loading globe with rotating quips.']]},{d:'November 2026', t:'More or less?', it:[['Duel mode:','Compare countries higher-or-lower – population, area, density, mountains, rivers.'],['Streak or fixed rounds:','Chase your best endlessly or keep it short and sharp.']]},{d:'2026-11-05', t:'A home of its own', it:[['The move:','KONTUR now lives at kontur-app.com – with its own domain and contact address.']]},{v:'v1.38', d:'2026-10-13', t:'The country almanac', it:[['Database expansion:','15 columns from official languages to currency, sortable and searchable.'],['CSV export:','What you see is what you get – filters and units included.']]},{d:'October 2026', t:'The great survey', it:[['212 outlines resurveyed:','Every country in its true view from space.'],['Capital markers:','208 countries with a precisely placed dot in capital mode.']]},{d:'Autumn 2026', t:'The fact book', it:[['Collect facts:','A fact awaits for every country, flag and capital – unlock them by playing.']]}], glossOpen:'Did you know?', glossT:'DID YOU KNOW?',
     duelT:'Duel', duelS:'More or less? Countries head-to-head', lblDuelCat:'CATEGORY', lblDuelMode:'MODE',
     catPop:'Population', catAr:'Area', catDens:'Density', catMt:'Peak', catRv:'River', catMix:'Mixed',
     duelSerie:'Streak ∞', duelR10:'10 rounds', duelR20:'20 rounds',
@@ -2129,7 +2132,7 @@ function renderDiffs(){
   };
   list.appendChild(bx);
 }
-const APP_VERSION = 'v1.98 · Beta · 2026-11-22';
+const APP_VERSION = 'v2.00 · Beta · 2026-11-22';
 let qtype = store0('kontur.qtype') || 'shape';
 if(!['shape','flag','cap'].includes(qtype)) qtype='shape';
 { const qx=new URLSearchParams(location.search).get('qx');
@@ -3994,7 +3997,7 @@ if(!store0('kontur.movenote')) $('moveNote').classList.add('open');
 $('moveNoteBtn').onclick=()=>{ store.set('kontur.movenote',1); $('moveNote').classList.remove('open'); };
 
 /* ---------- News ---------- */
-const NEWS_LATEST = 'v1.98';
+const NEWS_LATEST = 'v2.00';
 function newsDotSync(){
   const el=$('newsDot'); if(!el) return;
   el.style.display = (store.get('kontur.newsSeen')===NEWS_LATEST) ? 'none' : 'block';
@@ -4006,17 +4009,14 @@ function newsRender(){
     n.it.map(i=>'<li><b>'+escH(i[0])+'</b> '+escH(i[1])+'</li>').join('')+'</ul></div>').join('');
 }
 function newsSnap(){
-  /* Doppelboden v2: iOS-Standalone meldet einen zu kurzen Viewport (um die obere Aussparung).
-     Deshalb gegen die ECHTE Bildschirmhoehe messen und das Blatt entsprechend nachschieben. */
+  /* iOS-Standalone meldet einen zu kurzen Viewport (um die obere Aussparung):
+     Differenz zur echten Bildschirmhoehe VOR dem Einblenden setzen, Animation endet direkt am Ziel. */
   const sh=document.querySelector('#newsOverlay .sheet'); if(!sh) return;
-  sh.style.transform='';
   const standalone = (navigator.standalone===true) || (window.matchMedia && matchMedia('(display-mode: standalone)').matches);
-  let d = Math.round((window.visualViewport ? visualViewport.height + visualViewport.offsetTop : innerHeight) - sh.getBoundingClientRect().bottom);
-  if(standalone){
-    const scr = Math.max(screen.height, screen.width*0 + screen.height);   /* Hochformat */
-    d = Math.max(d, Math.round(scr - window.innerHeight));
-  }
-  if(d>1 && d<120) sh.style.transform='translateY('+d+'px)';
+  let d = standalone ? Math.round(screen.height - window.innerHeight) : 0;
+  if(!(d>1 && d<120)) d=0;
+  sh.style.setProperty('--nsnap', d+'px');
+  sh.style.transform='translateY(var(--nsnap,0px))';
 }
 { let prT=0, prN=0;
   document.querySelector('#newsOverlay .badge').addEventListener('click', ()=>{
@@ -4033,9 +4033,9 @@ function newsSnap(){
 }
 $('newsBtn').onclick = ()=>{
   newsRender();
+  newsSnap();
   $('newsOverlay').classList.add('open');
   document.body.classList.add('newsopen');
-  setTimeout(newsSnap, 420);
   store.set('kontur.newsSeen', NEWS_LATEST);
   newsDotSync();
   if(window.bodyLock) window.bodyLock();
