@@ -375,8 +375,10 @@
   #settingsOverlay .sheet>p{font-size:12.5px;margin:2px 0 8px;color:var(--ink-soft)}
   #settingsOverlay .btn{padding:11px;font-size:13.5px}
   #newsOverlay .sheet{max-height:calc(100dvh - 34px - var(--sat));
-    overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;
-    padding-bottom:calc(30px + var(--sab))}
+    display:flex;flex-direction:column;overflow:hidden;
+    padding-bottom:calc(16px + var(--sab))}
+  #newsBody{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;
+    overscroll-behavior:contain;padding-bottom:6px}
   .news-e{margin-top:12px}
   .news-e + .news-e{margin-top:18px}
   .news-e + .news-e::before{content:'';display:block;height:3px;border-radius:2px;background:var(--line);margin:0 0 16px}
@@ -485,6 +487,7 @@
   body.lock{overflow:hidden}
   .fr-ok{color:#2fa05c !important;border-color:rgba(47,160,92,.55) !important}
   .acct-danger.fr-mini{border-color:rgba(208,80,80,.5) !important}
+  .btn.ghost.acct-danger{color:#d05050}
   #frPill,#mpPill{position:fixed;top:calc(8px + var(--sat));left:50%;
     transform:translateX(-50%) translateY(calc(-100% - var(--sat) - 40px));opacity:0;pointer-events:none;z-index:45;
     display:flex;align-items:center;gap:9px;max-width:94vw;background:var(--card);border:1px solid var(--line);
@@ -1520,6 +1523,7 @@
         <button class="on" id="acctTabIn" data-i18n="acctLogin">Anmelden</button>
         <button id="acctTabUp" data-i18n="acctRegister">Registrieren</button>
       </div>
+      <p class="acct-sub" id="acctTabHint" style="margin:-4px 0 10px">Neu hier? Tippe oben auf „Registrieren“ und leg dir ein kostenloses Konto an.</p>
       <input class="reg-search" id="acctEmail" type="email" placeholder="E-Mail" data-i18n-ph="acctEmailPh" autocomplete="email" autocapitalize="off">
       <div class="pw-wrap">
         <input class="reg-search" id="acctPw" type="password" placeholder="Passwort (mind. 6 Zeichen)" data-i18n-ph="acctPwPh" autocomplete="current-password">
@@ -1629,7 +1633,7 @@ const STRINGS = {
     rounds:'RUNDEN', solvedK:'GELÖST', streakK:'SERIE',
     share:'Ergebnis teilen', next:'Nächstes Land', backStart:'Zurück zum Start',
     copied:'In die Zwischenablage kopiert',
-    nerdOn:'🤓 Nerd-Modus aktiviert', nerdOff:'Nerd-Modus deaktiviert',
+    nerdOn:'Nerd-Modus aktiviert', nerdOff:'Nerd-Modus deaktiviert',
     settingsT:'EINSTELLUNGEN', langT:'Sprache',
     langSub:'Ländernamen, Hauptstädte und Oberfläche', close:'Schließen',
     nerdT:'WUSSTEST DU?',
@@ -1654,7 +1658,7 @@ const STRINGS = {
     resetConfirm:'Wirklich zurücksetzen?', resetDone:'Zurückgesetzt ✓',
     ghLink:'Open Source auf GitHub', appLink:'App im Browser öffnen', dsLink:'Datenschutz', imLink:'Impressum',
     acctT:'Konto', acctSub:'Lernstand sichern und Geräte synchronisieren', acctOpenGuest:'Anmelden / Registrieren',
-    acctLogin:'Anmelden', acctRegister:'Registrieren', acctEmailPh:'E-Mail', acctPwPh:'Passwort (mind. 6 Zeichen)', acctPw2Ph:'Passwort wiederholen', acctErrPw2:'Die Passwörter stimmen nicht überein.', acctSpamHint:'Keine Mail bekommen? Schau auch im Spam-Ordner nach.',
+    acctLogin:'Anmelden', acctRegister:'Registrieren', acctEmailPh:'E-Mail', acctPwPh:'Passwort (mind. 6 Zeichen)', acctPw2Ph:'Passwort wiederholen', acctHintIn:'Neu hier? Tippe oben auf „Registrieren“ und leg dir ein kostenloses Konto an.', acctHintUp:'Schon ein Konto? Dann tippe oben auf „Anmelden“.', acctErrPw2:'Die Passwörter stimmen nicht überein.', acctSpamHint:'Keine Mail bekommen? Schau auch im Spam-Ordner nach.',
     acctForgot:'Passwort vergessen?', acctForgotSent:'E-Mail zum Zurücksetzen ist unterwegs.',
     acctVerifSent:'Bestätigungs-Mail ist unterwegs – bitte auch im Spam-Ordner nachschauen.',
     acctNameT:'Spielername wählen', acctNameSub:'3–16 Zeichen, nur Buchstaben und Ziffern. Dein Name ist einmalig in KONTUR und alle 14 Tage änderbar.',
@@ -1800,7 +1804,7 @@ const STRINGS = {
     rounds:'ROUNDS', solvedK:'SOLVED', streakK:'STREAK',
     share:'Share result', next:'Next country', backStart:'Back to start',
     copied:'Copied to clipboard',
-    nerdOn:'🤓 Nerd mode activated', nerdOff:'Nerd mode deactivated',
+    nerdOn:'Nerd mode activated', nerdOff:'Nerd mode deactivated',
     settingsT:'SETTINGS', langT:'Language',
     langSub:'Country names, capitals and interface', close:'Close',
     nerdT:'DID YOU KNOW?',
@@ -1825,7 +1829,7 @@ const STRINGS = {
     resetConfirm:'Really reset?', resetDone:'Reset done ✓',
     ghLink:'Open source on GitHub', appLink:'Open app in browser', dsLink:'Privacy policy', imLink:'Legal notice',
     acctT:'Account', acctSub:'Back up your progress and sync devices', acctOpenGuest:'Sign in / Register',
-    acctLogin:'Sign in', acctRegister:'Register', acctEmailPh:'Email', acctPwPh:'Password (min. 6 characters)', acctPw2Ph:'Repeat password', acctErrPw2:'The passwords do not match.', acctSpamHint:'No email? Check your spam folder too.',
+    acctLogin:'Sign in', acctRegister:'Register', acctEmailPh:'Email', acctPwPh:'Password (min. 6 characters)', acctPw2Ph:'Repeat password', acctHintIn:'New here? Tap “Register” above to create your free account.', acctHintUp:'Already have an account? Tap “Sign in” above.', acctErrPw2:'The passwords do not match.', acctSpamHint:'No email? Check your spam folder too.',
     acctForgot:'Forgot password?', acctForgotSent:'Reset email is on its way.',
     acctVerifSent:'Verification email sent – please also check your spam folder.',
     acctNameT:'Choose a player name', acctNameSub:'3–16 characters, letters and digits only. Your name is unique across KONTUR and can be changed every 14 days.',
@@ -2119,7 +2123,7 @@ function renderDiffs(){
   };
   list.appendChild(bx);
 }
-const APP_VERSION = 'v1.95 · Beta · 2026-11-21';
+const APP_VERSION = 'v1.96 · Beta · 2026-11-22';
 let qtype = store0('kontur.qtype') || 'shape';
 if(!['shape','flag','cap'].includes(qtype)) qtype='shape';
 { const qx=new URLSearchParams(location.search).get('qx');
@@ -5486,6 +5490,7 @@ $('saNameChg').onclick=()=>{
 window.acctLangSync = ()=>{ syncBtn(); };
 
 async function openAcct(){
+  if(window.acctTabHintSync) acctTabHintSync();
   $('settingsOverlay').classList.remove('open');
   $('acctOverlay').classList.add('open');
   bodyLock();
@@ -5531,8 +5536,10 @@ function pwMatchSync(){
 }
 $('acctPw').oninput = pwMatchSync;
 $('acctPw2').oninput = pwMatchSync;
-$('acctTabIn').onclick = ()=>{ mode='in'; $('acctTabIn').classList.add('on'); $('acctTabUp').classList.remove('on'); $('acctGo').textContent=t('acctLogin'); $('acctForgot').style.display=''; $('acctPw').setAttribute('autocomplete','current-password'); $('acctPw2Wrap').style.display='none'; $('acctPw2').value=''; pwMatchSync(); setErr('acctErr'); };
-$('acctTabUp').onclick = ()=>{ mode='up'; $('acctTabUp').classList.add('on'); $('acctTabIn').classList.remove('on'); $('acctGo').textContent=t('acctRegister'); $('acctForgot').style.display='none'; $('acctPw').setAttribute('autocomplete','new-password'); $('acctPw2Wrap').style.display=''; pwMatchSync(); setErr('acctErr'); };
+function acctTabHintSync(){ $('acctTabHint').textContent = mode==='up' ? t('acctHintUp') : t('acctHintIn'); }
+window.acctTabHintSync = acctTabHintSync;
+$('acctTabIn').onclick = ()=>{ mode='in'; $('acctTabIn').classList.add('on'); $('acctTabUp').classList.remove('on'); $('acctGo').textContent=t('acctLogin'); $('acctForgot').style.display=''; $('acctPw').setAttribute('autocomplete','current-password'); $('acctPw2Wrap').style.display='none'; $('acctPw2').value=''; pwMatchSync(); acctTabHintSync(); setErr('acctErr'); };
+$('acctTabUp').onclick = ()=>{ mode='up'; $('acctTabUp').classList.add('on'); $('acctTabIn').classList.remove('on'); $('acctGo').textContent=t('acctRegister'); $('acctForgot').style.display='none'; $('acctPw').setAttribute('autocomplete','new-password'); $('acctPw2Wrap').style.display=''; pwMatchSync(); acctTabHintSync(); setErr('acctErr'); };
 
 $('acctGo').onclick = async ()=>{
   const em=$('acctEmail').value.trim(), pw=$('acctPw').value;
