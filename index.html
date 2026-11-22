@@ -374,9 +374,10 @@
   #settingsOverlay h2{font-size:16.5px;margin:13px 0 2px}
   #settingsOverlay .sheet>p{font-size:12.5px;margin:2px 0 8px;color:var(--ink-soft)}
   #settingsOverlay .btn{padding:11px;font-size:13.5px}
-  #newsOverlay .sheet{max-height:calc(100dvh - 76px - var(--sat));
+  #newsOverlay .sheet{position:fixed;bottom:0;left:0;right:0;margin:0 auto;
+    max-height:calc(100dvh - 76px - var(--sat));
     display:flex;flex-direction:column;overflow:hidden;
-    padding-bottom:calc(26px + var(--sab))}
+    padding-bottom:calc(26px + env(safe-area-inset-bottom))}
   #newsOverlay .badge{margin-bottom:8px}
   #moveNote .sheet{padding-bottom:calc(26px + var(--sab))}
   #newsBody{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;
