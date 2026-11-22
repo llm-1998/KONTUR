@@ -4004,9 +4004,18 @@ function newsRender(){
     '<div class="news-e"><div class="news-ht">'+escH(n.t)+'</div><div class="news-meta">'+escH([n.v,n.d].filter(Boolean).join(' · '))+'</div><ul class="news-ul">'+
     n.it.map(i=>'<li><b>'+escH(i[0])+'</b> '+escH(i[1])+'</li>').join('')+'</ul></div>').join('');
 }
+function newsSnap(){
+  /* Doppelboden: falls das Blatt auf dem Geraet ueber der Unterkante schwebt, exakt nachschieben */
+  const sh=document.querySelector('#newsOverlay .sheet'); if(!sh) return;
+  sh.style.transform='';
+  const vh=(window.visualViewport ? window.visualViewport.height + window.visualViewport.offsetTop : window.innerHeight);
+  const d=Math.round(vh - sh.getBoundingClientRect().bottom);
+  if(d>1 && d<200) sh.style.transform='translateY('+d+'px)';
+}
 $('newsBtn').onclick = ()=>{
   newsRender();
   $('newsOverlay').classList.add('open');
+  setTimeout(newsSnap, 420);
   store.set('kontur.newsSeen', NEWS_LATEST);
   newsDotSync();
   if(window.bodyLock) window.bodyLock();
