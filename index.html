@@ -63,6 +63,10 @@
     z-index:40;background:var(--bg);transition:background .3s ease}
   header::before{content:'';position:absolute;top:0;bottom:0;left:50%;
     width:100vw;transform:translateX(-50%);background:inherit;z-index:-1}
+  header::after{content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);
+    width:100vw;height:22px;pointer-events:none;opacity:0;transition:opacity .25s ease;
+    background:linear-gradient(to bottom, var(--bg), rgba(18,24,28,0))}
+  body.scrolled header::after{opacity:1}
   .wordmark{font-size:17px;font-weight:800;letter-spacing:.22em;cursor:pointer;user-select:none}
   .wordmark span{color:var(--accent)}
   .meta{display:flex;gap:8px;align-items:center}
@@ -155,6 +159,12 @@
   .train-taphint{text-align:center;color:var(--ink-soft);font-size:13px;font-weight:600;
     margin-top:14px;animation:taphint 1.8s ease-in-out infinite}
   @keyframes taphint{0%,100%{opacity:.45}50%{opacity:.95}}
+  .train-globebtn{position:absolute;right:10px;bottom:10px;width:38px;height:38px;border-radius:50%;
+    border:1.5px solid var(--line);background:var(--card);color:var(--accent);
+    display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:4}
+  .train-globebtn:active{transform:scale(.92)}
+  #trainFactBtn{left:10px;right:auto}
+  #globeScreen.fromtrain .gp-reg{display:none}
   .flag-missing{font-size:13px;color:var(--ink-soft);font-weight:600;
     padding:10px 14px;border:1.5px dashed var(--line);border-radius:12px;display:inline-block}
   .qname{display:flex;align-items:center;justify-content:center;text-align:center;
@@ -264,6 +274,8 @@
     padding:14px 18px calc(26px + env(safe-area-inset-bottom));
     background:var(--bg);transition:background .3s ease}
   #startScreen{padding-bottom:calc(150px + var(--sab))}
+  .cta::before{content:'';position:absolute;bottom:100%;left:0;right:0;height:22px;pointer-events:none;
+    background:linear-gradient(to top, var(--bg), rgba(18,24,28,0))}
   .btn{width:100%;border:0;border-radius:var(--radius);background:var(--ink);color:var(--bg);
     font-family:inherit;font-size:16px;font-weight:700;padding:16px;cursor:pointer;
     display:flex;align-items:center;justify-content:center;gap:8px}
@@ -339,7 +351,7 @@
     animation:up .35s cubic-bezier(.2,.8,.2,1)}
   #settingsOverlay .sheet{max-height:calc(100dvh - 34px - var(--sat));
     overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;
-    padding-bottom:calc(30px + var(--sab))}
+    padding-bottom:calc(26px + var(--sab))}
   @keyframes up{from{transform:translateY(40px);opacity:0}to{transform:none;opacity:1}}
   .movenote-p{margin:0 0 10px;font-size:14.5px;line-height:1.55;color:var(--ink)}
   .movenote-p.en{color:var(--ink-soft);font-size:13.5px;border-top:1px solid var(--line);padding-top:10px}
@@ -379,7 +391,12 @@
     display:flex;flex-direction:column;overflow:hidden;
     padding-bottom:calc(26px + env(safe-area-inset-bottom))}
   #newsOverlay .badge{margin-bottom:8px}
+  #newsBody::before{content:'';position:sticky;top:0;display:block;height:18px;margin-bottom:-18px;z-index:1;
+    background:linear-gradient(to bottom, var(--card), rgba(26,34,41,0))}
+  #newsBody::after{content:'';position:sticky;bottom:0;display:block;height:18px;margin-top:-18px;z-index:1;
+    background:linear-gradient(to top, var(--card), rgba(26,34,41,0))}
   body.newsopen{background:var(--card)}
+  #trainFact{cursor:pointer}
   #moveNote .sheet{padding-bottom:calc(26px + var(--sab))}
   #newsBody{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;
     overscroll-behavior:contain;padding-bottom:6px}
@@ -665,6 +682,10 @@
   .reg-table td.rg{color:var(--ink-soft);font-size:11px;white-space:nowrap}
   .reg-table th.num,.reg-table td.num{text-align:right;font-variant-numeric:tabular-nums}
   .fb-sticky{position:sticky;top:calc(60px + var(--sat));z-index:14;background:var(--bg);padding:6px 0 10px}
+  .reg-searchwrap::after,.fb-sticky::after{content:'';position:absolute;top:100%;left:0;right:0;height:18px;pointer-events:none;
+    opacity:0;transition:opacity .25s ease;
+    background:linear-gradient(to bottom, var(--bg), rgba(18,24,28,0))}
+  body.scrolled .reg-searchwrap::after, body.scrolled .fb-sticky::after{opacity:1}
   .fx-seg{display:flex;gap:4px;margin-left:auto;background:var(--bg);border:1.5px solid var(--line);border-radius:10px;padding:3px}
   .fx-seg button{border:0;border-radius:7px;background:transparent;font-family:inherit;font-size:12px;font-weight:800;
     color:var(--ink-soft);padding:5px 10px;cursor:pointer}
@@ -816,7 +837,7 @@
     backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;padding:22px}
   .fb-detail[hidden]{display:none}
   .fb-dcard{position:relative;background:var(--card);border:1.5px solid var(--line);border-radius:16px;
-    padding:18px;width:100%;max-width:420px;max-height:78dvh;overflow:auto}
+    padding:18px;width:100%;max-width:420px;max-height:78dvh;overflow:auto;touch-action:pan-y}
   .fb-dx{position:absolute;top:8px;right:10px;background:none;border:none;color:var(--ink-soft);font-size:16px;cursor:pointer}
   .fb-dhead{display:flex;align-items:center;gap:10px;margin-bottom:10px;font-size:16px}
   .fb-drow{display:flex;gap:9px;align-items:flex-start;font-size:13.5px;line-height:1.5;padding:9px 0;border-top:1px solid var(--line)}
@@ -850,6 +871,20 @@
   .toast.show{transform:translateX(-50%) translateY(0);opacity:1;visibility:visible}
   .toast{transition:transform .3s ease, opacity .3s ease, visibility .3s}
   .toast{z-index:70}
+
+  /* ================= Milchglas-Optik ================= */
+  header{background:transparent}
+  header::before{background:color-mix(in srgb, var(--bg) 70%, transparent);
+    backdrop-filter:blur(16px) saturate(1.35);-webkit-backdrop-filter:blur(16px) saturate(1.35)}
+  header::after, body.scrolled header::after{opacity:0}
+  .cta{background:color-mix(in srgb, var(--bg) 70%, transparent);
+    backdrop-filter:blur(16px) saturate(1.35);-webkit-backdrop-filter:blur(16px) saturate(1.35)}
+  .cta::before{display:none}
+  .reg-searchwrap,.fb-sticky{background:color-mix(in srgb, var(--bg) 70%, transparent);
+    backdrop-filter:blur(14px) saturate(1.35);-webkit-backdrop-filter:blur(14px) saturate(1.35)}
+  body.scrolled .reg-searchwrap::after, body.scrolled .fb-sticky::after{opacity:0}
+  #frPill,#mpPill{background:color-mix(in srgb, var(--card) 72%, transparent);
+    backdrop-filter:blur(14px) saturate(1.35);-webkit-backdrop-filter:blur(14px) saturate(1.35)}
 </style>
 </head>
 <body>
@@ -1351,6 +1386,12 @@
       <div class="count" id="trainStreak"></div>
       <div class="silhouette" id="trainSilhouette"></div>
       <div class="train-fact" id="trainFact" style="display:none"></div>
+      <button class="train-globebtn" id="trainFactBtn" style="display:none" aria-label="Fakt wieder anzeigen · Show fact again">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 6c-2-1.6-4.8-1.9-8-1V19c3.2-.9 6-.6 8 1 2-1.6 4.8-1.9 8-1V5c-3.2-.9-6-.6-8 1z"/><path d="M12 6v14"/></svg>
+      </button>
+      <button class="train-globebtn" id="trainGlobeBtn" style="display:none" aria-label="Auf dem Globus zeigen · Show on the globe">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 2.5 15.4 0 18M12 3c-2.5 2.6-2.5 15.4 0 18"/></svg>
+      </button>
     </div>
     <div class="choices" id="choices"></div>
     <div class="train-taphint" id="trainTapHint" style="display:none" data-i18n="trainTap">Tippen, um fortzufahren</div>
@@ -1590,6 +1631,7 @@
   <button class="btn ghost fr-mini fr-ok" id="mpPillYes" data-i18n="frAccept">Annehmen</button>
   <button class="btn ghost fr-mini acct-danger" id="mpPillNo" data-i18n="frDecline">Ablehnen</button>
 </div>
+<button class="btn" id="gTrainPill" style="display:none;position:fixed;left:50%;transform:translateX(-50%);bottom:calc(26px + var(--sab));z-index:46;width:auto;padding:12px 22px;font-size:14px;box-shadow:0 8px 26px var(--shadow)" data-i18n="gTrainBack">← Zurück zum Training</button>
 <div id="ptrPill">
   <svg class="ptr-ring" width="46" height="46" viewBox="0 0 46 46">
     <circle class="ptr-track" cx="23" cy="23" r="19"/>
@@ -1652,7 +1694,7 @@ const STRINGS = {
     lblDiff:'SCHWIERIGKEIT', diffs:['Einfach','Mittel','Schwer','Experte'], lblQtype:'FRAGETYP', qtypes:['Umriss','Flagge','Hauptstadt'],
     flagMissing:'Flagge konnte nicht geladen werden – Internetverbindung nötig',
     trainAutoT:'Training', trainAutoSub:'Nach richtiger Antwort automatisch weiter',
-    trainFactT:'Fakten im Training', trainFactSub:'Nach richtiger Antwort einen Fakt einblenden',
+    trainFactT:'Fakten im Training', trainFactSub:'Nach richtiger Antwort einen Fakt einblenden', gTrainBack:'← Zurück zum Training',
     autoOn:'Ein', autoOff:'Aus', trainTap:'Tippen, um fortzufahren', twins:'Zwillinge',
     offlineMsg:'Offline! Umriss- & Hauptstadt-Quiz laufen weiter. Flaggen und Mehrspieler brauchen Internet.',
     qxLocked:'Extremstufe gesperrt: Meistere im Training je 98 Länder, Flaggen und Hauptstädte, um sie freizuschalten.',
@@ -1711,7 +1753,7 @@ const STRINGS = {
     mpIntro:'Spielt gleichzeitig auf euren eigenen Geräten: gleiche Länder, heimliche Tipps, Punkte nach Nähe. Region, Schwierigkeit und Rundenzahl legt der Host in der Lobby fest.',
     mpNameLbl:'DEIN NAME', mpNamePh:'Name eingeben …', mpCreate:'Runde erstellen',
     mpJoinLbl:'ODER MIT CODE BEITRETEN', mpJoin:'Beitreten', mpCodeLbl:'RAUM-CODE',
-    mpShare:'Teilen', mpCopy:'Link kopieren', mpCopyFail:'Kopieren nicht möglich – Code oben nutzen', mpPlayers:'SPIELER', mpRounds:'LÄNDER PRO PARTIE', mpTimerT:'TIMER PRO RUNDE', mpTimerOff:'Aus', mpNoTip:'Kein Tipp', mpInvFr:'Freunde einladen', mpInvSend:'Einladen', mpInvSent:'Gesendet', mpInvFail:'Fehler – nochmal', mpPillS:'lädt dich zum Mehrspieler ein', fbLbl:'SAMMLUNG', fbOpen:'Faktenbuch', fbT:'FAKTENBUCH', fbSearchPh:'Faktenbuch durchsuchen …', fbLocked:'Noch nicht freigeschaltet', dbOpen:'Datenbank', dbT:'DATENBANK', dbSearchPh:'Datenbank durchsuchen …', dbArea:'Fläche (km²)', dbDens:'Einw./km²', dbGov:'Regierungsform', dbMt:'Höchster Berg', dbMtH:'Höhe (m)', dbRv:'Längster Fluss', dbRvL:'Länge (km)', dbLang:'Amtssprache(n)', dbCur:'Währung', dbCode:'Währungscode', fxNote:'Wechselkurse: Tageswerte vom {d}, geladen bei Internetverbindung · Fluss: Gesamtlänge des prägenden Hauptstroms', fxNoteOff:'Wechselkurse: noch keine geladen (Internet nötig)', betaNote:'Beta-Version: Fehler können auftreten.', newsT:'NEUIGKEITEN', newsOk:'Alles klar', newsList:[{v:'v2.02', d:'22.11.2026', t:'KONTUR wird sozial', it:[['Online-Konto:','Registriere dich mit E-Mail und spiele auf allen Geräten weiter – dein Lernstand synchronisiert automatisch.'],['Freunde:','Suche Spieler, sende Anfragen oder lade Freunde per Einladungslink ein.'],['Mehrspieler-Einladungen:','Hole Freunde direkt in deinen Raum – die Einladung landet als Pille am oberen Bildschirmrand.'],['Leaderboard:','Vergleiche Punkte, Erdumrundungen und Fakten – mit Freunden oder global.'],['Erdumrundungen:','Schließe täglich die Tages-Challenge ab und baue deine Serie aus.'],['Neues Einstellungs-Menü:','Profil mit Spielername und Farbe, dazu volle Kontrolle über deine Sichtbarkeit.'],['Feinschliff:','Seite nach unten ziehen zum Aktualisieren, neuer Orbit-Ladeglobus mit Sprüchen.']]},{d:'November 2026', t:'Mehr oder weniger?', it:[['Duell-Modus:','Länder im Höher-Tiefer-Vergleich – Einwohner, Fläche, Dichte, Berge, Flüsse.'],['Serie oder feste Runden:','Endlos auf Bestwert spielen oder kompakt vergleichen.']]},{d:'05.11.2026', t:'Ein eigenes Zuhause', it:[['Umzug:','KONTUR läuft jetzt unter kontur-app.com – mit eigener Domain und Kontaktadresse.']]},{v:'v1.38', d:'13.10.2026', t:'Der Länder-Almanach', it:[['Datenbank-Ausbau:','15 Spalten von Amtssprachen bis Währung, sortierbar und durchsuchbar.'],['CSV-Export:','Was du siehst, bekommst du – Filter und Einheiten inklusive.']]},{d:'Oktober 2026', t:'Die Generalvermessung', it:[['212 Umrisse neu vermessen:','Jedes Land im echten Weltraumblick.'],['Hauptstadt-Punkte:','208 Länder mit exakt gesetztem Punkt im Hauptstadt-Modus.']]},{d:'Herbst 2026', t:'Das Faktenbuch', it:[['Fakten sammeln:','Zu jedem Land, jeder Flagge und jeder Hauptstadt wartet ein Fakt – freischalten durch Spielen.']]}], glossOpen:'Wusstest du?', glossT:'WUSSTEST DU?',
+    mpShare:'Teilen', mpCopy:'Link kopieren', mpCopyFail:'Kopieren nicht möglich – Code oben nutzen', mpPlayers:'SPIELER', mpRounds:'LÄNDER PRO PARTIE', mpTimerT:'TIMER PRO RUNDE', mpTimerOff:'Aus', mpNoTip:'Kein Tipp', mpInvFr:'Freunde einladen', mpInvSend:'Einladen', mpInvSent:'Gesendet', mpInvFail:'Fehler – nochmal', mpPillS:'lädt dich zum Mehrspieler ein', fbLbl:'SAMMLUNG', fbOpen:'Faktenbuch', fbT:'FAKTENBUCH', fbSearchPh:'Faktenbuch durchsuchen …', fbLocked:'Noch nicht freigeschaltet', dbOpen:'Datenbank', dbT:'DATENBANK', dbSearchPh:'Datenbank durchsuchen …', dbArea:'Fläche (km²)', dbDens:'Einw./km²', dbGov:'Regierungsform', dbMt:'Höchster Berg', dbMtH:'Höhe (m)', dbRv:'Längster Fluss', dbRvL:'Länge (km)', dbLang:'Amtssprache(n)', dbCur:'Währung', dbCode:'Währungscode', fxNote:'Wechselkurse: Tageswerte vom {d}, geladen bei Internetverbindung · Fluss: Gesamtlänge des prägenden Hauptstroms', fxNoteOff:'Wechselkurse: noch keine geladen (Internet nötig)', betaNote:'Beta-Version: Fehler können auftreten.', newsT:'NEUIGKEITEN', newsOk:'Alles klar', newsList:[{v:'v2.03', d:'24.11.2026', t:'Glas, Globus und Gesten', it:[['Milchglas-Design:','Kopfzeile und Leisten sind jetzt gläsern – der Inhalt schimmert beim Scrollen weich hindurch.'],['Training trifft Globus:','Nach richtigem Tipp bringt dich das blaue Globus-Symbol direkt zum Land, die Pille unten bringt dich zurück ins Training.'],['Faktenbuch blättern:','Wische im Länder-Detail nach links oder rechts zum nächsten Land.'],['Fakt wegtippen:','Im Training die Fakt-Karte antippen, um den ganzen Umriss zu sehen.']]},{v:'v2.02', d:'22.11.2026', t:'KONTUR wird sozial', it:[['Online-Konto:','Registriere dich mit E-Mail und spiele auf allen Geräten weiter – dein Lernstand synchronisiert automatisch.'],['Freunde:','Suche Spieler, sende Anfragen oder lade Freunde per Einladungslink ein.'],['Mehrspieler-Einladungen:','Hole Freunde direkt in deinen Raum, die Einladung landet als Pille am oberen Bildschirmrand.'],['Leaderboard:','Vergleiche Punkte, Erdumrundungen und Fakten, mit Freunden oder global.'],['Erdumrundungen:','Schließe täglich die Tages-Challenge ab und baue deine Serie aus.'],['Neues Einstellungs-Menü:','Profil mit Spielername und Farbe, dazu volle Kontrolle über deine Sichtbarkeit.'],['Feinschliff:','Seite nach unten ziehen zum Aktualisieren, neuer Orbit-Ladeglobus mit Sprüchen.']]},{d:'November 2026', t:'Mehr oder weniger?', it:[['Duell-Modus:','Länder im Höher-Tiefer-Vergleich: Einwohner, Fläche, Dichte, Berge, Flüsse.'],['Serie oder feste Runden:','Endlos auf Bestwert spielen oder kompakt vergleichen.']]},{d:'05.11.2026', t:'Ein eigenes Zuhause', it:[['Umzug:','KONTUR läuft jetzt unter kontur-app.com, mit eigener Domain und Kontaktadresse.']]},{v:'v1.38', d:'13.10.2026', t:'Der Länder-Almanach', it:[['Datenbank-Ausbau:','15 Spalten von Amtssprachen bis Währung, sortierbar und durchsuchbar.'],['CSV-Export:','Was du siehst, bekommst du. Filter und Einheiten inklusive.']]},{d:'Oktober 2026', t:'Die Generalvermessung', it:[['212 Umrisse neu vermessen:','Jedes Land im echten Weltraumblick.'],['Hauptstadt-Punkte:','208 Länder mit exakt gesetztem Punkt im Hauptstadt-Modus.']]},{d:'Herbst 2026', t:'Das Faktenbuch', it:[['Fakten sammeln:','Zu jedem Land, jeder Flagge und jeder Hauptstadt wartet ein Fakt. Freischalten durch Spielen.']]}], glossOpen:'Wusstest du?', glossT:'WUSSTEST DU?',
     duelT:'Duell', duelS:'Mehr oder weniger? Länder im Vergleich', lblDuelCat:'KATEGORIE', lblDuelMode:'SPIELART',
     catPop:'Einwohner', catAr:'Fläche', catDens:'Dichte', catMt:'Berg', catRv:'Fluss', catMix:'Gemischt',
     duelSerie:'Serie ∞', duelR10:'10 Runden', duelR20:'20 Runden',
@@ -1823,7 +1865,7 @@ const STRINGS = {
     lblDiff:'DIFFICULTY', diffs:['Easy','Medium','Hard','Expert'], lblQtype:'QUESTION TYPE', qtypes:['Outline','Flag','Capital'],
     flagMissing:'Flag could not be loaded – internet connection required',
     trainAutoT:'Training', trainAutoSub:'Advance automatically after a correct answer',
-    trainFactT:'Facts in training', trainFactSub:'Show a fact after a correct answer',
+    trainFactT:'Facts in training', trainFactSub:'Show a fact after a correct answer', gTrainBack:'← Back to training',
     autoOn:'On', autoOff:'Off', trainTap:'Tap to continue', twins:'Twins',
     offlineMsg:'Offline! Outline & capital quizzes keep working. Flags and multiplayer need internet.',
     qxLocked:'Extreme tier locked: master 98 countries, 98 flags and 98 capitals in training to unlock it.',
@@ -1882,7 +1924,7 @@ const STRINGS = {
     mpIntro:'Play simultaneously on your own devices: same countries, secret guesses, points for proximity. The host sets region, difficulty and round count in the lobby.',
     mpNameLbl:'YOUR NAME', mpNamePh:'Enter a name …', mpCreate:'Create a room',
     mpJoinLbl:'OR JOIN WITH A CODE', mpJoin:'Join', mpCodeLbl:'ROOM CODE',
-    mpShare:'Share', mpCopy:'Copy link', mpCopyFail:'Copy failed – use the code above', mpPlayers:'PLAYERS', mpRounds:'COUNTRIES PER MATCH', mpTimerT:'TIMER PER ROUND', mpTimerOff:'Off', mpNoTip:'No guess', mpInvFr:'Invite friends', mpInvSend:'Invite', mpInvSent:'Sent', mpInvFail:'Error – retry', mpPillS:'invites you to a multiplayer match', fbLbl:'COLLECTION', fbOpen:'Fact book', fbT:'FACT BOOK', fbSearchPh:'Search the fact book …', fbLocked:'Not unlocked yet', dbOpen:'Database', dbT:'DATABASE', dbSearchPh:'Search the database …', dbArea:'Area (km²)', dbDens:'Pop./km²', dbGov:'Government', dbMt:'Highest peak', dbMtH:'Height (m)', dbRv:'Longest river', dbRvL:'Length (km)', dbLang:'Official language(s)', dbCur:'Currency', dbCode:'Currency code', fxNote:'Exchange rates: daily values from {d}, fetched when online · River: total length of the main stream', fxNoteOff:'Exchange rates: none loaded yet (requires internet)', betaNote:'Beta version: errors may occur.', newsT:'WHAT’S NEW', newsOk:'Got it', newsList:[{v:'v2.02', d:'2026-11-22', t:'KONTUR goes social', it:[['Online account:','Sign up with your email and continue on any device – your progress syncs automatically.'],['Friends:','Search for players, send requests, or invite friends via invite link.'],['Multiplayer invites:','Bring friends straight into your room – the invite arrives as a pill at the top of the screen.'],['Leaderboard:','Compare points, Earth orbits and facts – with friends or globally.'],['Earth orbits:','Complete the daily challenge each day to grow your streak.'],['New settings menu:','Profile with player name and color, plus full control over your visibility.'],['Polish:','Pull down to refresh, plus a new orbiting loading globe with rotating quips.']]},{d:'November 2026', t:'More or less?', it:[['Duel mode:','Compare countries higher-or-lower – population, area, density, mountains, rivers.'],['Streak or fixed rounds:','Chase your best endlessly or keep it short and sharp.']]},{d:'2026-11-05', t:'A home of its own', it:[['The move:','KONTUR now lives at kontur-app.com – with its own domain and contact address.']]},{v:'v1.38', d:'2026-10-13', t:'The country almanac', it:[['Database expansion:','15 columns from official languages to currency, sortable and searchable.'],['CSV export:','What you see is what you get – filters and units included.']]},{d:'October 2026', t:'The great survey', it:[['212 outlines resurveyed:','Every country in its true view from space.'],['Capital markers:','208 countries with a precisely placed dot in capital mode.']]},{d:'Autumn 2026', t:'The fact book', it:[['Collect facts:','A fact awaits for every country, flag and capital – unlock them by playing.']]}], glossOpen:'Did you know?', glossT:'DID YOU KNOW?',
+    mpShare:'Share', mpCopy:'Copy link', mpCopyFail:'Copy failed – use the code above', mpPlayers:'PLAYERS', mpRounds:'COUNTRIES PER MATCH', mpTimerT:'TIMER PER ROUND', mpTimerOff:'Off', mpNoTip:'No guess', mpInvFr:'Invite friends', mpInvSend:'Invite', mpInvSent:'Sent', mpInvFail:'Error – retry', mpPillS:'invites you to a multiplayer match', fbLbl:'COLLECTION', fbOpen:'Fact book', fbT:'FACT BOOK', fbSearchPh:'Search the fact book …', fbLocked:'Not unlocked yet', dbOpen:'Database', dbT:'DATABASE', dbSearchPh:'Search the database …', dbArea:'Area (km²)', dbDens:'Pop./km²', dbGov:'Government', dbMt:'Highest peak', dbMtH:'Height (m)', dbRv:'Longest river', dbRvL:'Length (km)', dbLang:'Official language(s)', dbCur:'Currency', dbCode:'Currency code', fxNote:'Exchange rates: daily values from {d}, fetched when online · River: total length of the main stream', fxNoteOff:'Exchange rates: none loaded yet (requires internet)', betaNote:'Beta version: errors may occur.', newsT:'WHAT’S NEW', newsOk:'Got it', newsList:[{v:'v2.03', d:'2026-11-24', t:'Glass, globe and gestures', it:[['Frosted glass design:','Header and bars are now glassy – content shimmers softly through while you scroll.'],['Training meets globe:','After a correct answer, the blue globe icon takes you straight to the country, the pill below brings you back to training.'],['Fact book paging:','Swipe left or right in a country detail to jump to the next country.'],['Dismiss the fact:','Tap the fact card in training to reveal the full outline.']]},{v:'v2.02', d:'2026-11-22', t:'KONTUR goes social', it:[['Online account:','Sign up with your email and continue on any device – your progress syncs automatically.'],['Friends:','Search for players, send requests, or invite friends via invite link.'],['Multiplayer invites:','Bring friends straight into your room, the invite arrives as a pill at the top of the screen.'],['Leaderboard:','Compare points, Earth orbits and facts, with friends or globally.'],['Earth orbits:','Complete the daily challenge each day to grow your streak.'],['New settings menu:','Profile with player name and color, plus full control over your visibility.'],['Polish:','Pull down to refresh, plus a new orbiting loading globe with rotating quips.']]},{d:'November 2026', t:'More or less?', it:[['Duel mode:','Compare countries higher-or-lower: population, area, density, mountains, rivers.'],['Streak or fixed rounds:','Chase your best endlessly or keep it short and sharp.']]},{d:'2026-11-05', t:'A home of its own', it:[['The move:','KONTUR now lives at kontur-app.com, with its own domain and contact address.']]},{v:'v1.38', d:'2026-10-13', t:'The country almanac', it:[['Database expansion:','15 columns from official languages to currency, sortable and searchable.'],['CSV export:','What you see is what you get. Filters and units included.']]},{d:'October 2026', t:'The great survey', it:[['212 outlines resurveyed:','Every country in its true view from space.'],['Capital markers:','208 countries with a precisely placed dot in capital mode.']]},{d:'Autumn 2026', t:'The fact book', it:[['Collect facts:','A fact awaits for every country, flag and capital. Unlock them by playing.']]}], glossOpen:'Did you know?', glossT:'DID YOU KNOW?',
     duelT:'Duel', duelS:'More or less? Countries head-to-head', lblDuelCat:'CATEGORY', lblDuelMode:'MODE',
     catPop:'Population', catAr:'Area', catDens:'Density', catMt:'Peak', catRv:'River', catMix:'Mixed',
     duelSerie:'Streak ∞', duelR10:'10 rounds', duelR20:'20 rounds',
@@ -2129,7 +2171,7 @@ function renderDiffs(){
   };
   list.appendChild(bx);
 }
-const APP_VERSION = 'v2.02 · Beta · 2026-11-22';
+const APP_VERSION = 'v2.03 · Beta · 2026-11-24';
 let qtype = store0('kontur.qtype') || 'shape';
 if(!['shape','flag','cap'].includes(qtype)) qtype='shape';
 { const qx=new URLSearchParams(location.search).get('qx');
@@ -2501,6 +2543,7 @@ function show(screen){
   screen.classList.add('active');
   $('regionChip').style.display = (screen===gameScreen||screen===trainScreen)?'':'none';
   $('homeBtn').style.display    = screen===startScreen?'none':'';
+  { const tp=$('gTrainPill'); if(tp && screen!==globeScreen){ tp.style.display='none'; globeScreen.classList.remove('fromtrain'); } }
   $('edgeStrip').style.display  = (screen===registerScreen||screen===globeScreen||screen===fbScreen||screen===dbScreen||screen===glossScreen||screen===frScreen||screen===lbScreen)?'':'none';
   $('dbBack').style.display = (screen===dbScreen && window.dbReturnA2) ? 'flex' : 'none';
   window.scrollTo(0, screen===startScreen ? startScroll : 0);                                       // heimkehren, wo man war
@@ -3165,7 +3208,7 @@ function nextCard(){
   roundTries[trainTarget.a2] = (roundTries[trainTarget.a2] || 0) + 1;
   wrongThisCard = false; trainLocked = false;
   $('trainStreak').innerHTML = ICONS.flame + ' ' + trainStreakN;
-  trainWait=0; $('trainTapHint').style.display='none'; $('trainFact').style.display='none';
+  trainWait=0; $('trainTapHint').style.display='none'; $('trainFact').style.display='none'; $('trainGlobeBtn').style.display='none'; $('trainFactBtn').style.display='none';
   $('trainSilhouette').innerHTML =
     diff==='x'      ? svgFor(trainTarget) :
     qtype==='flag'  ? `<div class="qflag">${bigFlagHtml(trainTarget.a2)}</div>` :
@@ -3209,6 +3252,7 @@ function answer(btn, c){
       saveMastered();
     }
     trainStreakN++;
+    $('trainGlobeBtn').style.display='';
     let factShown=false;
     if(trainFactsOn){
       const mark = qtype==='flag' && twinMode && TWINS.marks[trainTarget.a2];
@@ -3222,7 +3266,7 @@ function answer(btn, c){
         if(!mark) markSeen(qtype==='cap'?'c':qtype==='flag'?'f':'l', trainTarget.a2);
       }
     }
-    if(trainAuto) setTimeout(nextCard, factShown ? 2600 : 750);
+    if(trainAuto) trainAdvT=setTimeout(nextCard, factShown ? 2600 : 750);
     else { trainWait=performance.now(); $('trainTapHint').style.display=''; }
   } else {
     btn.classList.add('wrong'); btn.classList.add('locked');
@@ -3583,6 +3627,7 @@ function buildFB(){
   const q=fold($('fbSearch').value.trim());
   const langIdx = lang==='de'?0:1;
   const list=$('fbList'); list.innerHTML='';
+  window.fbOrder=[];
   if(DEV_EARTH || totalSeen() === DATA.length*3){
     const eg=document.createElement('div'); eg.className='fb-group';
     const grid=document.createElement('div'); grid.className='fb-grid';
@@ -3613,6 +3658,7 @@ function buildFB(){
       b.className='fb-tile'+(fbUnlocked(c)===0?' dim':'');
       b.innerHTML=`<span class="iso">${c.a2}</span><span class="slots">`+
         ['l','f','c'].map(k=>`<span class="slot${seenFacts[k][c.a2]?' on':''}">${seenFacts[k][c.a2]?FB_IC[k]:FB_LOCK}</span>`).join('')+`</span>`;
+      fbOrder.push(c.a2);
       b.onclick=()=>openFbDetail(c);
       grid.appendChild(b);
     });
@@ -3634,7 +3680,7 @@ function openFbDetail(c){
     div.innerHTML=(open?FB_IC[k]:FB_LOCK)+`<span>${open && f ? f[langIdx] : t('fbLocked')}</span>`;
     rows.appendChild(div);
   });
-  $('fbDetail').hidden=false;
+  $('fbDetail').hidden=false; document.body.classList.add('lock');
 }
 function openEarth(){
   fbDcur='earth';
@@ -3645,14 +3691,63 @@ function openEarth(){
   const div=document.createElement('div'); div.className='fb-drow';
   div.innerHTML=FB_HEART+`<span>${t('fbEarthFact')}<span class="fb-ctx">${t('fbEarthCtx')}</span></span>`;
   rows.appendChild(div);
-  $('fbDetail').hidden=false;
+  $('fbDetail').hidden=false; document.body.classList.add('lock');
 }
 $('fbDGlobe').onclick=()=>{
-  const c=fbDcur; $('fbDetail').hidden=true; fbDcur=null;
+  const c=fbDcur; $('fbDetail').hidden=true; fbDcur=null; document.body.classList.remove('lock');
   if(c && c.a2 && window.globeShow) globeShow(c.a2);
 };
-$('fbDx').onclick=()=>{ $('fbDetail').hidden=true; fbDcur=null; };
-$('fbDetail').addEventListener('click', e=>{ if(e.target===$('fbDetail')){ $('fbDetail').hidden=true; fbDcur=null; } });
+$('fbDx').onclick=()=>{ $('fbDetail').hidden=true; fbDcur=null; document.body.classList.remove('lock'); };
+$('fbDetail').addEventListener('click', e=>{ if(window.fbSwiped && Date.now()-window.fbSwiped<600){ window.fbSwiped=0; return; } if(e.target===$('fbDetail')){ $('fbDetail').hidden=true; fbDcur=null; document.body.classList.remove('lock'); } });
+function fbNeighbor(dir){
+  if(!fbDcur || fbDcur==='earth' || !window.fbOrder) return null;
+  const i=fbOrder.indexOf(fbDcur.a2);
+  if(i<0) return null;
+  const j=i+dir;
+  if(j<0 || j>=fbOrder.length) return null;
+  return DATA.find(c=>c.a2===fbOrder[j]);
+}
+{ const zone=$('fbDetail'), card=document.querySelector('.fb-dcard');
+  const GAIN=3.5;                                          /* Fingerweg zaehlt 3,5-fach */
+  let sx=0, sy=0, dx=0, drag=0;
+  zone.addEventListener('touchstart', e=>{
+    if(!fbDcur || fbDcur==='earth') return;
+    sx=e.touches[0].clientX; sy=e.touches[0].clientY; dx=0; drag=0;
+    card.style.transition='none';
+  }, {passive:true});
+  zone.addEventListener('touchmove', e=>{
+    if(!fbDcur || fbDcur==='earth') return;
+    const x=e.touches[0].clientX, y=e.touches[0].clientY;
+    if(!drag){
+      if(Math.abs(x-sx)>12 && Math.abs(x-sx)>Math.abs(y-sy)*1.2) drag=1;      /* seitlich: blaettern */
+      else if(Math.abs(y-sy)>14) drag=-1;                                      /* senkrecht: scrollen lassen */
+    }
+    if(drag===1){ dx=(x-sx)*GAIN; card.style.transform='translateX('+dx+'px)'; e.preventDefault(); }
+  }, {passive:false});
+  zone.addEventListener('touchend', ()=>{
+    if(drag===1) window.fbSwiped=Date.now();
+    if(drag!==1){ card.style.transition=''; card.style.transform=''; dx=0; drag=0; return; }
+    const w=card.offsetWidth;
+    const nb = Math.abs(dx)>w/2 ? fbNeighbor(dx<0 ? 1 : -1) : null;
+    card.style.transition='transform .22s ease';
+    if(nb){
+      const out = dx<0 ? -(w+40) : (w+40);
+      card.style.transform='translateX('+out+'px)';
+      setTimeout(()=>{
+        openFbDetail(nb);
+        card.scrollTop=0;
+        card.style.transition='none';
+        card.style.transform='translateX('+(-out)+'px)';
+        void card.offsetWidth;
+        card.style.transition='transform .22s ease';
+        card.style.transform='';
+      }, 220);
+    } else {
+      card.style.transform='';
+    }
+    dx=0; drag=0;
+  }, {passive:true});
+}
 $('fbSearch').addEventListener('input', buildFB);
 function openFB(){ buildFB(); show(fbScreen); }
 $('fbBtn').onclick=openFB;
@@ -3950,8 +4045,20 @@ document.querySelectorAll('#trainFactSeg button').forEach(b=>{
   b.onclick = ()=> applyTrainFacts(b.dataset.fact==='1');
 });
 applyTrainFacts(trainFactsOn);
-let trainWait=0;
+let trainWait=0, trainAdvT=0;
 $('trainScreen').addEventListener('click', e=>{
+  if(e.target.closest('#trainGlobeBtn') || e.target.closest('#trainFactBtn')) return;  // Icons haben Vorfahrt
+  const tf=$('trainFact');
+  if(tf && tf.style.display!=='none'){                          // Fakt-Karte (+Puffer): schließen statt weiter
+    const r=tf.getBoundingClientRect(), B=18;
+    if(e.clientX>r.left-B && e.clientX<r.right+B && e.clientY>r.top-B && e.clientY<r.bottom+B){
+      tf.style.display='none';
+      $('trainFactBtn').style.display='';
+      const capPill=document.querySelector('#trainScreen .qcapname');
+      if(capPill) capPill.style.display='';
+      return;
+    }
+  }
   if(!trainWait || performance.now()-trainWait < 300) return;  // Antwort-Tipp nicht durchrutschen lassen
   if(e.target.closest('.train-foot')) return;                   // Fußzeile behält ihre eigenen Aufgaben
   nextCard();
@@ -3984,6 +4091,26 @@ armReset($('resetStatsBtn'), ()=>{
   store.set('kontur.stats', stats);
 });
 $('settingsBtn').onclick = ()=>{ $('settingsOverlay').classList.add('open'); if(window.svMenuOpen) window.svMenuOpen(); if(window.bodyLock) window.bodyLock(); };
+$('trainFactBtn').onclick = ()=>{
+  $('trainFactBtn').style.display='none';
+  const capPill=document.querySelector('#trainScreen .qcapname');
+  if(capPill) capPill.style.display='none';
+  $('trainFact').style.display='';
+};
+$('trainGlobeBtn').onclick = ()=>{
+  if(!trainTarget) return;
+  clearTimeout(trainAdvT);
+  globeScreen.classList.add('fromtrain');
+  if(window.globeShow) globeShow(trainTarget.a2);
+  $('gTrainPill').style.display='';
+};
+$('gTrainPill').onclick = ()=>{
+  $('gTrainPill').style.display='none';
+  globeScreen.classList.remove('fromtrain');
+  show(trainScreen);
+  trainWait=performance.now();
+  $('trainTapHint').style.display='';
+};
 $('settingsClose').onclick = ()=>{ $('settingsOverlay').classList.remove('open'); if(window.bodyLock) window.bodyLock(); };
 document.querySelectorAll('#langSeg button').forEach(b=>{
   b.onclick = ()=> applyLang(b.dataset.lang);
@@ -3993,8 +4120,10 @@ applyLang(lang);
 if(!store0('kontur.movenote')) $('moveNote').classList.add('open');
 $('moveNoteBtn').onclick=()=>{ store.set('kontur.movenote',1); $('moveNote').classList.remove('open'); };
 
+addEventListener('scroll', ()=>{ document.body.classList.toggle('scrolled', window.scrollY>8); }, {passive:true});
+
 /* ---------- News ---------- */
-const NEWS_LATEST = 'v2.02';
+const NEWS_LATEST = 'v2.03';
 function newsDotSync(){
   const el=$('newsDot'); if(!el) return;
   el.style.display = (store.get('kontur.newsSeen')===NEWS_LATEST) ? 'none' : 'block';
@@ -4007,22 +4136,24 @@ function newsRender(){
 }
 /* Selbstkalibrierung gegen den iOS-Schwebefehler des Unten-Blatts:
    beim Oeffnen den gemerkten Wert sofort anwenden, danach am sichtbaren Blatt nachmessen und merken. */
-function newsSnapApply(d){
-  const sh=document.querySelector('#newsOverlay .sheet'); if(!sh) return;
+function sheetSnapApply(sh){
+  if(!sh) return;
+  const d = store0('kontur.newssnap')||0;
   if(d>1 && d<120){ sh.style.animation='none'; sh.style.transform='translateY('+d+'px)'; }
-  else { sh.style.animation=''; sh.style.transform=''; }
 }
-function newsSnapMeasure(){
-  const sh=document.querySelector('#newsOverlay .sheet'); if(!sh || !$('newsOverlay').classList.contains('open')) return;
+function sheetSnapMeasure(sh){
+  if(!sh) return;
   const cur = parseInt((sh.style.transform.match(/translateY\((\d+)/)||[])[1]||'0',10);
   const vh = (window.visualViewport ? window.visualViewport.height + window.visualViewport.offsetTop : window.innerHeight);
   let d = cur + Math.round(vh - sh.getBoundingClientRect().bottom);
   const standalone = (navigator.standalone===true) || (window.matchMedia && matchMedia('(display-mode: standalone)').matches);
   if(standalone) d = Math.max(d, Math.round(screen.height - window.innerHeight));
   if(!(d>1 && d<120)) d=0;
-  if(d!==cur) newsSnapApply(d);
   store.set('kontur.newssnap', d);
+  if(d && d!==cur){ sh.style.animation='none'; sh.style.transform='translateY('+d+'px)'; }
+  if(!d && cur){ sh.style.transform=''; sh.style.animation=''; }
 }
+window.sheetSnapApply=sheetSnapApply; window.sheetSnapMeasure=sheetSnapMeasure;
 { let prT=0, prN=0;
   document.querySelector('#newsOverlay .badge').addEventListener('click', ()=>{
     const now=Date.now(); prN = (now-prT<1600) ? prN+1 : 1; prT=now;
@@ -4038,10 +4169,10 @@ function newsSnapMeasure(){
 }
 $('newsBtn').onclick = ()=>{
   newsRender();
-  newsSnapApply(store0('kontur.newssnap')||0);
+  sheetSnapApply(document.querySelector('#newsOverlay .sheet'));
   $('newsOverlay').classList.add('open');
   document.body.classList.add('newsopen');
-  setTimeout(newsSnapMeasure, 450);
+  setTimeout(()=>{ if($('newsOverlay').classList.contains('open')) sheetSnapMeasure(document.querySelector('#newsOverlay .sheet')); }, 450);
   store.set('kontur.newsSeen', NEWS_LATEST);
   newsDotSync();
   if(window.bodyLock) window.bodyLock();
@@ -5014,8 +5145,17 @@ function svView(v){
   $('svBack').style.display = v==='svMenu' ? 'none' : '';
 }
 function bodyLock(){
-  const any=['settingsOverlay','acctOverlay','welcomeGate','newsOverlay'].some(id=>{ const el=$(id); return el && el.classList.contains('open'); });
+  const ids=['settingsOverlay','acctOverlay','welcomeGate','newsOverlay'];
+  const any=ids.some(id=>{ const el=$(id); return el && el.classList.contains('open'); });
   document.body.classList.toggle('lock', any);
+  document.body.classList.toggle('newsopen', any);
+  ids.forEach(id=>{ const el=$(id);
+    if(el && el.classList.contains('open') && window.sheetSnapApply){
+      const sh=el.querySelector('.sheet');
+      sheetSnapApply(sh);
+      setTimeout(()=>{ if(el.classList.contains('open')) sheetSnapMeasure(sh); }, 450);
+    }
+  });
 }
 window.bodyLock=bodyLock;
 window.svMenuOpen = ()=>{ svView('svMenu'); syncBtn(); };
